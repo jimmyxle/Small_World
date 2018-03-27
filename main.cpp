@@ -10,98 +10,42 @@
 #include "SW_map_loader.h"
 #include "SW_pieces.h"
 #include "SW_player.h"
+#include "SW_game_start.h"
 /*
  * Driver file that contains all test situations
  */
 int main() {
 
-
-
-    cout<<"Assignment 2 Testing"<<endl<<"============================================="<<endl;
-    /*
-    bits* b1 = new bits();
-    b1->add_race_tokens("vampires" , 5);
-    cout<<b1->get_size();
-    b1->pop_race_tokens();
-    cout<<endl<<b1->get_size();
-    delete b1; */
-    /*
-    race_token* r1 = new race_token("vampire", true);
-    terrain_token* t1 = new terrain_token("mountain", true);
-
-    r1->flip_token();
-    cout<<  r1->is_active()<<endl;
-    cout<< r1->get_name()<<endl;
-    cout<<t1->getTerrain()<<endl;
-    t1->make_mountain();
-    cout<<t1->is_mountain()<<endl;
-
-    cout<<"Make a vector"<<endl;
-    vector<race_tokens*> bb1;
-    bb1.push_back(r1);
-    bb1.push_back(t1);
-
-    for(auto iter = bb1.begin(); iter != bb1.end(); ++iter)
-    {
-        cout<<(*iter)->is_mountain()<<endl;
-    }
-
-    delete bb1;
-    delete r1;
-    delete t1;
-    r1 = nullptr;
-    t1 = nullptr;
-    bb1  = nullptr;
-    */
-
-
-//    player* one = new player("one");
-    player* def = new player();
-    loader* loader1 = new loader();
-    loader1->read_file("5p.map");
-    cout<<"Populating...."<<endl;
-    loader1->populate();
-    def->add_map(loader1);
-
-
-//    one->give_tokens(1);
-//    one->picks_race();
-//    one->give_tokens(2);
-
-/*
-    cout<<"HEY"<<endl<<endl;
-    cout<<"start conquer"<<endl;
-    def->conquers();
-    def->conquers();
-    cout<<endl<<endl;
-    def->scores();
+    cout<<endl<<"Assignment 2 Testing"<<endl<<"============================================="<<endl;
 
     /*
-    cout<<"print out character summary sheet"<<endl;
-    one->get_status();
-    */
+    game_manager* game1 = new game_manager();
+    game1->game_loop();
+    delete game1;
+*/
+    bank * b1 = new bank();
+    wallet * w1 = new wallet();
 
 
-//    delete def;
-//    delete loader1;
+    w1->init(b1);
+//    w1->set_central(b1);
+//    w1->first_coins();
+    cout<<"The value of the wallet is: "<<w1->get_wallet_total()<<endl;
 
-
-    /*
-    wallet* w1 = new wallet(5);
+    w1->add_coin(1);
     w1->add_coin(3);
     w1->add_coin(10);
-    w1->add_coin(10);
-    w1->add_coin(10);
-    w1->add_coin(5);
-    w1->add_coin(5);
-    w1->rem_coin(5);
 
-    w1->print_wallet();
-    int total;
-    total = w1->get_wallet_total();
+//    w1->add_coin(1);
+//    w1->add_coin(1)
 
-    cout<<total<<endl;
-    */
-    cout<<"============================ END ============================";
+    cout<<"The value of the wallet is: "<<w1->get_wallet_total()<<endl;
+    w1->remove_coin(3);
+    w1->remove_coin(10);
+
+    cout<<"The value of the wallet is: "<<w1->get_wallet_total()<<endl;
+
+
+    cout<<endl<<"============================ END ============================";
     return 0;
 }

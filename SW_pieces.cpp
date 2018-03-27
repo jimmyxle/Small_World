@@ -6,132 +6,368 @@
 #include <iostream>
 #include <utility>
 #include <memory>
+#include <ctime>
+#include <random>
+//#include "SW_player.h"
 
 using namespace std;
 #include "SW_pieces.h"
 
 /*
- * Beginning of wallet class
+ * game_turn_token class
  */
-wallet::coin::coin()
+game_turn_token::game_turn_token()
 {
-    coin_value = 0;
+    turn_number =0;
 }
-wallet::coin::coin(int value)
+game_turn_token::game_turn_token(int number_of_players)
 {
-    if(value == 1 || value == 3 || value == 5 || value == 10)
+    turn_number =0;
+    switch(number_of_players)
     {
-        coin_value = value;
-    } else {
-        cout <<"Invalid value"<<endl;
+        case 2:
+            MAX_TURNS = 10;
+            break;
+        case 3:
+            MAX_TURNS = 10;
+            break;
+        case 4:
+            MAX_TURNS = 9;
+            break;
+        case 5:
+            MAX_TURNS = 8;
+            break;
+        default:
+            cout<<"wrong input"<<endl;
+            break;
     }
 }
-wallet::coin::~coin() {};
 
-wallet::wallet(const int SIZE)
+game_turn_token::~game_turn_token()
 {
-    for(int i = 0; i < SIZE; ++i)
+
+}
+int game_turn_token::get_turn_number()
+{
+    return turn_number;
+}
+
+bool game_turn_token::next_turn()
+{
+    if(turn_number < MAX_TURNS)
     {
-        coin* temp = new coin(1);
-        coin_wallet.push_back(temp);
-        wallet_total++;
-    }
-}
-
-wallet::~wallet()
-{
-    coin_wallet.clear();
-}
-void wallet::print_wallet()
-{
-    cout<<"This wallet contains:"<<endl;
-    int one = 0;
-    int three = 0;
-    int five = 0;
-    int ten = 0;
-    for(auto iter = coin_wallet.begin() ; iter!= coin_wallet.end(); ++iter)
-    {
-        switch((*iter)->get_coin())
-        {
-            case 1 :
-                one++;
-                break;
-            case 3:
-                three++;
-                break;
-            case 5:
-                five++;
-                break;
-            case 10:
-                ten++;
-                break;
-            default:
-                cout<<"something went real wrong."<<endl;
-                break;
-        }
-    }
-    cout<<"Number of 1's: "<<one<<endl;
-    cout<<"Number of 3's: "<<three<<endl;
-    cout<<"Number of 5's: "<<five<<endl;
-    cout<<"Number of 10's: "<<ten<<endl;
-    cout<<"Total value is: "<<one*1 + three*3 + five*5 + ten*10<<endl;
-}
-
-
-void wallet::add_coin(const int amount)
-{
-    coin* temp = new coin(amount);
-    coin_wallet.push_back(temp);
-    wallet_total += amount;
-}
-
-
-void wallet::rem_coin(const int amount)
-{
-    int index = find(amount);
-    if( index >= 0) {
-        if(index != coin_wallet.size())
-        {
-            std::swap(*coin_wallet[index], *coin_wallet.back());
-            coin_wallet.back()= nullptr;
-            coin_wallet.pop_back();
-        }
-        else
-        {
-            coin_wallet.pop_back();
-        }
-        wallet_total-=amount;
-//        cout<<"Removed: "<<index<<" succesfully."<<endl;
+        turn_number++;
+        cout<<"Turn advanced to turn: "<<turn_number<<endl;
+        if(turn_number == MAX_TURNS)
+            cout<<"It's the last turn!"<<endl;
+        return true;
     }
     else
-        cout<<"Can't remove this coin"<<endl;
-}
-
-int wallet::find(const int amount)
-{
-//    cout<<"The size of the wallet is: "<<coin_wallet.size()<<endl;
-    for(auto iter = coin_wallet.begin(); iter != coin_wallet.end(); ++iter )
     {
-//        cout<<(*iter)->get_coin()<<endl;
-        if( (*iter)->get_coin() == amount)
-        {
-//            cout<<"Here's the value: "<<iter-coin_wallet.begin()<<endl;
-            return iter - coin_wallet.begin();
-        }
+        cout<<"Game has ended."<<endl;
+        return false;
     }
-    return -1;
 }
+/*
+ * End of game_turn_token
+ */
 
+/*
+ * Beginning of the Bank class
+ */
 
-inline int wallet::coin::get_coin()
+coin::coin()
+{
+    coin_value = 1;
+}
+coin::~coin(){}
+coin::coin(int value)
+{
+    coin_value = value;
+}
+int coin::get_coin()
 {
     return coin_value;
 }
 
+bank::bank()
+{
+
+    ones.reserve(3*BASE_SIZE);
+    threes.reserve(BASE_SIZE);
+    fives.reserve(BASE_SIZE);
+    tens.reserve(BASE_SIZE);
+
+    initiate();
+    cout<<"Bank created"<<endl;
+}
+bank::~bank()
+{
+    for(auto iter = ones.begin(); iter != ones.end(); ++iter)
+    {
+        delete (*iter);
+    }
+    ones.clear();
+
+    for(auto iter = threes.begin(); iter != threes.end(); ++iter)
+    {
+        delete (*iter);
+    }
+    threes.clear();
+
+    for(auto iter = fives.begin(); iter != fives.end(); ++iter)
+    {
+        delete (*iter);
+    }
+
+    fives.clear();
+
+    for(auto iter = tens.begin(); iter != tens.end(); ++iter)
+    {
+        delete (*iter);
+    }
+    tens.clear();
+
+    cout<<"Bank emptied"<<endl;
+}
+
+void bank::initiate()
+{
+    for(int iter = 0; iter < 3*BASE_SIZE; ++iter)
+    {
+        coin *temp= new coin(1);
+        ones.push_back( temp );
+}
+    for(int iter = 0; iter < BASE_SIZE; ++iter)
+    {
+        coin *temp= new coin(3);
+        threes.push_back( temp );
+
+        temp = new coin(5);
+        fives.push_back( temp );
+
+        temp= new coin(10);
+        tens.push_back( temp );
+    }
+//    cout<<"ones size: "<<ones.size()<<endl;
+//    cout<<"threes size: "<<threes.size()<<endl;
+//    cout<<"fives size: "<<fives.size()<<endl;
+//    cout<<"tens size: "<<tens.size()<<endl;
+//
+//
+//    cout<<"initiated"<<endl;
+//    cout.flush();
+}
+
+coin* bank::give_coins( int value)
+{
+    //go to a vector according to value
+    //assign a temp to the pointer
+    //pop back that vector
+    //return pointer
+    coin* temp;
+    switch(value)
+    {
+        case 1:
+            temp = ones.back();
+            ones.pop_back();
+            return temp;
+        case 3:
+            temp = threes.back();
+            threes.pop_back();
+//            cout<<threes.size()<<endl;
+            return temp;
+        case 5:
+            temp = fives.back();
+            fives.pop_back();
+            return temp;
+        case 10:
+            temp = tens.back();
+            tens.pop_back();
+            return temp;
+        default:
+            cout<<"something went wrong"<<endl;
+            return NULL;
+    }
+}
+
+void bank::return_coin(coin * target)
+{
+    switch(target->get_coin())
+    {
+        case 1:
+            ones.push_back(target);
+            break;
+        case 3:
+            threes.push_back(target);
+            break;
+        case 5:
+            fives.push_back(target);
+            break;
+        case 10:
+            tens.push_back(target);
+            break;
+        default:
+            cout<<"problem!"<<endl;
+            break;
+    }
+}
+/*
+ * Beginning of wallet class
+ */
+wallet::wallet()
+{
+    const int SIZE = 10;
+    player_ones.reserve(SIZE);
+    player_threes.reserve(SIZE);
+    player_fives.reserve(SIZE);
+    player_tens.reserve(SIZE);
+};
+
+wallet::~wallet()
+{
+    for(auto iter = player_ones.begin(); iter != player_ones.end(); ++iter)
+    {
+        delete (*iter);
+    }
+    player_ones.clear();
+
+    for(auto iter = player_threes.begin(); iter != player_threes.end(); ++iter)
+    {
+        delete (*iter);
+    }
+    player_threes.clear();
+
+    for(auto iter = player_fives.begin(); iter != player_fives.end(); ++iter)
+    {
+        delete (*iter);
+    }
+
+    player_fives.clear();
+
+    for(auto iter = player_tens.begin(); iter != player_tens.end(); ++iter)
+    {
+        delete (*iter);
+    }
+    player_tens.clear();
+
+    cout<<"Wallet emptied"<<endl;
+}
+
+void wallet::set_central(bank * bank1)
+{
+    central = bank1;
+}
+
+void wallet::first_coins()
+{
+    for(int i = 0; i < 5; ++i)
+        player_ones.push_back( central->give_coins(1) );
+}
+
+void wallet::init(bank* bank1)
+{
+    set_central(bank1);
+    first_coins();
+}
+
+void wallet::add_coin(int value)
+{
+    switch(value)
+    {
+        case 1:
+            player_ones.push_back( central->give_coins(value) );
+            break;
+        case 3:
+            player_threes.push_back( central->give_coins(value));
+            break;
+        case 5:
+            player_fives.push_back( central->give_coins(value));
+            break;
+        case 10:
+            player_tens.push_back( central->give_coins(value));
+            break;
+        default:
+            cout<<"problem!"<<endl;
+            break;
+    }
+}
+
+bool wallet::remove_coin(int value)
+{
+    switch(value)
+    {
+        coin* temp;
+        case 1:
+            if(player_ones.size() > 0)
+            {
+                temp = player_ones.back();
+                player_ones.pop_back();
+
+                central->return_coin(temp);
+
+                return true;
+            }
+            else
+            {
+                cout<<"don't have this coin in the wallet."<<endl;
+                return false;
+            }
+        case 3:
+            if(player_threes.size() > 0)
+            {
+                temp = player_threes.back();
+                player_threes.pop_back();
+                central->return_coin(temp);
+                return true;
+            }
+            else
+            {
+                cout<<"don't have this coin in the wallet."<<endl;
+                return false;
+            }
+        case 5:
+            if(player_fives.size() > 0)
+            {
+                temp = player_fives.back();
+                player_fives.pop_back();
+                central->return_coin(temp);
+                return true;
+            }
+            else
+            {
+                cout<<"don't have this coin in the wallet."<<endl;
+                return false;
+            }
+        case 10:
+            if(player_tens.size() > 0)
+            {
+                temp = player_tens.back();
+                player_tens.pop_back();
+                central->return_coin(temp);
+                return true;
+            }
+            else
+            {
+                cout<<"don't have this coin in the wallet."<<endl;
+                return false;
+            }
+        default:
+            cout<<"problem!"<<endl;
+            break;
+    }
+    return false;
+};
 int wallet::get_wallet_total()
 {
-    return wallet_total;
+    int sum = 0;
+    sum += player_ones.size()*1;
+    sum += player_threes.size()*3;
+    sum += player_fives.size()*5;
+    sum += player_tens.size()*10;
+    return sum;
 }
+
 /*
  * End of Wallet class
  */
@@ -139,29 +375,54 @@ int wallet::get_wallet_total()
 /*
  * Board Bits
  */
+token::token()
+{
+    name = "";
+    mountain = false;
+}
 
-bool terrain_token::is_mountain()
+token::token(std::string n , bool m)
+{
+    name = n;
+    mountain = m;
+}
+token::~token(){}
+
+std::string token::get_name()
+{
+    return name;
+}
+
+bool token::is_mountain()
 {
     return mountain;
 }
-
-race_token::race_token()
+void token::flip_token()
 {
-    name_of_race = "toy token";
+
+}
+bool token::is_active()
+{
+
+}
+race_token::race_token() : token()
+{
+//    name = "toy token";
     cout<<"default token created"<<endl;
 }
-race_token::race_token(string name, bool status)
+race_token::race_token(string name, bool status, bool mount) : token(name, mount)
 {
-    name_of_race = name;
+
 }
 
-race_token::race_token( race_token& original)
-{
-    name_of_race = original.name_of_race;
-    active = original.active;
-}
+//race_token::race_token( race_token& original)
+//{
+//    name_of_race = original.name_of_race;
+//    active = original.active;
+//}
 
 race_token::~race_token()=default;
+
 
 void race_token::flip_token()
 {
@@ -171,10 +432,10 @@ bool race_token::is_active()
 {
    return active;
 }
-std::string race_token::get_name()
-{
-    return name_of_race;
-}
+//std::string race_token::get_name()
+//{
+//    return get_name();
+//}
 
 void race_token::foo()
 {
@@ -183,22 +444,20 @@ void race_token::foo()
 
 terrain_token::terrain_token()
 {
-    terrain = "rain puddle";
-    mountain = false;
+//    terrain = "rain puddle";
     cout<<"default terrain created"<<endl;
 }
-terrain_token::terrain_token(std::string tera, bool mount)
+terrain_token::terrain_token(std::string tera, bool mount) : token(tera, mount)
 {
-    terrain = tera;
-    mountain = mount;
+//    terrain = tera;
 }
 terrain_token::~terrain_token()=default;
 
 
-std::string terrain_token::getTerrain()
-{
-    return terrain;
-}
+//std::string terrain_token::getTerrain()
+//{
+//    return terrain;
+//}
 void terrain_token::foo()
 {
 
@@ -236,7 +495,7 @@ void bits::add_race_tokens(std::string name , int num_tokens)
 {
     for(int i =0; i < num_tokens; ++i)
     {
-        race_token* temp = new race_token(name, true);
+        race_token* temp = new race_token(name, true, false);
         pile.push_back(temp);
     }
 //    cout<<"HEY"<<endl;
@@ -251,10 +510,93 @@ int bits::get_size()
     return pile.size();
 }
 
+void bits::print_pile()
+{
+    for(auto iter = pile.begin(); iter != pile.end(); ++iter)
+    {
+        cout<<(*iter)->get_name()<<" ";
+    }
+    cout<<endl;
+}
 void bits::add_mountain_token()
 {
     pile.push_back(new terrain_token("mountain", true));
 }
+
+void bits::clean()
+{
+//    cout<<"this has a size of "<<pile.size()<<endl;
+    for(auto rev_iter = pile.rbegin(); rev_iter!= pile.rend(); ++rev_iter)
+    {
+        (*rev_iter)->get_name();
+        if( (*rev_iter)->is_mountain() )
+        {
+           //skip
+        }
+        else
+        {
+            pile.pop_back();
+        }
+    }
+//    cout<<"this now has a size of "<<pile.size()<<endl;
+
+}
+int bits::number_race_tokens()
+{
+    int count = 0;
+    for(auto iter = pile.begin(); iter != pile.end(); ++iter)
+    {
+        if(!((*iter)->is_mountain()))
+            count++;
+    }
+    return count;
+}
+void bits::token_decline()
+{
+    int count = 0;
+    for(auto iter = pile.rbegin(); iter!= pile.rend(); ++iter)
+    {
+        if(!((*iter)->is_mountain()) )
+        {
+            if(count < 1){
+                (*iter)->flip_token();
+                count++;
+            }
+            else
+            {
+                pile.pop_back();
+            }
+        }
+    }
+    cout<<"finished declining"<<endl;
+}
+
+bool bits::get_decline()
+{
+    for(auto iter = pile.begin(); iter!=pile.end(); ++iter)
+    {
+        if(! ((*iter)->is_mountain()) )
+        {
+            return (*iter)->is_active();
+        }
+    }
+}
+//bool bits::check_if_decline()
+//{
+//    cout<<"check if declined: ";
+//    for(auto iter = pile.rbegin(); iter != pile.rend(); ++iter)
+//    {
+//        if(!((*iter)->is_mountain()) )
+//        {
+//            if( !((*iter)->is_active()) )
+//                cout<<"true"<<endl;
+//                return true;
+//        }
+//    }
+//    cout<<"false"<<endl;
+//
+//    return false;
+//}
 /*
  * End of board bits
  */
@@ -294,9 +636,27 @@ culture::culture(std::string ban_name, int ban_power, std::string bad_name, int 
     cout<<"["<<player_badge.badge_name<<"] "<<"["<<player_banner.banner_name
         <<"] created with a power of: [" <<culture_power<<"]"<<endl;
 }
+culture::culture(std::string race_name, int race_power)
+{
+//    cout<<"race: "<<race_name<<" "<<race_power<<endl;
+    player_banner.banner_name = race_name;
+    player_banner.banner_value = race_power;
 
-culture::~culture()=default;
+    player_badge.badge_name= "";
+    player_badge.badge_value = 0;
+    culture_power = player_banner.banner_value + player_badge.badge_value;
 
+}
+
+culture::~culture()= default;
+
+void culture::give_badge(std::string name, int power)
+{
+//    cout<<"Gave "<<name<<" "<<power<<endl;
+    player_badge.badge_name= name;
+    player_badge.badge_value = power;
+    culture_power = player_banner.banner_value + player_badge.badge_value;
+}
 void culture::print_culture()
 {
     cout<<"["<<player_badge.badge_name<<"] "<<"["<<player_banner.banner_name
@@ -317,3 +677,188 @@ const std::string culture::get_badge()
 /*
  * End of culture
  */
+culture_set::culture_set()
+{
+    DECK_SIZE = banner_list.size();
+    for(int i = 0; i < banner_list.size(); ++i)
+    {
+        race_list.push_back(banner_list[i]);
+        race_power.push_back(banner_power[i]);
+    }
+    for(int i = 0; i < badge_list.size(); ++i)
+    {
+        ability_list.push_back(badge_list[i]);
+        ability_power.push_back(badge_power[i]);
+    }
+
+//    cout<<race_list.size()<<" AND "<<ability_power.size()<<endl;
+}
+culture_set::~culture_set()
+{
+    visible.clear();
+    deck.clear();
+//    culture* temp = nullptr;
+//   for(auto iter = deck.begin(); iter != deck.end();++iter)
+//   {
+//       *temp = *iter;
+//       delete temp;
+//   }
+//    temp = nullptr;
+//    for(auto iter = visible.begin(); iter != visible.end();++iter)
+//    {
+//        *temp = *iter;
+//        delete temp;
+//    }
+}
+
+
+
+void culture_set::shuffle()
+{
+    mt19937 randomGenerator(time(nullptr));
+
+    string r_name = "";
+    int r_power = 0;
+    string a_name = "";
+    int a_power = 0;
+    int index;
+    int r_size = race_list.size()-1;
+    int p_size = ability_list.size()-1;
+
+    do{
+        uniform_int_distribution<int> race_roll(0, r_size);
+        index = race_roll(randomGenerator); //cout<<"index chosen: "<<index<<endl;
+        r_name = race_list[index]; //cout<<"chosen race: "<<r_name<<endl;
+        r_power = race_power[index]; //cout<<"race power: "<<r_power<<endl;
+        //swap to end + pop_back
+//        if(index == (r_size-1) )
+//        {
+//            race_list.pop_back();
+//            race_power.pop_back();
+//        }
+//        else
+        {
+            race_list.erase(race_list.begin() + index);
+//
+//            std::swap(race_list[index], race_list.back() );
+//            race_list.pop_back();
+            //swap to end + pop_back
+            race_power.erase(race_power.begin() + index);
+//            std::swap(race_power[index], race_power.back());
+//            race_power.pop_back();
+
+        }
+        culture* temp = new culture(r_name, r_power);
+        deck.push_back( *temp );
+        delete temp;
+        /*
+         *
+         */
+        r_size--;
+
+    }while(r_size >= 0);
+
+//    cout<<"adding powers"<<endl;
+
+    r_size =  deck.size();
+    int count = 0;
+    do{
+//        cout<<"p size is "<<p_size<<endl;
+
+        uniform_int_distribution<int> race_roll(0, p_size);
+        index = race_roll(randomGenerator); //cout<<"index chosen: "<<index<<endl;
+        a_name = ability_list[index]; //cout<<"chosen ability: "<<a_name<<endl;
+        a_power = ability_power[index]; //cout<<"ability power: "<<a_power<<endl;
+        //swap to end + pop_back
+//        if(index == (p_size-1) )
+//        {
+//            cout<<"the removed ability is : "<<ability_list.back()<<endl;
+//            ability_list.pop_back();
+//            ability_power.pop_back();
+//        }
+//        else
+        {
+//            cout<<"the moved ability is : "<<ability_list.back()<<endl;
+//            cout<<"the removed ability is : "<<ability_list[index]<<endl;
+
+            ability_list.erase(ability_list.begin()+index);
+//            std::swap(ability_list[index], ability_list.back() );
+//            ability_list.pop_back();
+            //swap to end + pop_back
+            ability_power.erase(ability_power.begin()+index);
+//            std::swap(ability_power[index], ability_power.back());
+//            ability_power.pop_back();
+
+        }
+        deck[count].give_badge(a_name, a_power);
+        count++;
+
+        p_size--;
+        r_size--;
+
+    }while(r_size >= 0 && count < deck.size());
+
+//    for(auto iter = deck.begin(); iter != deck.end(); ++iter)
+//        (*iter).print_culture();
+//    cout<<"trouble"<<endl;
+}
+void culture_set::show_top(int number) {
+//    cout<<"deck size is now:"<<deck.size()<<" and visible is :"<<visible.size()<<endl;
+    if(visible.size() < number)
+    {
+        int remain = number - visible.size();// cout<<"remain is: "<<remain<<endl;
+        for (int i = 0; i < remain; ++i) {
+//            cout<<i<<": ";
+//            deck.back().print_culture();
+            culture temp = deck.back();
+            visible.push_back(temp);
+            deck.pop_back();
+        }
+        for (int i = 0; i < number; ++i) {
+            cout<<i<<": ";
+            visible[i].print_culture();
+        }
+    }
+    else
+    {
+//        cout<<"no need to draw more"<<endl;
+        for (int i = 0; i < number; ++i) {
+            cout<<i<<": ";
+            visible[i].print_culture();
+        }
+    }
+
+//    cout<<visible.size();
+/*
+    for(auto iter = visible.begin(); iter != visible.end(); ++iter)
+        (*iter).print_culture();
+
+    cout<<"The remaining deck is: "<<endl;
+
+    for(auto iter = deck.begin(); iter != deck.end(); ++iter)
+        (*iter).print_culture();
+        */
+}
+
+culture culture_set::pick_race()
+{
+    cout<<"Please choose an option from below:"<<endl;
+    show_top(6);
+    int choice = 0;
+    do
+    {
+        cin>>choice;
+        if(choice >= 0 || choice <6)
+            cout<<"You chose "<<choice<<endl;
+
+        else
+            cout<<"invalid choice, please choose again."<<endl;
+    }while(choice<0||choice>5);
+    visible[choice].print_culture();
+    culture temp = visible[choice];
+    visible.erase( visible.begin()+choice-1 );
+
+
+
+    return temp;
+}
