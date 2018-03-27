@@ -1,0 +1,495 @@
+/*
+ * Jimmy Le - 26546986
+ * COMP 345 WINTER 2018 NORA H.
+ * A1
+ */
+#include <iostream>
+#include <random>
+#include "SW_dice.h"
+#include "SW_graph.h"
+#include "SW_map_loader.h"
+#include "SW_pieces.h"
+#include "SW_player.h"
+/*
+ * Driver file that contains all test situations
+ */
+int main() {
+
+
+
+    cout<<"Assignment 1 Testing"<<endl<<"============================================="<<endl;
+    /*
+     * part 5: Tokens; Banners;Badges;Pieces
+     */
+    /*
+    cout<<"Making coins and display functinos"<<endl;
+    coin* c1 = new coin();
+    c1->add_coins(50);
+    c1->print_coins();
+    c1->remove_coins(25);
+    c1->print_coins();
+    delete c1;
+
+    cout<<endl<<"Making race tokens"<<endl;
+    race_token* vampires = new race_token("vampires");
+    vampires->is_active();
+    vampires->flip_token();
+    vampires->is_active();
+    delete vampires;
+
+    cout<<endl<<"Making board bits"<<endl;
+    terrain_token* b1 = new terrain_token("swamp");
+    cout<<"New "<<b1->getTerrain()<<" created"<<endl;
+    terrain_token* b2 = new terrain_token("mountain");
+    cout<<"New "<<b2->getTerrain()<<" created"<<endl;
+    delete b1;
+    delete b2;
+
+    cout<<endl<<"Making a new banner and badge"<<endl;
+    culture* cult1 = new culture(banner_list[0], banner_power[0], badge_list[1], badge_power[1]);
+    cult1->print_culture();
+
+    cout<<"num of tokens: "<<cult1->get_culture_power()<<endl;
+    delete cult1;
+
+
+     */
+
+
+    /*
+     * part 4: Player
+     *
+     * I made player and a map.
+     * I check if the player can roll a dice, pick_race(), conquer(), and scores
+     * I print out the summary sheet at the end
+     */
+
+
+    /*
+    player* one = new player("one");
+
+    loader1->read_file("2p.map");
+    loader1->populate();
+
+    one->picks_race();
+    cout<<endl<<endl;
+    one->conquers();
+    cout<<endl<<endl;
+    one->scores();
+
+    cout<<"Check if the player can roll the dice"<<endl;
+    one->player_dice->rollDice();
+    one->player_dice->rollDice();
+    one->player_dice->rollDice();
+    one->player_dice->rollDice();
+    one->player_dice->getHistory();
+
+    cout<<"print out character summary sheet"<<endl;
+    one->get_status();
+
+    delete one;
+    delete loader1;
+
+
+     */
+
+/*
+ * map testing: check for subgraphs
+ */
+    /*
+    List *l1 = new List();
+    l1->add_region("sea");
+    l1->add_region("forest");
+    l1->add_region("hills");
+    l1->add_region("mountain");
+
+    l1->add_region_edge(0,1);
+    l1->add_region_edge(1,0);
+    l1->add_region_edge(0,2);
+    l1->add_region_edge(2,0);
+    l1->add_region_edge(2,3);
+    l1->add_region_edge(3,2);
+
+    l1->control_region(0, "Jimmy");
+    l1->control_region(1, "Jimmy");
+    l1->control_region(2, "Jeannine");
+    l1->control_region(3, "Jeannine");
+
+
+//    cout<<"testing region 0 and 1"<<endl;
+//    l1->is_control_adjacent(0, 1);
+//    cout<<"testing region 2 and 3"<<endl;
+//    l1->is_control_adjacent(2,3);
+    cout<<"testing region 0 and 3"<<endl;
+    l1->is_control_adjacent(0,3);
+    l1->add_region_edge(0,3);
+    l1->add_region_edge(3,0);
+    l1->control_region(0, "Jeannine");
+    cout<<"testing region 0 and 3 AGAIN"<<endl;
+    l1->is_control_adjacent(0,3);
+
+
+//    if(l1->traversal())
+//        cout<<"there's an edge"<<endl;
+
+    delete l1;
+    /*
+    player* one = new player("one");
+//    one->player_dice->rollDice();
+    one->picks_race();
+    one->picks_race();
+    one->picks_race();
+
+    delete one;
+
+//    culture *c1 = new culture();
+//    cout<<banner_list.size()<<endl;
+//    cout<<banner_power.size()<<endl<<endl;
+//
+//    cout<<badge_list.size()<<endl;
+//    cout<<badge_power.size()<<endl<<endl;
+
+
+
+//    dice * d1 = new dice();
+//    d1->rollDice();
+//    delete d1;
+//    one->player_dice->rollDice();
+    /*
+ * culture testing
+ */
+    /*
+    culture *c1 = new culture();
+    culture *c2 = new culture("vampires", 7, "vengeful", 4);
+    cout<<"<======= end reached =========>"<<endl<<endl<<endl;
+    c1->print_culture();
+    delete c1;
+    delete c2;
+/*
+ * terrain_token testing
+ */
+/*
+    terrain_token *b1 = new terrain_token();
+    terrain_token *b2 = new terrain_token("mountain");
+
+
+    b1->getTerrain();
+    b2->getTerrain();
+
+    delete b1;
+    delete b2;
+
+/*
+ * race_token testing
+ */
+/*
+    race_token *vampire1 = new race_token("vampire");
+    race_token *vampire2 = new race_token("vampire");
+    vampire1->is_active();
+    vampire2->is_active();
+    vampire1->flip_token();
+    vampire1->is_active();
+    delete vampire1;
+    delete vampire2;
+
+/*
+ * coin testing
+ */
+    /*
+    coin *c1 = new coin();
+    c1->add_coins(10);
+    c1->print_coins();
+    c1->remove_coins(2);
+    c1->print_coins();
+    delete c1;
+
+
+    /*
+     * Part 2: map loading
+     *
+     * These following comment blocks make each map
+     *
+     */
+
+    cout<<"create the 5p map"<<endl;
+    loader * loader5 = new loader();
+    loader5->read_file("5p.map");
+    loader5->populate();
+    delete loader5;
+
+    cout<<"create the 4p map"<<endl;
+    loader * loader4 = new loader();
+    loader4->read_file("4p.map");
+    loader4->populate();
+    delete loader4;
+    cout<<"create the 3p map"<<endl;
+    loader * loader3 = new loader();
+    loader3->read_file("3p.map");
+    loader3->populate();
+    delete loader3;
+    cout<<"create the 2p map"<<endl;
+    loader* loader2 = new loader();
+    loader2->read_file("2p.map");
+    loader2->populate();
+    delete loader2;
+    cout<<"create the invalid map"<<endl;
+    loader* loader0 = new loader();
+    loader0->read_file("bad_test_map.map");
+    loader0->populate();
+    delete loader0;
+    */
+    /*
+     * 5p map
+     */
+    /*
+    loader *l2 = new loader();
+    l2->write_file("sea 1 7 14 19 20 25 30 31","5p.map");
+    l2->write_file("mountain 0 2 7","5p.map");
+    l2->write_file("swamp 1 3 7 8","5p.map");
+    l2->write_file("mountain 2 4 8 9","5p.map");
+    l2->write_file("forest 3 5 9 10","5p.map");
+    l2->write_file("plain 3 6 10","5p.map");//plain 5
+    l2->write_file("plain 5 10 12 13","5p.map");
+    l2->write_file("swamp 0 1 2 8 14","5p.map");
+    l2->write_file("plain 2 3 7 9 14 15","5p.map");
+    l2->write_file("hill 3 4 8 10 11 15","5p.map");
+    l2->write_file("mountain 4 5 6 9 11 12","5p.map");//mountain 10
+    l2->write_file("mountain 9 10 12 15 16 17","5p.map");
+    l2->write_file("swamp 6 10 11 13 17 18","5p.map");
+    l2->write_file("hill 6 12 18","5p.map");
+    l2->write_file("hill 0 7 8 15 20 21","5p.map");
+    l2->write_file("plain 8 9 11 14 16 21 22","5p.map");//plain 15
+    l2->write_file("sea 11 15 17 22 23 26 27 32 33 38","5p.map");
+    l2->write_file("forest 11 12 16 18 23","5p.map");
+    l2->write_file("mountain 12 13 17 23 24","5p.map");
+    l2->write_file("hill 0 20","5p.map");
+    l2->write_file("forest 0 14 19 21 25","5p.map"); //forest 20
+    l2->write_file("swamp 14 15 20 22 25 26","5p.map");
+    l2->write_file("hill 15 16 21 26","5p.map");
+    l2->write_file("swamp 16 17 18 24 27 28","5p.map");
+    l2->write_file("plain 18 23 28 29","5p.map");
+    l2->write_file("plain 0 21 26 29 31 32","5p.map");//plain 25
+    l2->write_file("mountain 16 21 22 25 32 ","5p.map");
+    l2->write_file("forest 16 23 28 33 34","5p.map");
+    l2->write_file("hill 23 24 27 29 34 47","5p.map");
+    l2->write_file("swamp 24 28 47","5p.map");
+    l2->write_file("forest 0 31 35","5p.map"); //forest 30
+    l2->write_file("swamp 0 25 30 32 35 36","5p.map");
+    l2->write_file("hill 16 25 26 31 36 37 38","5p.map");
+    l2->write_file("plain 16 27 34 38 39 40","5p.map");
+    l2->write_file("mountain 27 28 33 40 41 47","5p.map");
+    l2->write_file("plain 30 31 36 43","5p.map");//plain 35
+    l2->write_file("forest 31 32 35 37 43 44","5p.map");
+    l2->write_file("plain 32 36 38 44 45","5p.map");
+    l2->write_file("swamp 16 32 33 37 39 45 46","5p.map");
+    l2->write_file("forest 33 38 40 46","5p.map");
+    l2->write_file("mountain 33 34 39 41 46","5p.map");//mountain 40
+    l2->write_file("forest 34 40 42 47","5p.map");
+    l2->write_file("sea 41 47","5p.map");
+    l2->write_file("swamp 35 36 44","5p.map");
+    l2->write_file("forest 36 37 43 45","5p.map");
+    l2->write_file("hill 37 38 44 46","5p.map");//hill 45
+    l2->write_file("mountain 38 39 40 45","5p.map");
+    l2->write_file("hill 28 29 34 41 42","5p.map");
+    /*
+     * 4p map
+    */
+    /*
+    l2->write_file("sea 1 2 3 7 13 19","4p.map");
+    l2->write_file("plain 0 6","4p.map");
+    l2->write_file("plain 0 3 4 7 8","4p.map");
+    l2->write_file("forest 0 2 4","4p.map");
+    l2->write_file("hill 2 3 5 8 9","4p.map");
+    l2->write_file("swamp 4 9 11","4p.map");//swamp 5
+    l2->write_file("swamp 0 1 7 13","4p.map");
+    l2->write_file("hill 0 2 6 8 13 14","4p.map");
+    l2->write_file("plain 2 4 7 9 14 15 16","4p.map");
+    l2->write_file("mountain 4 5 8 11 10 16","4p.map");
+    l2->write_file("forest 9 11 12 16 17","4p.map");//forest 10
+    l2->write_file("forest 5 9 10 12","4p.map");
+    l2->write_file("mountain 10 11 17 18","4p.map");
+    l2->write_file("forest 0 6 7 14 19 20","4p.map");
+    l2->write_file("swamp 7 8 13 15 20 21","4p.map");
+    l2->write_file("hill 8 14 16 21","4p.map");
+    l2->write_file("sea 8 9 10 15 17 21 27 22","4p.map"); //sea 16
+    l2->write_file("swamp 10 12 16 18 22 23","4p.map");
+    l2->write_file("plain 12 17 23 24","4p.map");
+    l2->write_file("mountain 0 13 20 25","4p.map");
+    l2->write_file("hill 13 14 19 21 25 26","4p.map");//hill 20
+    l2->write_file("mountain 14 15 16 20 26 27","4p.map");
+    l2->write_file("plain 16 17 23 27 28 32 33 34","4p.map");
+    l2->write_file("hill 17 18 22 24 28 29","4p.map");
+    l2->write_file("swamp 18 23 29","4p.map");
+    l2->write_file("swamp 19 20 26 30","4p.map");//swamp 25
+    l2->write_file("forest 29 21 25 27 30 31 32","4p.map");
+    l2->write_file("mountain 16 21 22 26 32","4p.map");
+    l2->write_file("mountain 22 23 29 34 35","4p.map");
+    l2->write_file("hill 23 24 28 35 36","4p.map");
+    l2->write_file("plain 25 26 31","4p.map");//plain 30
+    l2->write_file("mountain 26 30 32 37","4p.map");
+    l2->write_file("swamp 22 26 27 31 33 37 38","4p.map");
+    l2->write_file("forest 22 32 34 38","4p.map");
+    l2->write_file("mountain 22 28 33 35 38","4p.map");
+    l2->write_file("forest 28 29 32 36","4p.map");//forest 35
+    l2->write_file("sea 29 35","4p.map");
+    l2->write_file("hill 31 32 38","4p.map");
+    l2->write_file("plain 32 33 34 37","4p.map");
+    /*
+     * 3p map
+     */
+    /*
+    l2->write_file("sea 1 2 12","3p.map");
+    l2->write_file("plain 0 2 8 12","3p.map");
+    l2->write_file("forest 0 1 3 8","3p.map");
+    l2->write_file("mountain 2 4 8 9","3p.map");
+    l2->write_file("plain 3 5 9 10","3p.map");
+    l2->write_file("swamp 4 6 10 11","3p.map");
+    l2->write_file("forest 5 7 11","3p.map");
+    l2->write_file("swamp 6 11 16 17","3p.map");
+    l2->write_file("swamp 1 2 3 9 12 13","3p.map");
+    l2->write_file("hill 3 4 8 10 13 14","3p.map");
+    l2->write_file("mountain 4 5 9 11 14 15","3p.map");
+    l2->write_file("plain 5 6 10 7 15 16","3p.map");
+    l2->write_file("mountain 0 1 8 13 18","3p.map");
+    l2->write_file("swamp 8 9 12 14 18 19","3p.map");
+    l2->write_file("sea 9 10 13 15 19 20 21","3p.map");
+    l2->write_file("mountain 10 11 14 16 21 22","3p.map");
+    l2->write_file("hill 7 11 15 17 22 23","3p.map");
+    l2->write_file("mountain 7 16 23 29","3p.map");
+    l2->write_file("plain 12 13 19 24 25","3p.map");
+    l2->write_file("forest 13 14 18 20 25 26","3p.map");
+    l2->write_file("hill 14 19 21 26 27","3p.map");
+    l2->write_file("swamp 14 15 20 22 27 28","3p.map");
+    l2->write_file("plain 15 16 21 23 28","3p.map");
+    l2->write_file("hill 16 17 22 28 29","3p.map");
+    l2->write_file("hill 18 25","3p.map");
+    l2->write_file("mountain 18 19 24 26","3p.map");
+    l2->write_file("mountain 19 20 25 27","3p.map");
+    l2->write_file("forest 20 21 26 28","3p.map");
+    l2->write_file("forest 21 22 23 27 29","3p.map");
+    l2->write_file("sea 17 23 28","3p.map");
+    delete l2;
+
+    /*
+     * 2p map gen
+     */
+    /*
+    loader *loader1 = new loader();
+    loader1->write_file( "sea 1 5", "2p.map");
+    loader1->write_file( "plain 0 2 5 6", "2p.map");
+    loader1->write_file( "forest 1 3 6 7 8", "2p.map");
+    loader1->write_file( "swamp 2 4 8 9", "2p.map");
+    loader1->write_file( "hill 3 9 10", "2p.map");
+    loader1->write_file( "mountain 0 1 6 11", "2p.map");
+    loader1->write_file( "hill 1 2 5 7 11 12", "2p.map");
+    loader1->write_file( "sea 2 6 8 12 13", "2p.map");
+    loader1->write_file( "mountain 2 3 7 9 13 14", "2p.map");
+    loader1->write_file( "plain 3 4 8 10 14", "2p.map");
+    loader1->write_file( "forest 4 9 14 15", "2p.map");
+    loader1->write_file( "plain 5 6 12 16 17", "2p.map");
+    loader1->write_file( "forest 6 7 11 13 17 18", "2p.map");
+    loader1->write_file( "plain 7 8 12 14 18 19 20", "2p.map");
+    loader1->write_file( "hill 8 9 10 13 15 20 21", "2p.map");
+    loader1->write_file( "mountain 10 14 21 22", "2p.map");
+    loader1->write_file( "swamp 11 17", "2p.map");
+    loader1->write_file( "plain 11 12 16 18", "2p.map");
+    loader1->write_file( "swamp 12 13 17 19", "2p.map");
+    loader1->write_file( "mountain 13 18 20", "2p.map");
+    loader1->write_file( "swamp 13 14 19 21 22", "2p.map");
+    loader1->write_file("forest 14 15 20 22", "2p.map");
+    loader1->write_file( "sea 15 20 21", "2p.map");
+
+    delete loader1;
+    */
+
+    /*
+     * Part 1: Maps
+     *
+     * 1)show that the graph is connected
+     * 2)regions are connected subgraphs
+     * 3)each region is a node
+     */
+    /*
+    List* l1 = new List();
+    l1->add_region("plains");//0
+    l1->add_region("plains");//1
+    l1->add_region("plains");//2
+    l1->add_region("plains");//3
+
+    l1->add_region_edge(0,1);
+    l1->add_region_edge(1,0);
+    l1->add_region_edge(1,2);
+    l1->add_region_edge(1,3);
+    l1->add_region_edge(2,1);
+    l1->add_region_edge(2,3);
+    l1->add_region_edge(3,2);
+    l1->add_region_edge(3,1);
+
+    //Show that the graph is connected
+    cout<<"Check if the graph, \'l1\' , is a connected graph"<<endl;
+    l1->traversal();
+    delete l1;
+
+    cout<<"Added a new node that isn't connected to any other nodes. Checking the graph again!"<<endl;
+
+    List* l2 = new List();
+    l2->add_region("plains");//0
+    l2->add_region("plains");//1
+    l2->add_region("plains");//2
+    l2->add_region("plains");//3
+    l2->add_region("mountains");//4
+
+    l2->add_region_edge(0,1);
+    l2->add_region_edge(1,0);
+    l2->add_region_edge(1,2);
+    l2->add_region_edge(1,3);
+    l2->add_region_edge(2,1);
+    l2->add_region_edge(2,3);
+    l2->add_region_edge(3,2);
+    l2->add_region_edge(3,1);
+
+    l2->traversal();
+
+
+    cout<<"Check if the graph is made of subgraphs"<<endl
+            <<"Check if 0 is connected to 1"<<endl;
+    if(l2->is_region_adjacent(1,0) && l2->is_region_adjacent(1,0))
+        cout<<"connected"<<endl;
+    else
+        cout<<"not connected"<<endl;
+
+    delete l2;
+    cout<<"I added the new region as a node, so that shows that is a node"<<endl;
+
+    */
+
+
+    /*
+     * Part 3: Reinforcement Die
+     *
+     * 1)one can request a die to be rolled
+     * 2)container returns the right number of values
+     * 3)0-3 values returned
+     * 4)maintain a percentage of all rolls
+     */
+    /*
+    dice * d1  = new dice();
+    d1->rollDice();
+    d1->rollDice();
+    d1->rollDice();
+    d1->rollDice();
+    d1->rollDice();
+    d1->rollDice();
+    d1->rollDice();
+    d1->rollDice();
+    d1->rollDice();
+    d1->rollDice();
+    d1->rollDice();
+    d1->rollDice();
+    d1->getHistory();
+     delete d1;
+    */
+
+    cout<<"============================ END ============================";
+    return 0;
+}

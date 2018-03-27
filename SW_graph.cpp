@@ -11,30 +11,30 @@ using namespace std;
 
 List::List()
 {
-    cout<<"list created w/ default"<<endl;
+//    cout<<"list created w/ default"<<endl;
     head = nullptr;
     temp = nullptr;
     world_nodes.reserve(50);
 }
-List::List(std::string terrain)
-{
-    head = new region(counter, std::move(terrain));
-    temp = nullptr;
-    world_nodes.push_back(*head);
-    counter++;
-}
+//List::List(std::string terrain)
+//{
+//    head = new region(counter, std::move(terrain));
+//    temp = nullptr;
+//    world_nodes.push_back(*head);
+//    counter++;
+//}
 List::~List()
 {
-    cout<<"List delete initiated."<<endl;
-//    world_nodes.clear();
+//    cout<<"List delete initiated."<<endl;
+    world_nodes.clear();
 
-    for(auto iter = world_nodes.begin(); iter != world_nodes.end(); ++iter)
-    {
-        *temp = *iter;
-        delete temp;
-    }
-
-    cout<<"List deleted succesfully."<<endl;
+//    for(auto iter = world_nodes.begin(); iter != world_nodes.end(); ++iter)
+//    {
+//        *temp = *iter;
+//        delete temp;
+//    }
+//    temp = nullptr;
+//    cout<<"List deleted succesfully."<<endl;
 }
 //method takes in a string that describe the terrain. Creates region and gives it an ID
 void List::add_region( std::string terrain)
@@ -78,8 +78,19 @@ void List::control_region(int ID, std::string str)
     }
 //    world_nodes[ID].printAdj();
 }
+int List::get_region_strength(int ID)
+{
+    return world_nodes[ID].tokens_attached->get_size();
+}
+void List::clean_region(int ID)
+{
+    world_nodes[ID].tokens_attached->clean();
+}
 
-
+int List::get_number_race_tokens(int ID)
+{
+    return world_nodes[ID].tokens_attached->number_race_tokens();
+}
 
 //HEREE
 void List::add_region_tokens(int ID, int number_of_tokens, std::string race)
@@ -156,7 +167,7 @@ bool List::traversal() {
     }
     if (is_connected)
     {
-        cout << "graph is connected!" << endl;
+//        cout << "graph is connected!" << endl;
         return true;
     }
     else {
@@ -172,7 +183,9 @@ bool List::traversal() {
 List::region::region(){
     ID = 0;
     name = "firelands1";
-    std::vector<region> adjacent;
+    controlled = "default";
+//    std::vector<region> adjacent;
+    adjacent.reserve(3);
     tokens_attached = new bits();
 
 }
@@ -180,27 +193,20 @@ List::region::region(int i, string n)
 {
     ID = i;
     name =n;
-    vector<region> adjacent;
+//    vector<region> adjacent;
+    adjacent.reserve(3);
+    controlled = "default";
     tokens_attached = new bits();
-//    cout<<tokens_attached->get_size()<<endl;
 
     if(n == "mountain")
         tokens_attached->add_mountain_token();
-
+//    cout<<"\tregion "<<ID<<" created"<<endl;
 }
+
 List::region::~region()
 {
     delete tokens_attached;
-//    adjacent.clear();
     adjacent.clear();
-
-//    region* temp = nullptr;
-//    for(auto iter = adjacent.begin(); iter!=adjacent.end();++iter)
-//    {
-//        temp  = *iter;
-//        delete temp;
-//    }
-
 }
 
 /*
@@ -234,8 +240,35 @@ int List::num_regions_controlled(std::string str)
 //used for player class
 bool List::check_ownership(int target, std::string str)
 {
-    return (world_nodes[target].controlled == std::move(str));
+    return (world_nodes[target].controlled == (str));
+}
+std::string List::get_owner(int ID)
+{
+    return world_nodes[ID].controlled;
+}
+void List::print_tokens()
+{
+    for(auto iter = world_nodes.begin(); iter!=world_nodes.end(); ++iter)
+    {
+        if(iter->tokens_attached->get_size() > 0)
+        {
+            cout<<iter->ID<<" ";
+            iter->tokens_attached->print_pile();
+        }
+    }
 }
 
-
-
+void List::regions_in_decline(std::string player_name)
+{
+    for(auto iter = world_nodes.begin(); iter!= world_nodes.end(); ++iter)
+    {
+        if((*iter).controlled == player_name)
+        {
+            (*iter).tokens_attached->token_decline();
+        }
+    }
+}
+bool List::check_region_is_decline(int ID)
+{
+    return world_nodes[ID].tokens_attached->get_decline();
+}
