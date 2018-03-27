@@ -14,10 +14,14 @@ using namespace std;
 loader::loader()
 {
     l1 = new List();
+    loader_ID++;
 }
 
 loader::~loader()
 {
+//    cout<<loader_ID<<" loader delete initiated"<<endl;
+    region_adj.clear();
+    region_adj.clear();
     delete l1;
 }
 
@@ -85,7 +89,7 @@ bool loader::populate()
         l1->add_region( *iter );
     }
 
-    cout <<"All the nodes have been created."<<endl;
+//    cout <<"All the nodes have been created."<<endl;
     for(int i = 0; i < region_adj.size(); ++i)
     {
         for(int j =0;j < region_adj[i].size(); j++) {

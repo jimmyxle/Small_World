@@ -25,6 +25,7 @@ class loader
 private:
     std::vector<std::string> region_nodes;
     std::vector<std::vector<int>> region_adj;
+    int loader_ID=0;
 public:
     loader();
     ~loader();

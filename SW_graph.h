@@ -30,6 +30,7 @@ private:
         //Constructors
         region();
         region(int, std::string);
+//        region(const region &);
         ~region();
         //Class functions
         void addAdj(region*);
@@ -45,7 +46,7 @@ private:
 public:
     //Constructors
     List();
-    explicit List( std::string);
+//    explicit List( std::string);
     ~List();
     //Methods to create the graph
     void add_region( std::string);
@@ -54,10 +55,18 @@ public:
     bool traversal();
     //Used by other classes to manipulate data
     void control_region(int, std::string);
+    int get_region_strength(int);
+    int get_number_race_tokens(int);
+    void clean_region(int);
     void add_region_tokens(int, int, std::string);
     bool is_region_adjacent(int, int);
     bool is_control_adjacent(int, int);
     int num_regions_controlled(std::string);
     bool check_ownership(int, std::string);
+    std::string get_owner(int);
+    void print_tokens();
+    void regions_in_decline(std::string);
+    bool check_region_is_decline(int);
+//    bool check_region_in_decline(int);
 };
 #endif //SMALL_WORLD_SW_GRAPH_H
