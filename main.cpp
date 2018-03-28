@@ -15,9 +15,8 @@
  * Driver file that contains all test situations
  */
 int main() {
-
+    cout.flush();
     cout<<endl<<"Assignment 2 Testing"<<endl<<"============================================="<<endl;
-
 
     game_manager* game1 = new game_manager();
     game1->game_loop();

@@ -45,7 +45,6 @@ game_manager::game_manager(){
             game_map->populate();
             cout<<"2p mode chosen."<<endl;
             add_lost_tribes(2);
-
             break;
         case 3:
             game_map = new loader();
@@ -53,7 +52,6 @@ game_manager::game_manager(){
             game_map->populate();
             cout<<"3p mode chosen."<<endl;
             add_lost_tribes(3);
-
             break;
         case 4:
             game_map = new loader();
@@ -84,7 +82,6 @@ void game_manager::initialize()
 {
     culture_deck = new culture_set();
     culture_deck->shuffle(); //uncomment this later
-
 }
 game_manager::~game_manager()
 {
@@ -126,60 +123,11 @@ void game_manager::create_players(int number)
         default:
             cout<<"Not possible"<<endl;
     }
-//    cout<<"players created"<<endl;
 }
 
 void game_manager::game_loop()
 {
     cout<<endl<<"Game start!"<<endl;
-    if(marker->get_turn_number() == 0)
-    {
-        marker->next_turn();
-        one->set_first_culture(culture_deck->pick_race());
-        one->give_tokens(1);
-        turn(one);
-        cout<<endl;
-
-        two->set_first_culture(culture_deck->pick_race());
-        two->give_tokens(1);
-        turn(two);
-        cout<<endl;
-
-        if(three != nullptr)
-        {
-            three->set_first_culture((culture_deck->pick_race()));
-            three->give_tokens(1);
-            turn(three);
-            cout<<endl;
-
-        }
-
-        if(four!= nullptr)
-        {
-            four->set_first_culture(culture_deck->pick_race());
-            four->give_tokens(1);
-            turn(four);
-            cout<<endl;
-
-        }
-        if(five != nullptr)
-        {
-            five->set_first_culture(culture_deck->pick_race());
-            five->give_tokens(1);
-            turn(five);
-            cout<<endl;
-        }
-        //scoring phase
-        one->scores();
-        two->scores();
-        if(three!= nullptr)
-            three->scores();
-        if(four!= nullptr)
-            four->scores();
-        if(five!= nullptr)
-            five->scores();
-    }
-
     while(marker->next_turn())
     {
         int menu_num = 0;
@@ -435,11 +383,11 @@ int game_manager::menu(player* p)
         p->set_first_culture(culture_deck->pick_race());
         if(p->get_second_race_active())
         {
-            p->give_tokens(1);
+            p->give_tokens();
         }
         else
         {
-            p->give_tokens(2);
+            p->give_tokens();
         }
 //        p->give_tokens(2);
 //        p->set_decline();

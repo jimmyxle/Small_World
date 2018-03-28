@@ -48,11 +48,11 @@ public:
 
     explicit player(std::string, loader*, bank*);
     const std::string get_name();
-    void give_tokens(int);
+    void give_tokens();
     void redistribute_tokens(int, int);
     void get_status();
     void set_first_culture(culture);
-    void set_second_culture(culture);
+//    void set_second_culture(culture);
     int get_number_of_tokens_owned(int);
 //    void set_decline();
 //    bool get_decline();

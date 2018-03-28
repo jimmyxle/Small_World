@@ -92,8 +92,8 @@ int List::get_number_race_tokens(int ID)
     return world_nodes[ID].tokens_attached->number_race_tokens();
 }
 
-//HEREE
-void List::add_region_tokens(int ID, int number_of_tokens, std::string race)
+//Change here
+void List::add_region_tokens(int ID, int number_of_tokens,const std::string& race)
 {
 //    world_nodes[ID].printAdj();
     world_nodes[ID].tokens_attached->add_race_tokens(race, number_of_tokens);
