@@ -165,21 +165,21 @@ class culture
      * my culture class is made of two inner classes: banners and badges
      */
 private:
-    typedef struct banners
+    struct banners
     {
         std::string banner_name;
         int banner_value;
         banners();
         ~banners();
-    }* bannerPtr;
+    };
 
-    typedef struct badges
+    struct badges
     {
         std::string badge_name;
         int badge_value;
         badges();
         ~badges();
-    }* badgePtr;
+    };
 
     banners player_banner;
     badges player_badge;

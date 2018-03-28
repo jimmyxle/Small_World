@@ -179,6 +179,7 @@ void game_manager::game_loop()
         if(five!= nullptr)
             five->scores();
     }
+
     while(marker->next_turn())
     {
         int menu_num = 0;
@@ -429,11 +430,19 @@ void game_manager::turn(player* p)
 }
 int game_manager::menu(player* p)
 {
-    if(p->get_decline())
+    if(p->first_culture_null())
     {
-        p->set_second_culture(culture_deck->pick_race());
-        p->give_tokens(2);
-        p->set_decline();
+        p->set_first_culture(culture_deck->pick_race());
+        if(p->get_second_race_active())
+        {
+            p->give_tokens(1);
+        }
+        else
+        {
+            p->give_tokens(2);
+        }
+//        p->give_tokens(2);
+//        p->set_decline();
     }
     cout<<p->get_name()<<"'s turn. Will you conquer(1) or go in decline(2)?"<<endl;
     int p_choice = 0;
@@ -461,6 +470,6 @@ void game_manager::decline(player* p)
 //    cout<<"flipping all tokens on the map"<<endl;
     game_map->l1->regions_in_decline(p->get_name());
 //    cout<<"tokens are flipped succesfully"<<endl;
-    p->set_decline();
+    p->player_decline();
 
 }

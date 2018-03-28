@@ -22,7 +22,7 @@ player::player()
     give_tokens(1);
     second_race_stack = new bits();
     map = nullptr;
-    first_decline = false;
+//    first_decline = false;
     cout<<player_name<<" has entered the game!"<<"\t";
 
 };
@@ -52,7 +52,7 @@ player::player(std::string str, loader* map_loaded, bank* bank1)
     first_race_stack = new bits();
     second_race_stack = new bits();
     map = map_loaded;
-    first_decline = false;
+//    first_decline = false;
 
     player_central = bank1;
     player_wallet = new wallet();
@@ -128,27 +128,18 @@ void player::picks_race() // no longer used
 
 void player::give_tokens(int index)
 {
-    if(index == 1)
+    if(player_second_culture == nullptr)
     {
-//        first_race_stack->add_race_tokens(player_first_culture->get_banner(),5);
         first_race_stack->add_race_tokens(player_first_culture->get_banner(),
                                           player_first_culture->get_culture_power());
-//        cout<<"race one tokens: "<<first_race_stack->get_size()<<endl;
-//        cout<<"race two tokens: "<<second_race_stack->get_size()<<endl;
-    }
-
-    else if(index == 2)
-    {
-        second_race_stack->add_race_tokens(player_second_culture->get_banner(),
-                                           player_second_culture->get_culture_power());
-//        cout<<"race one tokens: "<<first_race_stack->get_size()<<endl;
-//        cout<<"race two tokens: "<<second_race_stack->get_size()<<endl;
     }
 
     else
     {
-        cout<<"Invalid race choice"<<endl;
+        second_race_stack->add_race_tokens(player_second_culture->get_banner(),
+                                           player_second_culture->get_culture_power());
     }
+
 }
 
 void player::redistribute_tokens(int index, int number_of_tokens)
@@ -192,10 +183,8 @@ tokens_info player::conquers()
         cout<<"Eligible region."<<endl;
         int race_num = 0;
 
-        if(get_second_race_active())
-            race_num = 1;
-        else
-            race_num = 2;
+        race_num = 1;
+
 
 
         if(race_num == 1)
@@ -446,6 +435,18 @@ int player::get_number_of_tokens_owned(int index)
         cout<<"Something wrong here."<<endl;
     }
 }
+
+void player::player_decline()
+{
+    player_second_culture = player_first_culture;
+    player_first_culture = nullptr;
+}
+
+bool player::first_culture_null()
+{
+    return player_first_culture == nullptr;
+}
+/*
 void player::set_decline()
 {
     first_decline = !first_decline;
@@ -455,6 +456,7 @@ bool player::get_decline()
 {
     return first_decline;
 }
+ */
 bool player::get_second_race_active()
 {
     return player_second_culture == nullptr;

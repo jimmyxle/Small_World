@@ -28,7 +28,7 @@ private:
     bits* second_race_stack;
     culture* player_first_culture;
     culture* player_second_culture;
-    bool first_decline;
+//    bool first_decline;
     dice* player_dice;
     loader* map;
 
@@ -54,8 +54,10 @@ public:
     void set_first_culture(culture);
     void set_second_culture(culture);
     int get_number_of_tokens_owned(int);
-    void set_decline();
-    bool get_decline();
+//    void set_decline();
+//    bool get_decline();
+    void player_decline();
+    bool first_culture_null();
     bool get_second_race_active(); //return true if second race == nullptr
     bool remove_tokens(int);
 };

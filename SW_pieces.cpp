@@ -581,22 +581,7 @@ bool bits::get_decline()
         }
     }
 }
-//bool bits::check_if_decline()
-//{
-//    cout<<"check if declined: ";
-//    for(auto iter = pile.rbegin(); iter != pile.rend(); ++iter)
-//    {
-//        if(!((*iter)->is_mountain()) )
-//        {
-//            if( !((*iter)->is_active()) )
-//                cout<<"true"<<endl;
-//                return true;
-//        }
-//    }
-//    cout<<"false"<<endl;
-//
-//    return false;
-//}
+
 /*
  * End of board bits
  */
@@ -697,18 +682,7 @@ culture_set::~culture_set()
 {
     visible.clear();
     deck.clear();
-//    culture* temp = nullptr;
-//   for(auto iter = deck.begin(); iter != deck.end();++iter)
-//   {
-//       *temp = *iter;
-//       delete temp;
-//   }
-//    temp = nullptr;
-//    for(auto iter = visible.begin(); iter != visible.end();++iter)
-//    {
-//        *temp = *iter;
-//        delete temp;
-//    }
+
 }
 
 
@@ -731,76 +705,29 @@ void culture_set::shuffle()
         r_name = race_list[index]; //cout<<"chosen race: "<<r_name<<endl;
         r_power = race_power[index]; //cout<<"race power: "<<r_power<<endl;
         //swap to end + pop_back
-//        if(index == (r_size-1) )
-//        {
-//            race_list.pop_back();
-//            race_power.pop_back();
-//        }
-//        else
         {
             race_list.erase(race_list.begin() + index);
-//
-//            std::swap(race_list[index], race_list.back() );
-//            race_list.pop_back();
             //swap to end + pop_back
             race_power.erase(race_power.begin() + index);
-//            std::swap(race_power[index], race_power.back());
-//            race_power.pop_back();
-
         }
         culture* temp = new culture(r_name, r_power);
         deck.push_back( *temp );
-        delete temp;
-        /*
-         *
-         */
         r_size--;
-
     }while(r_size >= 0);
-
-//    cout<<"adding powers"<<endl;
-
     r_size =  deck.size();
     int count = 0;
     do{
-//        cout<<"p size is "<<p_size<<endl;
-
         uniform_int_distribution<int> race_roll(0, p_size);
         index = race_roll(randomGenerator); //cout<<"index chosen: "<<index<<endl;
         a_name = ability_list[index]; //cout<<"chosen ability: "<<a_name<<endl;
         a_power = ability_power[index]; //cout<<"ability power: "<<a_power<<endl;
-        //swap to end + pop_back
-//        if(index == (p_size-1) )
-//        {
-//            cout<<"the removed ability is : "<<ability_list.back()<<endl;
-//            ability_list.pop_back();
-//            ability_power.pop_back();
-//        }
-//        else
-        {
-//            cout<<"the moved ability is : "<<ability_list.back()<<endl;
-//            cout<<"the removed ability is : "<<ability_list[index]<<endl;
-
-            ability_list.erase(ability_list.begin()+index);
-//            std::swap(ability_list[index], ability_list.back() );
-//            ability_list.pop_back();
-            //swap to end + pop_back
-            ability_power.erase(ability_power.begin()+index);
-//            std::swap(ability_power[index], ability_power.back());
-//            ability_power.pop_back();
-
-        }
+        ability_list.erase(ability_list.begin()+index);
+        ability_power.erase(ability_power.begin()+index);
         deck[count].give_badge(a_name, a_power);
         count++;
-
         p_size--;
         r_size--;
-
     }while(r_size >= 0 && count < deck.size());
-
-//    for(auto iter = deck.begin(); iter != deck.end(); ++iter)
-//        (*iter).print_culture();
-//    cout<<"trouble"<<endl;
 }
 void culture_set::show_top(int number) {
 //    cout<<"deck size is now:"<<deck.size()<<" and visible is :"<<visible.size()<<endl;
@@ -827,17 +754,6 @@ void culture_set::show_top(int number) {
             visible[i].print_culture();
         }
     }
-
-//    cout<<visible.size();
-/*
-    for(auto iter = visible.begin(); iter != visible.end(); ++iter)
-        (*iter).print_culture();
-
-    cout<<"The remaining deck is: "<<endl;
-
-    for(auto iter = deck.begin(); iter != deck.end(); ++iter)
-        (*iter).print_culture();
-        */
 }
 
 culture culture_set::pick_race()
@@ -857,8 +773,5 @@ culture culture_set::pick_race()
     visible[choice].print_culture();
     culture temp = visible[choice];
     visible.erase( visible.begin()+choice-1 );
-
-
-
     return temp;
 }
