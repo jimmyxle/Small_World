@@ -9,7 +9,21 @@
 #include <limits>
 using namespace std;
 
+tokens_info::tokens_info()
+{
+    number_of_tokens = 0;
+    prev_owner = "";
+    exists = false;
+    returned_tokens.reserve(5);
+}
 
+tokens_info::~tokens_info()
+{
+    for(auto iter = returned_tokens.begin(); iter != returned_tokens.end(); ++iter)
+    {
+        delete (*iter);
+    }
+}
 player::player()
 {
     player_name = "Dom";
@@ -18,7 +32,12 @@ player::player()
     player_first_culture = new culture(banner_list[2],banner_power[2],badge_list[2],badge_power[2]);
     player_second_culture= nullptr;
     first_race_stack = new bits();
-    first_race_stack->add_race_tokens(badge_list[2], player_first_culture->get_culture_power());
+    int power = player_first_culture->get_culture_power();
+    for(int i = 0 ; i <power; ++i)
+    {
+        race_token* temp = new race_token(badge_list[2], true, false);
+        first_race_stack->add_race_token( (temp) );
+    }
     give_tokens();
     second_race_stack = new bits();
     map = nullptr;
@@ -130,51 +149,77 @@ void player::give_tokens()
 {
     if(player_second_culture == nullptr)
     {
-        first_race_stack->add_race_tokens(player_first_culture->get_banner(),
-                                          player_first_culture->get_culture_power());
+//        first_race_stack->add_race_tokens(player_first_culture->get_banner(),
+//                                          player_first_culture->get_culture_power());
+        int power = player_first_culture->get_culture_power();
+        string name = player_first_culture->get_banner();
+        for(int i = 0 ; i <power; ++i)
+        {
+            race_token* temp = new race_token(name, true, false);
+            first_race_stack->add_race_token( (temp) );
+        }
+
     }
 
     else
     {
-        second_race_stack->add_race_tokens(player_second_culture->get_banner(),
-                                           player_second_culture->get_culture_power());
+        int power = player_second_culture->get_culture_power();
+        string name = player_second_culture->get_banner();
+        for(int i = 0 ; i <power; ++i)
+        {
+            race_token* temp = new race_token(name, true, false);
+            second_race_stack->add_race_token( (temp) );
+        }
+//        second_race_stack->add_race_tokens(player_second_culture->get_banner(),
+//                                           player_second_culture->get_culture_power());
     }
 
 }
-
+void player::redistribute_token(token * token1)
+{
+    if(get_second_race_active())
+    {
+        first_race_stack->add_race_token( token1 );
+    }
+    else
+    {
+        second_race_stack->add_race_token(token1);
+    }
+}
+/*
 void player::redistribute_tokens(int index, int number_of_tokens)
 {
-    if(index == 1)
+    if(get_second_race_active())
     {
+
         first_race_stack->add_race_tokens(player_first_culture->get_banner(),
                                           number_of_tokens);
         cout<<player_name<<" now has "<<first_race_stack->get_size()<<" (1)tokens."<<endl;
 
     }
-    else if(index == 2)
+    else
     {
         second_race_stack->add_race_tokens(player_second_culture->get_banner(),
                                            number_of_tokens);
         cout<<player_name<<" now has "<<second_race_stack->get_size()<<" (2)tokens."<<endl;
 
     }
-    else
-    {
-        cout<<"Something wrong has occured."<<endl;
-    }
+
 
 
 }
-tokens_info player::conquers()
+ */
+tokens_info* player::conquers()
 {
     //start of turn
     cout<<endl;
 
 
-    tokens_info remainder;
-    (remainder).number_of_tokens = 0;
-    (remainder).prev_owner = "";
-    (remainder).exists=false;
+    tokens_info* remainder = new tokens_info();
+    (remainder)->number_of_tokens = 0;
+    (remainder)->prev_owner = "";
+    (remainder)->exists=false;
+    remainder->returned_tokens.reserve(5);
     cout<<"enter a region_ID(int) to conquer"<<endl;
     int region_ID;
     cin>>region_ID;
@@ -215,7 +260,7 @@ tokens_info player::conquers()
                                 if(  !(map->l1->check_region_is_decline(region_ID)) )//check if any tokens were in decline
                                 {
                                     cout<<"decline detected"<<endl;
-                                    remainder.number_of_tokens = 0;
+                                    remainder->number_of_tokens = 0;
                                 }
                                 else
                                 {
@@ -223,28 +268,44 @@ tokens_info player::conquers()
                                     int num_tokens = map->l1->get_number_race_tokens(region_ID);
 //                                    cout<<"num tokens detected = "<<num_tokens<<endl;
                                     cout<<"num tokens given = "<<num_tokens-1<<endl;
-                                    remainder.number_of_tokens= (num_tokens-1);
+                                    remainder->number_of_tokens= (num_tokens-1);
                                 }
                                 //this happens no matter what
-                                cout<<"Tokens returned = "<<remainder.number_of_tokens<<endl;
-                                if(remainder.number_of_tokens < 0)
-                                    remainder.number_of_tokens = 0;
-                                remainder.prev_owner = map->l1->get_owner(region_ID);
-                                remainder.exists = true;
+                                cout<<"Tokens returned = "<<remainder->number_of_tokens<<endl;
+                                if(remainder->number_of_tokens < 0)
+                                    remainder->number_of_tokens = 0;
+                                remainder->prev_owner = map->l1->get_owner(region_ID);
+                                remainder->exists = true;
                                 //note if first or second race
                             }
                         }
                         //go in region + remove race tokens but not mountain
-                        map->l1->clean_region(region_ID); //
+
+
+
+
+                        token* temp = nullptr;
+                        do{ //gotta give back to original player
+//                            cout<<endl<<"this size: "<<map->l1->get_number_race_tokens(region_ID)<<endl;
+                            temp = map->l1->clear_region(region_ID);
+                            remainder->returned_tokens.push_back(temp);
+                        }while(temp != nullptr);
+
                         cout<<"Success, region "<<region_ID<<" conquered!"<<endl;
                         map->l1->control_region(region_ID, player_name);
-                        for(int i = 0; i < power; ++i)
-                        {
-                            first_race_stack->pop_race_tokens();
-                        }
+
+
                         cout<<"Adding "<<power<<" tokens to region "<<region_ID<<endl;
 
-                        map->l1->add_region_tokens(region_ID, power, player_first_culture->get_banner());
+                        map->l1->add_region_token(region_ID, power, first_race_stack->pop_race_token());
+
+
+                        /*
+                         * here
+                         */
+                        map->l1->get_region_strength(region_ID);
+
+//                        map->l1->add_region_tokens(region_ID, power, player_first_culture->get_banner());
                         cout<<"You have "<<first_race_stack->get_size()<<" tokens left"<<endl;
 
                         power = 0;
@@ -289,27 +350,34 @@ tokens_info player::conquers()
                             if(!(map->l1->check_ownership(region_ID, "default" )) )
                             {
 
-                                remainder.number_of_tokens= map->l1->get_number_race_tokens(region_ID)-1;
-                                cout<<"Tokens returned = "<<remainder.number_of_tokens<<endl;
-                                if(remainder.number_of_tokens < 0)
-                                    remainder.number_of_tokens = 0;
-                                remainder.prev_owner = map->l1->get_owner(region_ID);
-                                remainder.exists = true;
+                                remainder->number_of_tokens= map->l1->get_number_race_tokens(region_ID)-1;
+                                cout<<"Tokens returned = "<<remainder->number_of_tokens<<endl;
+                                if(remainder->number_of_tokens < 0)
+                                    remainder->number_of_tokens = 0;
+                                remainder->prev_owner = map->l1->get_owner(region_ID);
+                                remainder->exists = true;
                             }
                         }
                         //go in region + remove race tokens but not mountain
-                        map->l1->clean_region(region_ID); //
+
+                        token* temp = nullptr;
+                        do{ //gotta give back to original player
+                            temp = map->l1->clear_region(region_ID);
+                            remainder->returned_tokens.push_back(temp);
+                        }while(temp != nullptr);
+
+
+//                        map->l1->clean_region(region_ID); //
                         cout<<"success"<<endl;
                         map->l1->control_region(region_ID, player_name);
-                        for(int i = 0; i < power; ++i)
-                        {
-                            second_race_stack->pop_race_tokens();
-                        }
                         cout<<"Adding "<<power<<" tokens to region "<<region_ID<<endl;
+
+
+                        map->l1->add_region_token(region_ID, power, second_race_stack->pop_race_token());
+
 
                         cout<<"You have "<<second_race_stack->get_size()<<" tokens left"<<endl;
 
-                        map->l1->add_region_tokens(region_ID, power, player_second_culture->get_banner());
 //                        cout<<"added "<<power<<" tokens of "<<player_first_culture->get_banner()<<endl;
 //                        cout<<"Region "<<region_ID<<" now has "<<map->l1->get_region_strength(region_ID)<<endl;
                         power = 0;
@@ -417,19 +485,11 @@ void player::set_first_culture(culture first)
     player_first_culture = &(first);
 }
 
-int player::get_number_of_tokens_owned(int index)
-{
-    if(index == 1 )
-    {
+int player::get_number_of_tokens_owned() {
+    if (get_second_race_active()) {
         return first_race_stack->get_size();
-    }
-    else if(index == 2)
-    {
+    } else {
         return second_race_stack->get_size();
-    }
-    else
-    {
-        cout<<"Something wrong here."<<endl;
     }
 }
 

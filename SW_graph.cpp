@@ -80,6 +80,7 @@ void List::control_region(int ID, std::string str)
 }
 int List::get_region_strength(int ID)
 {
+    cout<<"This region has "<<world_nodes[ID].tokens_attached->get_size()<<" attached."<<endl;
     return world_nodes[ID].tokens_attached->get_size();
 }
 void List::clean_region(int ID)
@@ -87,16 +88,46 @@ void List::clean_region(int ID)
     world_nodes[ID].tokens_attached->clean();
 }
 
+token* List::clear_region(const int ID)
+{
+    bits* temp = world_nodes[ID].tokens_attached;
+    if(temp->get_size() > 0)
+    {
+        token* token_temp;
+        token_temp = world_nodes[ID].tokens_attached->pop_one();
+        return token_temp;
+    }
+    else
+    {
+        return nullptr;
+    }
+
+
+}
 int List::get_number_race_tokens(int ID)
 {
     return world_nodes[ID].tokens_attached->number_race_tokens();
 }
 
 //Change here
+/*
 void List::add_region_tokens(int ID, int number_of_tokens,const std::string& race)
 {
 //    world_nodes[ID].printAdj();
+    bits* temp = world_nodes[ID].tokens_attached;
+
     world_nodes[ID].tokens_attached->add_race_tokens(race, number_of_tokens);
+}
+ */
+
+void List::add_region_token(int ID,int number_of_tokens,  token * token1)
+{
+    bits* temp = world_nodes[ID].tokens_attached;
+    for(int i = 0; i<number_of_tokens; ++i)
+    {
+        temp->add_race_token(token1);
+    }
+
 }
 //Checks if the two regions are adjacent
 bool List::is_region_adjacent(int target, int ID_check)

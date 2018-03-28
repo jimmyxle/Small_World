@@ -399,7 +399,7 @@ bool token::is_mountain()
 }
 void token::flip_token()
 {
-
+    cout<<"flip!"<<endl;
 }
 bool token::is_active()
 {
@@ -423,7 +423,10 @@ race_token::race_token(string name, bool status, bool mount) : token(name, mount
 
 race_token::~race_token()=default;
 
-
+bool race_token::is_mountain()
+{
+    return false;
+}
 void race_token::flip_token()
 {
     active = !active;
@@ -491,6 +494,7 @@ bits::~bits()
 
 }
 
+/*
 void bits::add_race_tokens(std::string name , int num_tokens)
 {
     for(int i =0; i < num_tokens; ++i)
@@ -501,9 +505,16 @@ void bits::add_race_tokens(std::string name , int num_tokens)
 //    cout<<"HEY"<<endl;
 //    cout<<pile.size()<<endl;
 }
-void bits::pop_race_tokens()
+ */
+void bits::add_race_token(token *token1)
 {
+    pile.push_back( (token1) );
+}
+token* bits::pop_race_token()
+{
+    token* temp = (pile.back());
     pile.pop_back();
+    return temp;
 }
 int bits::get_size()
 {
@@ -528,18 +539,26 @@ void bits::clean()
 //    cout<<"this has a size of "<<pile.size()<<endl;
     for(auto rev_iter = pile.rbegin(); rev_iter!= pile.rend(); ++rev_iter)
     {
-        (*rev_iter)->get_name();
-        if( (*rev_iter)->is_mountain() )
-        {
-           //skip
-        }
-        else
-        {
+//        (*rev_iter)->get_name();
+        if( !( (*rev_iter)->is_mountain() ) )
             pile.pop_back();
-        }
+
     }
 //    cout<<"this now has a size of "<<pile.size()<<endl;
-
+}
+token* bits::pop_one()
+{
+    auto rev_iter = pile.rbegin();
+//    cout<<"size: "<<pile.size()<<endl;
+//    cout<<endl<<"result "<<(*rev_iter)->is_mountain()<<endl;
+    if( !( (*rev_iter)->is_mountain() ) )
+    {
+        token* temp = (*rev_iter);
+        pile.pop_back();
+        return temp;
+    } else{
+        return nullptr;
+    }
 }
 int bits::number_race_tokens()
 {
@@ -554,11 +573,22 @@ int bits::number_race_tokens()
 void bits::token_decline()
 {
     int count = 0;
+//    cout<<pile.size();
+//    cout<<endl;
     for(auto iter = pile.rbegin(); iter!= pile.rend(); ++iter)
     {
+        cout<<"1.name: ";
+
+        cout<<(*iter)->get_name()<<endl;
+
         if(!((*iter)->is_mountain()) )
         {
+            //flip one then pop rest
             if(count < 1){
+                cout<<"2.name: ";
+                cout<<(*iter)->get_name()<<endl;
+
+
                 (*iter)->flip_token();
                 count++;
             }
@@ -575,6 +605,10 @@ bool bits::get_decline()
 {
     for(auto iter = pile.begin(); iter!=pile.end(); ++iter)
     {
+        cout<<"size pile: "<<pile.size()<<endl;
+        cout<<(*iter)->get_name();
+        cout<<(*iter)->is_mountain();
+
         if(! ((*iter)->is_mountain()) )
         {
             return (*iter)->is_active();

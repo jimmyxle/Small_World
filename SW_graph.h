@@ -54,11 +54,15 @@ public:
     void add_region_edge(int, int);
     bool traversal();
     //Used by other classes to manipulate data
+
+
     void control_region(int, std::string);
     int get_region_strength(int);
     int get_number_race_tokens(int);
     void clean_region(int);
-    void add_region_tokens(int, int, const std::string&);
+    token* clear_region(const int);
+//    void add_region_tokens(int, int, const std::string&);
+    void add_region_token(int,int, token*);
     bool is_region_adjacent(int, int);
     bool is_control_adjacent(int, int);
     int num_regions_controlled(std::string);

@@ -107,6 +107,7 @@ public:
     explicit race_token(std::string, bool, bool);
 //    race_token( race_token&);
     ~race_token();
+    bool is_mountain();
     void flip_token();
     bool is_active();
 //    std::string get_name();
@@ -134,11 +135,14 @@ public:
     bits();
     ~bits();
     void add_mountain_token();
-    void add_race_tokens(std::string, int);
-    void pop_race_tokens();
+//    void add_race_tokens(std::string, int);
+
+    void add_race_token( token *);
+    token* pop_race_token();
     int get_size();
     void print_pile();
     void clean();
+    token* pop_one();
     int number_race_tokens();
     void token_decline();
     bool get_decline();
