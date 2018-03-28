@@ -165,7 +165,7 @@ coin* bank::give_coins( int value)
     //assign a temp to the pointer
     //pop back that vector
     //return pointer
-    coin* temp;
+    coin* temp = nullptr;
     switch(value)
     {
         case 1:
@@ -731,6 +731,7 @@ void culture_set::shuffle()
 }
 void culture_set::show_top(int number) {
 //    cout<<"deck size is now:"<<deck.size()<<" and visible is :"<<visible.size()<<endl;
+
     if(visible.size() < number)
     {
         int remain = number - visible.size();// cout<<"remain is: "<<remain<<endl;
@@ -754,12 +755,15 @@ void culture_set::show_top(int number) {
             visible[i].print_culture();
         }
     }
+    cout.flush();
 }
 
 culture culture_set::pick_race()
 {
+
     cout<<"Please choose an option from below:"<<endl;
     show_top(6);
+    cout.flush();
     int choice = 0;
     do
     {
@@ -772,6 +776,6 @@ culture culture_set::pick_race()
     }while(choice<0||choice>5);
     visible[choice].print_culture();
     culture temp = visible[choice];
-    visible.erase( visible.begin()+choice-1 );
+    visible.erase( visible.begin()+choice );
     return temp;
 }

@@ -58,7 +58,7 @@ public:
     int get_region_strength(int);
     int get_number_race_tokens(int);
     void clean_region(int);
-    void add_region_tokens(int, int, std::string);
+    void add_region_tokens(int, int, const std::string&);
     bool is_region_adjacent(int, int);
     bool is_control_adjacent(int, int);
     int num_regions_controlled(std::string);
