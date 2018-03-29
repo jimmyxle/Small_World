@@ -7,10 +7,6 @@
 #include "SW_player.h"
 
 game_manager::game_manager(){
-    //make game coins
-    game_bank = new bank();
-
-
     one = nullptr;
     two = nullptr;
     three = nullptr;
@@ -45,6 +41,7 @@ game_manager::game_manager(){
             game_map->populate();
             cout<<"2p mode chosen."<<endl;
             add_lost_tribes(2);
+
             break;
         case 3:
             game_map = new loader();
@@ -52,6 +49,7 @@ game_manager::game_manager(){
             game_map->populate();
             cout<<"3p mode chosen."<<endl;
             add_lost_tribes(3);
+
             break;
         case 4:
             game_map = new loader();
@@ -74,14 +72,11 @@ game_manager::game_manager(){
     }
     create_players(num_players);
     marker = new game_turn_token(num_players);
-    initialize();
-
-}
-
-void game_manager::initialize()
-{
     culture_deck = new culture_set();
     culture_deck->shuffle(); //uncomment this later
+//    culture_deck->show_top(6);
+
+
 }
 game_manager::~game_manager()
 {
@@ -102,32 +97,85 @@ game_manager::~game_manager()
 }
 void game_manager::create_players(int number)
 {
-    one = new player("uno", game_map, game_bank);
-    two = new player("dos", game_map, game_bank);
+    one = new player("uno", game_map);
+    two = new player("dos", game_map);
     switch(number)
     {
         case 2:
             break;
         case 3:
-            three = new player("tres", game_map, game_bank);
+            three = new player("tres", game_map);
             break;
         case 4:
-            three = new player("tres", game_map,game_bank);
-            four = new player("quatro", game_map,game_bank);
+            three = new player("tres", game_map);
+            four = new player("quatro", game_map);
             break;
         case 5:
-            three = new player("tres", game_map,game_bank);
-            four = new player("quatro", game_map,game_bank);
-            five = new player("cinqo", game_map,game_bank);
+            three = new player("tres", game_map);
+            four = new player("quatro", game_map);
+            five = new player("cinqo", game_map);
             break;
         default:
             cout<<"Not possible"<<endl;
     }
+//    cout<<"players created"<<endl;
 }
 
 void game_manager::game_loop()
 {
     cout<<endl<<"Game start!"<<endl;
+    /*
+    if(marker->get_turn_number() == 0)
+    {
+        marker->next_turn();
+
+        one->set_first_culture(culture_deck->pick_race());
+        one->give_tokens(1);
+
+         turn(one);
+        cout<<endl;
+
+        two->set_first_culture(culture_deck->pick_race());
+        two->give_tokens(1);
+        turn(two);
+        cout<<endl;
+
+        if(three != nullptr)
+        {
+            three->set_first_culture((culture_deck->pick_race()));
+            three->give_tokens(1);
+            turn(three);
+            cout<<endl;
+
+        }
+
+        if(four!= nullptr)
+        {
+            four->set_first_culture(culture_deck->pick_race());
+            four->give_tokens(1);
+            turn(four);
+            cout<<endl;
+
+        }
+        if(five != nullptr)
+        {
+            five->set_first_culture(culture_deck->pick_race());
+            five->give_tokens(1);
+            turn(five);
+            cout<<endl;
+        }
+        //scoring phase
+        one->scores();
+        two->scores();
+        if(three!= nullptr)
+            three->scores();
+        if(four!= nullptr)
+            four->scores();
+        if(five!= nullptr)
+            five->scores();
+    }
+
+*/
     while(marker->next_turn())
     {
         int menu_num = 0;
@@ -206,81 +254,76 @@ void game_manager::game_loop()
 
 void game_manager::add_lost_tribes(int number_of_players)
 {
-    List* temp_list = game_map->l1;
-
     switch(number_of_players)
     {
         case 2:
-            temp_list->add_region_token(3,2,new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(6, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(10, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(11, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(12, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(13, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(14, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(18, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(20, 2, new race_token("lost_tribes", true, false) );
+            game_map->l1->add_region_tokens(3, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(6, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(10, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(11, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(12, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(13, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(14, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(18, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(20, 2, "lost_tribes");
 //            game_map->l1->print_tokens();
             cout<<"added Lost_Tribe tokess"<<endl;
             break;
-
-
         case 3:
-            temp_list->add_region_token(1, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(6, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(9, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(11, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(13, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(19, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(21, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(22, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(23, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(29, 2, new race_token("lost_tribes", true, false));
+            game_map->l1->add_region_tokens(1, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(6, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(9, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(11, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(13, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(19, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(21, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(22, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(23, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(29, 2, "lost_tribes");
 //            game_map->l1->print_tokens();
             cout<<"added Lost_Tribe tokess"<<endl;
             break;
         case 4:
-            temp_list->add_region_token(2, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(3, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(4, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(6, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(7, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(10, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(14, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(22, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(23, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(24, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(25, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(26, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(32, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(33, 2, new race_token("lost_tribes", true, false));
+            game_map->l1->add_region_tokens(2, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(3, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(4, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(6, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(7, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(10, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(14, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(22, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(23, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(24, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(25, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(26, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(32, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(33, 2, "lost_tribes");
 //            game_map->l1->print_tokens();
             cout<<"added Lost_Tribe tokess"<<endl;
             break;
         case 5:
-            temp_list->add_region_token(5, 2,new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(8, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(12, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(14, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(15, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(19, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(21, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(23, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(25, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(27, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(29, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(32, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(35, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(36, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(38, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(43, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(44, 2, new race_token("lost_tribes", true, false));
+            game_map->l1->add_region_tokens(5, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(8, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(12, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(14, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(15, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(19, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(21, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(23, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(25, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(27, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(29, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(32, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(35, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(36, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(38, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(43, 2, "lost_tribes");
+            game_map->l1->add_region_tokens(44, 2, "lost_tribes");
 //            game_map->l1->print_tokens();
             cout<<"added Lost_Tribe tokess"<<endl;
             break;
-
         default:
-            cout<<"MAP DISABLED."<<endl;
+            cout<<"This shouldn't have happened."<<endl;
             break;
     }
 }
@@ -288,106 +331,94 @@ void game_manager::turn(player* p)
 {
     cout.flush();
     cout<<"player "<<p->get_name()<<"'s turn"<<endl;
-    tokens_info *return_token = ( p->conquers() );
-    if(return_token->exists)
+
+    /*
+     * change conquers function to deal w/ second race tokens
+     */
+    tokens_info return_token = p->conquers();
+    if(return_token.exists)
     {
-        if(return_token->prev_owner == one->get_name())
+        if(return_token.prev_owner == one->get_name())
         {
             //conditional to check for first race or second race in decline
             if(one->get_second_race_active())
             {
-
-                cout<<"player current number of tokens: "<<one->get_number_of_tokens_owned()<<endl;
-                cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
-                vector<token*> *temp = &return_token->returned_tokens;
-                for(auto iter = temp->rbegin(); iter != temp->rend();++iter)
-                {
-                    one->redistribute_token(*iter);
-                    temp->pop_back();
-                }
-                /*
+                cout<<"player current number of tokens: "<<one->get_number_of_tokens_owned(1)<<endl;
+                cout<<"tokens added: "<<return_token.number_of_tokens<<endl;
                 one->redistribute_tokens(1, return_token.number_of_tokens);
-                 */
             }
             else
             {
-                cout<<"include this for second race"<<endl;
-                /*
                 cout<<"Second race:"<<endl;
-                cout<<"player tokens: "<<one->get_number_of_tokens_owned()<<endl;
+                cout<<"player tokens: "<<one->get_number_of_tokens_owned(2)<<endl;
                 cout<<"tokens added: "<<return_token.number_of_tokens<<endl;
                 one->redistribute_tokens(2, return_token.number_of_tokens);
-                */
-
             }
 //            cout<<"after returning tokens: "<<one->get_number_of_tokens_owned(1)<<endl;
         }
-        else if(return_token->prev_owner == two->get_name())
+        else if(return_token.prev_owner == two->get_name())
         {
             //conditional to check for first race or second race in decline
             if(two->get_second_race_active())
             {
-                cout<<"player tokens: "<<two->get_number_of_tokens_owned()<<endl;
-                cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
-                cout<<"DISABLED REDISTRIBUTE TOKENS"<<endl;
-//                two->redistribute_tokens(1, return_token.number_of_tokens);
+                cout<<"player tokens: "<<two->get_number_of_tokens_owned(1)<<endl;
+                cout<<"tokens added: "<<return_token.number_of_tokens<<endl;
+                two->redistribute_tokens(1, return_token.number_of_tokens);
             }
             else
             {
-                cout<<"player tokens: "<<two->get_number_of_tokens_owned()<<endl;
-                cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
-                cout<<"DISABLED REDISTRIBUTE TOKENS"<<endl;
-
-//                two->redistribute_tokens(2, return_token.number_of_tokens);
+                cout<<"player tokens: "<<two->get_number_of_tokens_owned(2)<<endl;
+                cout<<"tokens added: "<<return_token.number_of_tokens<<endl;
+                two->redistribute_tokens(2, return_token.number_of_tokens);
             }
         }
-        else if(three!= nullptr && return_token->prev_owner == three->get_name())
+        else if(three!= nullptr && return_token.prev_owner == three->get_name())
         {
             //conditional to check for first race or second race in decline
             if(three->get_second_race_active())
             {
-                cout<<"player tokens: "<<three->get_number_of_tokens_owned()<<endl;
-                cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
-//                three->redistribute_tokens(1, return_token.number_of_tokens);
+                cout<<"player tokens: "<<three->get_number_of_tokens_owned(1)<<endl;
+                cout<<"tokens added: "<<return_token.number_of_tokens<<endl;
+                three->redistribute_tokens(1, return_token.number_of_tokens);
             }
             else
             {
-                cout<<"player tokens: "<<three->get_number_of_tokens_owned()<<endl;
-                cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
-//                three->redistribute_tokens(2, return_token.number_of_tokens);
+                cout<<"player tokens: "<<three->get_number_of_tokens_owned(2)<<endl;
+                cout<<"tokens added: "<<return_token.number_of_tokens<<endl;
+                three->redistribute_tokens(2, return_token.number_of_tokens);
             }
         }
-        else if(four != nullptr && return_token->prev_owner == four->get_name())
+        else if(four != nullptr && return_token.prev_owner == four->get_name())
         {
             //conditional to check for first race or second race in decline
             if(four->get_second_race_active())
             {
-                cout<<"player tokens: "<<four->get_number_of_tokens_owned()<<endl;
-                cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
-//                four->redistribute_tokens(1, return_token.number_of_tokens);
+                cout<<"player tokens: "<<four->get_number_of_tokens_owned(1)<<endl;
+                cout<<"tokens added: "<<return_token.number_of_tokens<<endl;
+                four->redistribute_tokens(1, return_token.number_of_tokens);
             }
             else
             {
-                cout<<"player tokens: "<<four->get_number_of_tokens_owned()<<endl;
-                cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
-//                four->redistribute_tokens(2, return_token.number_of_tokens);
+                cout<<"player tokens: "<<four->get_number_of_tokens_owned(2)<<endl;
+                cout<<"tokens added: "<<return_token.number_of_tokens<<endl;
+                four->redistribute_tokens(2, return_token.number_of_tokens);
             }
 
         }
-        else if(five != nullptr && return_token->prev_owner == five->get_name())
+        else if(five != nullptr && return_token.prev_owner == five->get_name())
         {
             //conditional to check for first race or second race in decline
             if( five->get_second_race_active() )
             {
-                cout<<"player tokens: "<<five->get_number_of_tokens_owned()<<endl;
-                cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
-//                five->redistribute_tokens(1, return_token.number_of_tokens);
+                cout<<"player tokens: "<<five->get_number_of_tokens_owned(1)<<endl;
+                cout<<"tokens added: "<<return_token.number_of_tokens<<endl;
+                five->redistribute_tokens(1, return_token.number_of_tokens);
             }
             else
             {
-                cout<<"player tokens: "<<five->get_number_of_tokens_owned()<<endl;
-                cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
-//                five->redistribute_tokens(2, return_token.number_of_tokens);
+                cout<<"player tokens: "<<five->get_number_of_tokens_owned(2)<<endl;
+                cout<<"tokens added: "<<return_token.number_of_tokens<<endl;
+                five->redistribute_tokens(2, return_token.number_of_tokens);
             }
         }
         else
@@ -395,34 +426,36 @@ void game_manager::turn(player* p)
             cout<<"something wrong has happened."<<endl;
         }
     }
-    delete return_token;
-    return_token = nullptr;
+
 }
 int game_manager::menu(player* p)
 {
     if(p->first_culture_null())
     {
+//        p->player_decline();
         p->set_first_culture(culture_deck->pick_race());
-        if(p->get_second_race_active())
+        cout<<"Here 1 "<<endl;
+        //could include an if statement to check if player second culture is
+        //in decline or not. This would mean i don't change my cukture class
+        if(p->player_second_culture == nullptr)
         {
-            p->give_tokens();
+            p->give_tokens(1);
+
+        } else {
+
         }
-        else
-        {
-            p->give_tokens();
-        }
+        cout<<"Here 2 "<<endl;
+
+//        p->set_second_culture(culture_deck->pick_race());
 //        p->give_tokens(2);
 //        p->set_decline();
+
     }
     cout<<p->get_name()<<"'s turn. Will you conquer(1) or go in decline(2)?"<<endl;
     int p_choice = 0;
     do
     {
-
-
         cin>>p_choice;
-
-
         if(!cin || p_choice <1 || p_choice >2)
         {
             cout<<"Did not choose 1 or 2, pick again."<<endl;
@@ -440,6 +473,7 @@ void game_manager::decline(player* p)
 //    cout<<"flipping all tokens on the map"<<endl;
     game_map->l1->regions_in_decline(p->get_name());
 //    cout<<"tokens are flipped succesfully"<<endl;
-    p->player_decline();
+//    p->set_decline();
+    p->player_decline(); //set second to point to first culture + set first to null
 
 }

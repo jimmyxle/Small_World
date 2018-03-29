@@ -14,14 +14,9 @@
 
 struct tokens_info
 {
-public:
     int number_of_tokens;
     string prev_owner;
     bool exists;
-    vector<token*> returned_tokens;
-
-    tokens_info();
-    ~tokens_info();
 //    bool second;
 };
 class player
@@ -34,11 +29,9 @@ private:
     culture* player_first_culture;
     culture* player_second_culture;
 //    bool first_decline;
+    wallet* player_wallet;
     dice* player_dice;
     loader* map;
-
-    bank* player_central;
-    wallet* player_wallet;
 
     //include board bit vector
 //    bits* player_tokens;
@@ -46,20 +39,19 @@ private:
 public:
     void add_map(loader*);
     void picks_race();
-    tokens_info* conquers();
+    tokens_info conquers();
     void scores();
     player();
     ~player();
 
-    explicit player(std::string, loader*, bank*);
+    explicit player(std::string, loader*);
     const std::string get_name();
-    void give_tokens();
-    void redistribute_token(token *);
-//    void redistribute_tokens(int, int);
+    void give_tokens(int);
+    void redistribute_tokens(int, int);
     void get_status();
     void set_first_culture(culture);
-//    void set_second_culture(culture);
-    int get_number_of_tokens_owned();
+    void set_second_culture(culture);
+    int get_number_of_tokens_owned(int);
 //    void set_decline();
 //    bool get_decline();
     void player_decline();
