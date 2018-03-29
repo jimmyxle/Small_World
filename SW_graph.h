@@ -62,7 +62,7 @@ public:
     void clean_region(int);
     token* clear_region(const int);
 //    void add_region_tokens(int, int, const std::string&);
-    void add_region_token(int,int, token*);
+    void add_region_token(int, token*);
     bool is_region_adjacent(int, int);
     bool is_control_adjacent(int, int);
     int num_regions_controlled(std::string);
