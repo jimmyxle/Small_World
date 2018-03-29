@@ -83,10 +83,10 @@ int List::get_region_strength(int ID)
     cout<<"This region has "<<world_nodes[ID].tokens_attached->get_size()<<" attached."<<endl;
     return world_nodes[ID].tokens_attached->get_size();
 }
-void List::clean_region(int ID)
-{
-    world_nodes[ID].tokens_attached->clean();
-}
+//void List::clean_region(int ID)
+//{
+//    world_nodes[ID].tokens_attached->clean();
+//}
 
 token* List::clear_region(const int ID)
 {
@@ -299,7 +299,7 @@ void List::regions_in_decline(std::string player_name)
         }
     }
 }
-bool List::check_region_is_decline(int ID)
+int List::check_region_is_active(int ID)
 {
-    return world_nodes[ID].tokens_attached->get_decline();
+    return world_nodes[ID].tokens_attached->get_active();
 }

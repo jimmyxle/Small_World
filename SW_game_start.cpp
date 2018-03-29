@@ -128,15 +128,27 @@ void game_manager::create_players(int number)
 void game_manager::game_loop()
 {
     cout<<endl<<"Game start!"<<endl;
-    while(marker->next_turn())
-    {
+    while(marker->next_turn()) {
         int menu_num = 0;
-
-
-        menu_num= menu(one);
+        menu_num = menu(one);
         //conquer phase
-        if(menu_num == 1)
-            turn(one);
+        if (menu_num == 1)
+        {
+            bool continue_turn = true;
+            while (continue_turn) {
+                int empty_tokens = turn(one);
+                if(one->get_number_of_tokens_owned() > 0)
+                {
+                    continue_turn = true;
+                }
+                else
+                {
+                    continue_turn = false;
+                }
+                if(empty_tokens == 1)
+                    continue_turn = false;
+            }
+        }
         else if(menu_num == 2)
         {
             //go in decline
@@ -148,9 +160,7 @@ void game_manager::game_loop()
             turn(two);
         else if(menu_num == 2)
         {
-            //go in decline
             decline(two);
-
         }
 
         if(three!= nullptr)
@@ -161,9 +171,7 @@ void game_manager::game_loop()
                 turn(three);
             else if(menu_num == 2)
             {
-                //go in decline
                 decline(three);
-
             }
         }
         if(four!= nullptr)
@@ -334,7 +342,7 @@ void game_manager::add_lost_tribes(int number_of_players)
             break;
     }
 }
-void game_manager::turn(player* p)
+int game_manager::turn(player* p)
 {
     cout.flush();
     cout<<"player "<<p->get_name()<<"'s turn"<<endl;
@@ -343,58 +351,40 @@ void game_manager::turn(player* p)
     {
         if(return_token->prev_owner == one->get_name())
         {
-            //conditional to check for first race or second race in decline
-            if(one->get_second_race_active())
-            {
-                cout<<"player"one->get_name()<<" new token total : "<<one->get_number_of_tokens_owned()<<endl;
+            cout<<"player"<<one->get_name()<<" current token total : "
+                <<one->get_number_of_tokens_owned()<<endl;
+            vector<token*> *temp = &return_token->returned_tokens;
+            int SIZE = temp->size();
 
-//                cout<<"player"one->get_name()<<" new token total : "<<one->get_number_of_tokens_owned()<<endl;
-                cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
-                vector<token*> *temp = &return_token->returned_tokens;
-                for(auto iter = temp->rbegin(); iter != temp->rend();++iter)
-                {
-                    one->redistribute_token(*iter);
-                    temp->pop_back();
-                }
-                /*
-                one->redistribute_tokens(1, return_token.number_of_tokens);
-                 */
-            }
-            else
-            {
-                cout<<"include this for second race"<<endl;
-                /*
-                cout<<"Second race:"<<endl;
-                cout<<"player tokens: "<<one->get_number_of_tokens_owned()<<endl;
-                cout<<"tokens added: "<<return_token.number_of_tokens<<endl;
-                one->redistribute_tokens(2, return_token.number_of_tokens);
-                */
+            if(temp->size() > 0)
+                SIZE--;
 
+            for(int i = 0; i < SIZE; i++)
+            {
+                token* token1 = temp->back();
+                one->redistribute_token(token1);
+                temp->pop_back();
             }
-//            cout<<"after returning tokens: "<<one->get_number_of_tokens_owned(1)<<endl;
+            cout<<"player "<<one->get_name()<<" new token total : "<<one->get_number_of_tokens_owned()<<endl;
         }
         else if(return_token->prev_owner == two->get_name())
         {
-            //conditional to check for first race or second race in decline
-            if(two->get_second_race_active())
+            cout<<"player"<<two->get_name()<<" current token total : "
+                <<two->get_number_of_tokens_owned()<<endl;
+            vector<token*> *temp = &return_token->returned_tokens;
+            int SIZE = temp->size();
+
+            if(temp->size() > 0)
+                SIZE--;
+
+            for(int i = 0; i < SIZE; i++)
             {
-                cout<<"player"two->get_name()<<" new token total : "<<two->get_number_of_tokens_owned()<<endl;
-
-//                cout<<"player tokens: "<<two->get_number_of_tokens_owned()<<endl;
-                cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
-                cout<<"DISABLED REDISTRIBUTE TOKENS"<<endl;
-//                two->redistribute_tokens(1, return_token.number_of_tokens);
+                token* token1 = temp->back();
+                two->redistribute_token(token1);
+                temp->pop_back();
             }
-            else
-            {
-                cout<<"player"two->get_name()<<" new token total : "<<two->get_number_of_tokens_owned()<<endl;
-
-                cout<<"player tokens: "<<two->get_number_of_tokens_owned()<<endl;
-                cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
-                cout<<"DISABLED REDISTRIBUTE TOKENS"<<endl;
-
-//                two->redistribute_tokens(2, return_token.number_of_tokens);
-            }
+            cout<<"player "<<two->get_name()<<" new token total : "
+                <<two->get_number_of_tokens_owned()<<endl;
         }
         else if(three!= nullptr && return_token->prev_owner == three->get_name())
         {
@@ -404,12 +394,15 @@ void game_manager::turn(player* p)
                 cout<<"player tokens: "<<three->get_number_of_tokens_owned()<<endl;
                 cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
 //                three->redistribute_tokens(1, return_token.number_of_tokens);
+                cout<<"PLAYER REDISTRIBUTE DISABLED"<<endl;
             }
             else
             {
                 cout<<"player tokens: "<<three->get_number_of_tokens_owned()<<endl;
                 cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
 //                three->redistribute_tokens(2, return_token.number_of_tokens);
+                cout<<"PLAYER REDISTRIBUTE DISABLED"<<endl;
+
             }
         }
         else if(four != nullptr && return_token->prev_owner == four->get_name())
@@ -420,12 +413,16 @@ void game_manager::turn(player* p)
                 cout<<"player tokens: "<<four->get_number_of_tokens_owned()<<endl;
                 cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
 //                four->redistribute_tokens(1, return_token.number_of_tokens);
+                cout<<"PLAYER REDISTRIBUTE DISABLED"<<endl;
+
             }
             else
             {
                 cout<<"player tokens: "<<four->get_number_of_tokens_owned()<<endl;
                 cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
 //                four->redistribute_tokens(2, return_token.number_of_tokens);
+                cout<<"PLAYER REDISTRIBUTE DISABLED"<<endl;
+
             }
 
         }
@@ -437,12 +434,15 @@ void game_manager::turn(player* p)
                 cout<<"player tokens: "<<five->get_number_of_tokens_owned()<<endl;
                 cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
 //                five->redistribute_tokens(1, return_token.number_of_tokens);
+                cout<<"PLAYER REDISTRIBUTE DISABLED"<<endl;
+
             }
             else
             {
                 cout<<"player tokens: "<<five->get_number_of_tokens_owned()<<endl;
                 cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
 //                five->redistribute_tokens(2, return_token.number_of_tokens);
+                cout<<"PLAYER REDISTRIBUTE DISABLED"<<endl;
             }
         }
         else
@@ -450,34 +450,29 @@ void game_manager::turn(player* p)
             cout<<"something wrong has happened."<<endl;
         }
     }
-    delete return_token;
-    return_token = nullptr;
+    if(return_token->turn_finish == true)
+    {
+        delete return_token;
+        return 1;
+    }
+    else
+    {
+        delete return_token;
+        return 0;
+    }
 }
 int game_manager::menu(player* p)
 {
     if(p->first_culture_null())
     {
         p->set_first_culture(culture_deck->pick_race());
-        if(p->get_second_race_active())
-        {
-            p->give_tokens();
-        }
-        else
-        {
-            p->give_tokens();
-        }
-//        p->give_tokens(2);
-//        p->set_decline();
+        p->give_tokens();
     }
     cout<<p->get_name()<<"'s turn. Will you conquer(1) or go in decline(2)?"<<endl;
     int p_choice = 0;
     do
     {
-
-
         cin>>p_choice;
-
-
         if(!cin || p_choice <1 || p_choice >2)
         {
             cout<<"Did not choose 1 or 2, pick again."<<endl;
@@ -492,9 +487,7 @@ int game_manager::menu(player* p)
 void game_manager::decline(player* p)
 {
     cout<<p->get_name()<<" chose to go in decline."<<endl;
-//    cout<<"flipping all tokens on the map"<<endl;
     game_map->l1->regions_in_decline(p->get_name());
-//    cout<<"tokens are flipped succesfully"<<endl;
     p->player_decline();
 
 }

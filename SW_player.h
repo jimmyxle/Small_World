@@ -16,9 +16,10 @@ struct tokens_info
 {
 public:
     int number_of_tokens;
-    string prev_owner;
+    std::string prev_owner;
     bool exists;
     vector<token*> returned_tokens;
+    int turn_finish;
 
     tokens_info();
     ~tokens_info();
@@ -66,6 +67,8 @@ public:
     bool first_culture_null();
     bool get_second_race_active(); //return true if second race == nullptr
     bool remove_tokens(int);
+    void battle(int, tokens_info&);
+    void take_over(int, int, bits*);
 };
 
 
