@@ -256,7 +256,7 @@ tokens_info* player::conquers()
                         {
                             if(!(map->l1->check_ownership(region_ID, "default" )) )
                             {
-                                cout<<endl<<endl<<"trouble?"<<endl;
+//                                cout<<endl<<endl<<"trouble?"<<endl;
                                 if(  !(map->l1->check_region_is_decline(region_ID)) )//check if any tokens were in decline
                                 {
                                     cout<<"decline detected"<<endl;
@@ -267,15 +267,17 @@ tokens_info* player::conquers()
                                     cout<<"decline not detected"<<endl;
                                     int num_tokens = map->l1->get_number_race_tokens(region_ID);
 //                                    cout<<"num tokens detected = "<<num_tokens<<endl;
-                                    cout<<"num tokens given = "<<num_tokens-1<<endl;
+                                    cout<<"num tokens given = "<<num_tokens-1 <<endl;
                                     remainder->number_of_tokens= (num_tokens-1);
                                 }
                                 //this happens no matter what
+
                                 cout<<"Tokens returned = "<<remainder->number_of_tokens<<endl;
                                 if(remainder->number_of_tokens < 0)
                                     remainder->number_of_tokens = 0;
                                 remainder->prev_owner = map->l1->get_owner(region_ID);
                                 remainder->exists = true;
+                                remainder->number_of_tokens = 0;
                                 //note if first or second race
                             }
                         }
@@ -296,8 +298,8 @@ tokens_info* player::conquers()
 
 
                         cout<<"Adding "<<power<<" tokens to region "<<region_ID<<endl;
-
-                        map->l1->add_region_token(region_ID, power, first_race_stack->pop_race_token());
+                        for(int i = 0; i < power; ++i)
+                            map->l1->add_region_token(region_ID, first_race_stack->pop_race_token());
 
 
                         /*
@@ -306,7 +308,7 @@ tokens_info* player::conquers()
                         map->l1->get_region_strength(region_ID);
 
 //                        map->l1->add_region_tokens(region_ID, power, player_first_culture->get_banner());
-                        cout<<"You have "<<first_race_stack->get_size()<<" tokens left"<<endl;
+                        cout<<player_name<<" has "<<first_race_stack->get_size()<<" tokens left"<<endl;
 
                         power = 0;
                     }
@@ -356,6 +358,7 @@ tokens_info* player::conquers()
                                     remainder->number_of_tokens = 0;
                                 remainder->prev_owner = map->l1->get_owner(region_ID);
                                 remainder->exists = true;
+                                remainder->number_of_tokens =0;
                             }
                         }
                         //go in region + remove race tokens but not mountain
@@ -372,11 +375,11 @@ tokens_info* player::conquers()
                         map->l1->control_region(region_ID, player_name);
                         cout<<"Adding "<<power<<" tokens to region "<<region_ID<<endl;
 
+                        for(int i = 0; i < power;++i )
+                            map->l1->add_region_token(region_ID, second_race_stack->pop_race_token());
 
-                        map->l1->add_region_token(region_ID, power, second_race_stack->pop_race_token());
 
-
-                        cout<<"You have "<<second_race_stack->get_size()<<" tokens left"<<endl;
+                        cout<<player_name<<" has "<<second_race_stack->get_size()<<" tokens left"<<endl;
 
 //                        cout<<"added "<<power<<" tokens of "<<player_first_culture->get_banner()<<endl;
 //                        cout<<"Region "<<region_ID<<" now has "<<map->l1->get_region_strength(region_ID)<<endl;

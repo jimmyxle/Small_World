@@ -120,13 +120,13 @@ void List::add_region_tokens(int ID, int number_of_tokens,const std::string& rac
 }
  */
 
-void List::add_region_token(int ID,int number_of_tokens,  token * token1)
+void List::add_region_token(int ID,  token * token1)
 {
     bits* temp = world_nodes[ID].tokens_attached;
-    for(int i = 0; i<number_of_tokens; ++i)
-    {
+//    for(int i = 0; i<number_of_tokens; ++i)
+//    {
         temp->add_race_token(token1);
-    }
+//    }
 
 }
 //Checks if the two regions are adjacent

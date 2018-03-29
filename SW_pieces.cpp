@@ -605,13 +605,13 @@ bool bits::get_decline()
 {
     for(auto iter = pile.begin(); iter!=pile.end(); ++iter)
     {
-        cout<<"size pile: "<<pile.size()<<endl;
-        cout<<(*iter)->get_name();
-        cout<<(*iter)->is_mountain();
+//        cout<<"size pile: "<<pile.size()<<endl;
+//        cout<<(*iter)->get_name();
+//        cout<<(*iter)->is_mountain();
 
         if(! ((*iter)->is_mountain()) )
         {
-            return (*iter)->is_active();
+            return (*iter)->is_active() == false;
         }
     }
 }

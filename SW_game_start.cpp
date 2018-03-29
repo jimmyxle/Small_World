@@ -211,70 +211,120 @@ void game_manager::add_lost_tribes(int number_of_players)
     switch(number_of_players)
     {
         case 2:
-            temp_list->add_region_token(3,2,new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(6, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(10, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(11, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(12, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(13, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(14, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(18, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(20, 2, new race_token("lost_tribes", true, false) );
+            temp_list->add_region_token(3,new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(3,new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(6, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(6, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(10, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(10, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(11, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(11, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(12,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(12,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(13,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(13,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(14, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(14, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(18, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(18, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(20, new race_token("lost_tribes", true, false) );
+            temp_list->add_region_token(20, new race_token("lost_tribes", true, false) );
 //            game_map->l1->print_tokens();
             cout<<"added Lost_Tribe tokess"<<endl;
             break;
 
 
         case 3:
-            temp_list->add_region_token(1, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(6, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(9, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(11, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(13, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(19, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(21, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(22, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(23, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(29, 2, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(1, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(1, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(6, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(6, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(9, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(9, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(11,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(11,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(13,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(13,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(19,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(19,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(21,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(21,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(22, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(22, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(23,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(23,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(29,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(29,  new race_token("lost_tribes", true, false));
 //            game_map->l1->print_tokens();
             cout<<"added Lost_Tribe tokess"<<endl;
             break;
         case 4:
-            temp_list->add_region_token(2, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(3, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(4, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(6, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(7, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(10, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(14, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(22, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(23, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(24, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(25, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(26, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(32, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(33, 2, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(2,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(2,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(3,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(3,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(4,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(4,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(6,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(6,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(7,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(7,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(10, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(10, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(14, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(14, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(22, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(22, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(23, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(23, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(24, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(24, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(25, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(25, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(26, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(26, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(32, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(32, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(33, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(33, new race_token("lost_tribes", true, false));
 //            game_map->l1->print_tokens();
             cout<<"added Lost_Tribe tokess"<<endl;
             break;
         case 5:
-            temp_list->add_region_token(5, 2,new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(8, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(12, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(14, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(15, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(19, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(21, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(23, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(25, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(27, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(29, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(32, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(35, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(36, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(38, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(43, 2, new race_token("lost_tribes", true, false));
-            temp_list->add_region_token(44, 2, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(5,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(5,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(8, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(8, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(12,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(12,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(14,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(14,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(15,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(15,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(19,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(19,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(21,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(21,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(23,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(23,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(25, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(25, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(27,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(27,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(29,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(29,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(32, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(32, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(35, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(35, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(36, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(36, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(38, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(38, new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(43,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(43,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(44,  new race_token("lost_tribes", true, false));
+            temp_list->add_region_token(44,  new race_token("lost_tribes", true, false));
 //            game_map->l1->print_tokens();
             cout<<"added Lost_Tribe tokess"<<endl;
             break;
@@ -296,8 +346,9 @@ void game_manager::turn(player* p)
             //conditional to check for first race or second race in decline
             if(one->get_second_race_active())
             {
+                cout<<"player"one->get_name()<<" new token total : "<<one->get_number_of_tokens_owned()<<endl;
 
-                cout<<"player current number of tokens: "<<one->get_number_of_tokens_owned()<<endl;
+//                cout<<"player"one->get_name()<<" new token total : "<<one->get_number_of_tokens_owned()<<endl;
                 cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
                 vector<token*> *temp = &return_token->returned_tokens;
                 for(auto iter = temp->rbegin(); iter != temp->rend();++iter)
@@ -327,13 +378,17 @@ void game_manager::turn(player* p)
             //conditional to check for first race or second race in decline
             if(two->get_second_race_active())
             {
-                cout<<"player tokens: "<<two->get_number_of_tokens_owned()<<endl;
+                cout<<"player"two->get_name()<<" new token total : "<<two->get_number_of_tokens_owned()<<endl;
+
+//                cout<<"player tokens: "<<two->get_number_of_tokens_owned()<<endl;
                 cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
                 cout<<"DISABLED REDISTRIBUTE TOKENS"<<endl;
 //                two->redistribute_tokens(1, return_token.number_of_tokens);
             }
             else
             {
+                cout<<"player"two->get_name()<<" new token total : "<<two->get_number_of_tokens_owned()<<endl;
+
                 cout<<"player tokens: "<<two->get_number_of_tokens_owned()<<endl;
                 cout<<"tokens added: "<<return_token->number_of_tokens<<endl;
                 cout<<"DISABLED REDISTRIBUTE TOKENS"<<endl;
