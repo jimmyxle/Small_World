@@ -22,7 +22,7 @@ private:
 public:
     dice();
     ~dice();
-    void rollDice();
+    int rollDice();
     void getHistory();
 };
 

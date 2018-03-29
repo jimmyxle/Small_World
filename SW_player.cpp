@@ -175,6 +175,8 @@ void player::give_tokens()
     }
 
 }
+
+
 void player::redistribute_token(token * token1)
 {
     if(get_second_race_active())
@@ -186,29 +188,66 @@ void player::redistribute_token(token * token1)
         second_race_stack->add_race_token(token1);
     }
 }
-/*
-void player::redistribute_tokens(int index, int number_of_tokens)
+
+//this gets tokesn to give back to players
+void player::battle(int region_ID, tokens_info& remainder)
 {
-    if(get_second_race_active())
     {
+        if(!(map->l1->check_ownership(region_ID, "default" )) )
+        {
+            if(  (map->l1->check_region_is_active(region_ID)) == 0 )//check if any tokens were in decline
+            {
+                cout<<"!!decline detected!!"<<endl;
+                (&remainder)->number_of_tokens = 0;
+            }
+            else
+            {
+                cout<<"!!active!!"<<endl;
+                int num_tokens = map->l1->get_number_race_tokens(region_ID);
 
-        first_race_stack->add_race_tokens(player_first_culture->get_banner(),
-                                          number_of_tokens);
-        cout<<player_name<<" now has "<<first_race_stack->get_size()<<" (1)tokens."<<endl;
-
+                cout<<"num tokens given = "<<num_tokens-1 <<endl;
+                (&remainder)->number_of_tokens= (num_tokens-1);
+                token* temp = nullptr;
+                do{ //gotta give back to original player
+                    temp = map->l1->clear_region(region_ID);
+                    if(temp != nullptr)
+                        (&remainder)->returned_tokens.push_back(temp);
+                }while(temp != nullptr);
+            }
+            if((&remainder)->number_of_tokens < 0)
+                (&remainder)->number_of_tokens = 0;
+            (&remainder)->prev_owner = map->l1->get_owner(region_ID);
+            (&remainder)->exists = true;
+        }
+        else
+        {//lost tribes
+            token* temp = nullptr;
+            vector<token*> delete_these;
+            delete_these.reserve(2);
+            do{
+                temp = map->l1->clear_region(region_ID);
+                if(temp != nullptr)
+                    delete_these.push_back(temp);
+            }while(temp != nullptr);
+            for(auto iter = delete_these.begin(); iter != delete_these.end();++iter)
+                delete (*iter);
+            delete_these.clear();
+        }
     }
-    else
-    {
-        second_race_stack->add_race_tokens(player_second_culture->get_banner(),
-                                           number_of_tokens);
-        cout<<player_name<<" now has "<<second_race_stack->get_size()<<" (2)tokens."<<endl;
-
-    }
-
-
-
 }
- */
+
+void player::take_over(int region_ID, int power, bits* stack)
+{
+    cout << "Success, region " << region_ID << " conquered!" << endl;
+    map->l1->control_region(region_ID, player_name);
+    cout << "Adding " << power << " tokens to region " << region_ID << endl;
+
+    for (int i = 0; i < power; ++i)
+        map->l1->add_region_token(region_ID, stack->pop_race_token());
+
+    cout << player_name << " has " << stack->get_size() << " tokens left" << endl;
+}
+
 tokens_info* player::conquers()
 {
     //start of turn
@@ -220,198 +259,123 @@ tokens_info* player::conquers()
     (remainder)->prev_owner = "";
     (remainder)->exists=false;
     remainder->returned_tokens.reserve(5);
-    cout<<"enter a region_ID(int) to conquer"<<endl;
-    int region_ID;
-    cin>>region_ID;
-    if(!(map->l1->check_ownership(region_ID, player_name)))
+    remainder->turn_finish = 0;
+
+    bool keep_conquering = true;
+    do
     {
-        cout<<"Eligible region."<<endl;
-        int race_num = 0;
+        cout << "Enter a region_ID(int) to conquer. Enter a -1 to skip the rest of the turn." << endl;
+        int region_ID;
+        cin >> region_ID;
 
-        if(get_second_race_active())
-            race_num = 1;
-        else
-            race_num = 2;
-
-
-        if(race_num == 1)
-        {
-            int player_power = first_race_stack->get_size();
-            if(player_power>=2)
+        if (region_ID < 0) {
+            cout << "Turn skipped" << endl;
+            keep_conquering = false;
+            remainder->turn_finish = 1;
+        } else {
+            if (!(map->l1->check_ownership(region_ID, player_name)))
             {
-                //Check how many tokens there are, including mountain
-                int strength = map->l1->get_region_strength(region_ID) + 2;
+                cout << "Eligible region." << endl;
+                int SIZE = 0;
 
-                int power = 0;
-                do
+                if (get_second_race_active())
                 {
-                    cout<<"You need to have "<<strength<<" to conquer this."<<endl;
-                    cout<<"You currently have "<<player_power<<" tokens."<<endl;
-                    cout<<"How many do you want to use to conquer ["<<region_ID<<"] ?"<<endl;
-                    cin>>power;
+                    SIZE = first_race_stack->get_size();
+                }
+                else
+                {
+                    SIZE = second_race_stack->get_size();
+                }
 
-                    if(power >= strength && power <= player_power)
+                {
+                    int player_power = SIZE;
+                    if (player_power >= 0)
                     {
-                        //check for previous owner existence
-                        {
-                            if(!(map->l1->check_ownership(region_ID, "default" )) )
-                            {
-//                                cout<<endl<<endl<<"trouble?"<<endl;
-                                if(  !(map->l1->check_region_is_decline(region_ID)) )//check if any tokens were in decline
-                                {
-                                    cout<<"decline detected"<<endl;
-                                    remainder->number_of_tokens = 0;
+                        //Check how many tokens there are, including mountain
+                        int strength = map->l1->get_region_strength(region_ID) + 2;
+
+                        int power = 0;
+                        int dice = 0;
+                        int roll_result = 0;
+
+                        cout << "You need to have " << strength << " to conquer this." << endl;
+
+                        if (player_power >= 1 && strength > player_power &&
+                            (player_power + 3) >= strength) {
+                            cout << "You must use the reinforcement die to conquer this" << endl;
+                            cout << "Enter: '1' to roll the die." << endl;
+                            cin >> dice;
+                            if (dice == 1) {
+                                roll_result = player_dice->rollDice();
+                            }
+                            player_power += roll_result;
+                            if (player_power >= strength) {
+                                cout << "Comquered!" << endl;
+                                //slap on units
+                                if(get_second_race_active()){
+                                    take_over(region_ID, SIZE, first_race_stack);
                                 }
                                 else
                                 {
-                                    cout<<"decline not detected"<<endl;
-                                    int num_tokens = map->l1->get_number_race_tokens(region_ID);
-//                                    cout<<"num tokens detected = "<<num_tokens<<endl;
-                                    cout<<"num tokens given = "<<num_tokens-1 <<endl;
-                                    remainder->number_of_tokens= (num_tokens-1);
+                                    take_over(region_ID, SIZE, second_race_stack);
+
                                 }
-                                //this happens no matter what
+                                keep_conquering = false;
+                            } else {
+                                cout << "too weak" << endl;
+                                keep_conquering = false;
+                                remainder->turn_finish = 1;
+                            }
+                        } else {
+                            cout << "You currently have " << player_power << " tokens." << endl;
+                            cout << "How many do you want to use to conquer [" << region_ID << "] ?" << endl;
+                            cin >> power;
+                            if (power >= strength && power <= player_power) {
+                                cout << endl;
+                                battle(region_ID, *remainder);
+                                if(get_second_race_active())
+                                {
+                                    take_over(region_ID, power, first_race_stack);
+                                }
+                                else
+                                {
+                                    take_over(region_ID, power, second_race_stack);
+                                }
 
-                                cout<<"Tokens returned = "<<remainder->number_of_tokens<<endl;
-                                if(remainder->number_of_tokens < 0)
-                                    remainder->number_of_tokens = 0;
-                                remainder->prev_owner = map->l1->get_owner(region_ID);
-                                remainder->exists = true;
-                                remainder->number_of_tokens = 0;
-                                //note if first or second race
+                                power = 0;
+                            } else {
+                                cin.clear();
+                                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                                cout << "Not strong enough" << endl;
+                                remainder->turn_finish = 1;
                             }
                         }
-                        //go in region + remove race tokens but not mountain
-
-
-
-
-                        token* temp = nullptr;
-                        do{ //gotta give back to original player
-//                            cout<<endl<<"this size: "<<map->l1->get_number_race_tokens(region_ID)<<endl;
-                            temp = map->l1->clear_region(region_ID);
-                            remainder->returned_tokens.push_back(temp);
-                        }while(temp != nullptr);
-
-                        cout<<"Success, region "<<region_ID<<" conquered!"<<endl;
-                        map->l1->control_region(region_ID, player_name);
-
-
-                        cout<<"Adding "<<power<<" tokens to region "<<region_ID<<endl;
-                        for(int i = 0; i < power; ++i)
-                            map->l1->add_region_token(region_ID, first_race_stack->pop_race_token());
-
-
-                        /*
-                         * here
-                         */
-                        map->l1->get_region_strength(region_ID);
-
-//                        map->l1->add_region_tokens(region_ID, power, player_first_culture->get_banner());
-                        cout<<player_name<<" has "<<first_race_stack->get_size()<<" tokens left"<<endl;
-
-                        power = 0;
                     }
                     else
                     {
-                        cin.clear();
-                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                        cout<<"Not strong enough"<<endl;
-                        cout<<"Enter '0' if you wish to pass your turn. "
-                                "Enter a negative number to try again."<<endl;
-                        cin>>power;
-                        if(power == 0)
-                            break;
+                        keep_conquering = false;
+                        cout << "not enough first race tokens" << endl;
                     }
-                }while(power<0 || power> player_power );
-//                first_race_stack.pop_back(); // go to node and put in an int member
+                }
+            } else {
+                cout << "You already control this!" << endl;
+                conquers();
             }
-            else
-                cout<<"not enough first race tokens"<<endl;
-            //have other option here
         }
-        else if(race_num == 2)
+        if(get_second_race_active())
         {
-            int player_power = second_race_stack->get_size();
-            if(player_power>=2)
-            {
-                //Check how many tokens there are, including mountain
-                int strength = map->l1->get_region_strength(region_ID) + 2;
-                int power = 0;
-                do
-                {
-                    cout<<"You need to have more than "<<strength<<" to conquer this."<<endl;
-                    cout<<"You currently have "<<player_power<<" tokens."<<endl;
-                    cout<<"How many do you want to use to conquer ["<<region_ID<<"] ?"<<endl;
-                    cin>>power;
-
-                    if(power >= strength && power < player_power)
-                    {
-                        //check for previous owner existence
-                        {
-                            if(!(map->l1->check_ownership(region_ID, "default" )) )
-                            {
-
-                                remainder->number_of_tokens= map->l1->get_number_race_tokens(region_ID)-1;
-                                cout<<"Tokens returned = "<<remainder->number_of_tokens<<endl;
-                                if(remainder->number_of_tokens < 0)
-                                    remainder->number_of_tokens = 0;
-                                remainder->prev_owner = map->l1->get_owner(region_ID);
-                                remainder->exists = true;
-                                remainder->number_of_tokens =0;
-                            }
-                        }
-                        //go in region + remove race tokens but not mountain
-
-                        token* temp = nullptr;
-                        do{ //gotta give back to original player
-                            temp = map->l1->clear_region(region_ID);
-                            remainder->returned_tokens.push_back(temp);
-                        }while(temp != nullptr);
-
-
-//                        map->l1->clean_region(region_ID); //
-                        cout<<"success"<<endl;
-                        map->l1->control_region(region_ID, player_name);
-                        cout<<"Adding "<<power<<" tokens to region "<<region_ID<<endl;
-
-                        for(int i = 0; i < power;++i )
-                            map->l1->add_region_token(region_ID, second_race_stack->pop_race_token());
-
-
-                        cout<<player_name<<" has "<<second_race_stack->get_size()<<" tokens left"<<endl;
-
-//                        cout<<"added "<<power<<" tokens of "<<player_first_culture->get_banner()<<endl;
-//                        cout<<"Region "<<region_ID<<" now has "<<map->l1->get_region_strength(region_ID)<<endl;
-                        power = 0;
-                    }
-                    else
-                    {
-                        cin.clear();
-                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                        cout<<"Not strong enough"<<endl;
-                        cout<<"Enter '0' if you wish to pass your turn. "
-                                "Enter a negative number to try again."<<endl;
-                        cin>>power;
-                        if(power == 0)
-                            break;
-
-                    }
-                }while(power<0 || power> player_power );
-
-//                first_race_stack.pop_back(); // go to node and put in an int member
-            }
-            else
-                cout<<"not enough second race tokens"<<endl;
+            if(first_race_stack->get_size() == 0)
+                keep_conquering = false;
 
         }
+        else
+        {
+            if(second_race_stack->get_size() == 0)
+                keep_conquering = false;
+        }
+    }
+    while(keep_conquering);
 
-    }
-    else
-    {
-        cout<<"You already control this!"<<endl;
-        conquers();
-    }
     return remainder;
 }
 void player::scores()
@@ -500,23 +464,15 @@ void player::player_decline()
 {
     player_second_culture = player_first_culture;
     player_first_culture = nullptr;
+    first_race_stack->clean();
+    first_race_stack = nullptr;
 }
 
 bool player::first_culture_null()
 {
     return player_first_culture == nullptr;
 }
-/*
-void player::set_decline()
-{
-    first_decline = !first_decline;
-}
 
-bool player::get_decline()
-{
-    return first_decline;
-}
- */
 bool player::get_second_race_active()
 {
     return player_second_culture == nullptr;

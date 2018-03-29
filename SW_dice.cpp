@@ -29,18 +29,20 @@ dice::~dice(){
  * Function generates a number between 1 and 6. If 4,5,6 is rolled; then it is set to 4 and blank face is printed.
  * The value of the roll is pushed into the history vector of the class
  */
-void dice::rollDice()
+int dice::rollDice()
 {
-    cout<<"Dice rolled!"<<endl;
+    cout<<"Dice rolled";
     int face = dice_roll(randomGenerator);
     if(face>3)
-        face = 4;
-    if(face==4)
-        cout << "===>blank face!" << endl;
-    else
-        cout<<"===>"<<face<<endl;
+        face = 0;
 
+    if(face==0)
+        cout << "  ===>blank face!" << endl;
+    else
+        cout<<"  ===>"<<face<<endl;
     history.push_back(face);
+    return face;
+
 }
 /*
  * Prints out the history of rolls as a percentage

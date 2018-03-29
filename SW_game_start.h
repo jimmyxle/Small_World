@@ -29,7 +29,7 @@ public:
     ~game_manager();
     void initialize();
     void game_loop();
-    void turn(player*);
+    int turn(player*);
     int menu(player*);
     void decline(player*);
 };

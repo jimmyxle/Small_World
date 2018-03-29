@@ -57,6 +57,7 @@ bool game_turn_token::next_turn()
     if(turn_number < MAX_TURNS)
     {
         turn_number++;
+        cout<<endl<<endl<<"====================="<<endl;
         cout<<"Turn advanced to turn: "<<turn_number<<endl;
         if(turn_number == MAX_TURNS)
             cout<<"It's the last turn!"<<endl;
@@ -99,7 +100,6 @@ bank::bank()
     tens.reserve(BASE_SIZE);
 
     initiate();
-    cout<<"Bank created"<<endl;
 }
 bank::~bank()
 {
@@ -399,29 +399,18 @@ bool token::is_mountain()
 }
 void token::flip_token()
 {
-    cout<<"flip!"<<endl;
 }
-bool token::is_active()
+int token::is_active()
 {
-
 }
-race_token::race_token() : token()
-{
-//    name = "toy token";
-    cout<<"default token created"<<endl;
-}
+race_token::race_token() : token(){}
 race_token::race_token(string name, bool status, bool mount) : token(name, mount)
 {
-
+    active = status;
 }
 
-//race_token::race_token( race_token& original)
-//{
-//    name_of_race = original.name_of_race;
-//    active = original.active;
-//}
 
-race_token::~race_token()=default;
+race_token::~race_token() {}
 
 bool race_token::is_mountain()
 {
@@ -431,23 +420,20 @@ void race_token::flip_token()
 {
     active = !active;
 }
-bool race_token::is_active()
+int race_token::is_active()
 {
-   return active;
+    if(active)
+        return 1;
+    else
+        return 0;
 }
-//std::string race_token::get_name()
-//{
-//    return get_name();
-//}
 
 void race_token::foo()
 {
-
 }
 
 terrain_token::terrain_token()
 {
-//    terrain = "rain puddle";
     cout<<"default terrain created"<<endl;
 }
 terrain_token::terrain_token(std::string tera, bool mount) : token(tera, mount)
@@ -457,55 +443,27 @@ terrain_token::terrain_token(std::string tera, bool mount) : token(tera, mount)
 terrain_token::~terrain_token()=default;
 
 
-//std::string terrain_token::getTerrain()
-//{
-//    return terrain;
-//}
 void terrain_token::foo()
 {
 
+}
+void terrain_token::flip_token()
+{
+    cout<<"wrong call "<<endl;
+}
+int terrain_token::is_active()
+{
+    return 0;
 }
 
 bits::bits()
 {
     pile.clear();
-//    cout<<"bits created"<<endl;
-//
-//    race_token * r1 = new race_token( ) ;
-//    pile.push_back(r1);
-//    cout<<"Hey"<<endl;
-//    pile.pop_back();
-//    cout<<pile.size()<<endl;
-//    pile->reserve(10);
 }
 bits::~bits()
 {
-
-//    token* pointer;
-//    if(pile.size() > 0)
-//    {
-//        cout<<"HERE's the SIZE "<<pile.size()<<endl;
-//        for(auto iter = pile.begin(); iter != pile.end(); ++iter)
-//        {
-//            pointer = *iter;
-//            delete pointer;
-//        }
-//    }
-
 }
 
-/*
-void bits::add_race_tokens(std::string name , int num_tokens)
-{
-    for(int i =0; i < num_tokens; ++i)
-    {
-        race_token* temp = new race_token(name, true, false);
-        pile.push_back(temp);
-    }
-//    cout<<"HEY"<<endl;
-//    cout<<pile.size()<<endl;
-}
- */
 void bits::add_race_token(token *token1)
 {
     pile.push_back( (token1) );
@@ -536,24 +494,17 @@ void bits::add_mountain_token()
 
 void bits::clean()
 {
-//    cout<<"this has a size of "<<pile.size()<<endl;
     for(auto rev_iter = pile.rbegin(); rev_iter!= pile.rend(); ++rev_iter)
-    {
-//        (*rev_iter)->get_name();
-        if( !( (*rev_iter)->is_mountain() ) )
-            pile.pop_back();
+        delete (*rev_iter);
 
-    }
-//    cout<<"this now has a size of "<<pile.size()<<endl;
 }
 token* bits::pop_one()
 {
-    auto rev_iter = pile.rbegin();
+    token* temp = pile.back();
 //    cout<<"size: "<<pile.size()<<endl;
 //    cout<<endl<<"result "<<(*rev_iter)->is_mountain()<<endl;
-    if( !( (*rev_iter)->is_mountain() ) )
+    if(  !((temp)->is_mountain() ))
     {
-        token* temp = (*rev_iter);
         pile.pop_back();
         return temp;
     } else{
@@ -573,45 +524,26 @@ int bits::number_race_tokens()
 void bits::token_decline()
 {
     int count = 0;
-//    cout<<pile.size();
-//    cout<<endl;
     for(auto iter = pile.rbegin(); iter!= pile.rend(); ++iter)
     {
-        cout<<"1.name: ";
-
-        cout<<(*iter)->get_name()<<endl;
-
+        (*iter)->flip_token();
         if(!((*iter)->is_mountain()) )
         {
-            //flip one then pop rest
-            if(count < 1){
-                cout<<"2.name: ";
-                cout<<(*iter)->get_name()<<endl;
-
-
-                (*iter)->flip_token();
+            if(count < 1)
                 count++;
-            }
             else
-            {
                 pile.pop_back();
-            }
         }
     }
-    cout<<"finished declining"<<endl;
 }
 
-bool bits::get_decline()
+int bits::get_active()
 {
     for(auto iter = pile.begin(); iter!=pile.end(); ++iter)
     {
-//        cout<<"size pile: "<<pile.size()<<endl;
-//        cout<<(*iter)->get_name();
-//        cout<<(*iter)->is_mountain();
-
         if(! ((*iter)->is_mountain()) )
         {
-            return (*iter)->is_active() == false;
+            return (*iter)->is_active();
         }
     }
 }
@@ -764,14 +696,10 @@ void culture_set::shuffle()
     }while(r_size >= 0 && count < deck.size());
 }
 void culture_set::show_top(int number) {
-//    cout<<"deck size is now:"<<deck.size()<<" and visible is :"<<visible.size()<<endl;
-
     if(visible.size() < number)
     {
-        int remain = number - visible.size();// cout<<"remain is: "<<remain<<endl;
+        int remain = number - visible.size();
         for (int i = 0; i < remain; ++i) {
-//            cout<<i<<": ";
-//            deck.back().print_culture();
             culture temp = deck.back();
             visible.push_back(temp);
             deck.pop_back();
@@ -783,7 +711,6 @@ void culture_set::show_top(int number) {
     }
     else
     {
-//        cout<<"no need to draw more"<<endl;
         for (int i = 0; i < number; ++i) {
             cout<<i<<": ";
             visible[i].print_culture();
@@ -794,10 +721,13 @@ void culture_set::show_top(int number) {
 
 culture culture_set::pick_race()
 {
-
+    cout<<endl;
+    cout<<"-----------------------------------"<<endl;
     cout<<"Please choose an option from below:"<<endl;
     show_top(6);
-    cout.flush();
+    cout<<"-----------------------------------"<<endl;
+
+//    cout.flush();
     int choice = 0;
     do
     {

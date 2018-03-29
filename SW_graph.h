@@ -59,7 +59,7 @@ public:
     void control_region(int, std::string);
     int get_region_strength(int);
     int get_number_race_tokens(int);
-    void clean_region(int);
+//    void clean_region(int);
     token* clear_region(const int);
 //    void add_region_tokens(int, int, const std::string&);
     void add_region_token(int, token*);
@@ -70,7 +70,7 @@ public:
     std::string get_owner(int);
     void print_tokens();
     void regions_in_decline(std::string);
-    bool check_region_is_decline(int);
+    int check_region_is_active(int);
 //    bool check_region_in_decline(int);
 };
 #endif //SMALL_WORLD_SW_GRAPH_H

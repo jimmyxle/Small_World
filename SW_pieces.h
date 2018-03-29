@@ -93,8 +93,8 @@ public:
     virtual void foo() = 0;
     std::string get_name();
     bool is_mountain();
-    virtual void flip_token();
-    virtual bool is_active();
+    virtual void flip_token()=0;
+    virtual int is_active()=0;
 
 };
 class race_token : public token
@@ -109,7 +109,7 @@ public:
     ~race_token();
     bool is_mountain();
     void flip_token();
-    bool is_active();
+    int is_active();
 //    std::string get_name();
     void foo();
 };
@@ -124,6 +124,8 @@ public:
     ~terrain_token();
 //    std::string getTerrain();
     void foo();
+    void flip_token();
+    int is_active();
 };
 
 class bits {
@@ -145,7 +147,8 @@ public:
     token* pop_one();
     int number_race_tokens();
     void token_decline();
-    bool get_decline();
+    int get_active();
+
 //    bool check_if_decline();
 };
 
