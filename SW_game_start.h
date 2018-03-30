@@ -25,6 +25,7 @@ private:
     void add_lost_tribes(int);
     void redistrib_tokens(player&,  tokens_info&, bool );
     void continue_loop(player&);
+    void distrib_tokens(player*);
 public:
     game_manager(); //initiate map
     ~game_manager();

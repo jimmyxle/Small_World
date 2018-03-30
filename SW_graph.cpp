@@ -328,3 +328,25 @@ tokens_info* List::region_in_withdraw(const std::string& player_name)
     cout<<"tokens "<<remainder->number_of_tokens<<endl;
     return remainder;
 }
+vector<int> List::get_region_array(const std::string& player_name)
+{
+    vector<int> region_list;
+
+    for(auto iter = world_nodes.begin(); iter != world_nodes.end(); ++iter)
+    {
+        if(iter-> controlled == player_name)
+        {
+            region_list.push_back(iter->ID);
+        }
+    }
+    return region_list;
+}
+void List::get_region_info(int region_ID)
+{
+    world_nodes[region_ID].display();
+}
+
+void List::region::display()
+{
+    cout<<"[ "<<ID<<" ]\t"<<"\'"<<name<<"\' : num_tokens: "<<tokens_attached->get_size()<<endl;
+}

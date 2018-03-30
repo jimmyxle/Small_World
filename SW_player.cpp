@@ -222,7 +222,7 @@ tokens_info* player::conquers()
                         int strength = map->l1->get_region_strength(region_ID) + 2;
 
                         int power = 0;
-                        int dice = 0;
+                        int dice_affirm = 0;
                         int roll_result = 0;
 
                         cout << "You need to have " << strength << " to conquer this." << endl;
@@ -231,9 +231,13 @@ tokens_info* player::conquers()
                             (player_power + 3) >= strength) {
                             cout << "You must use the reinforcement die to conquer this" << endl;
                             cout << "Enter: '1' to roll the die." << endl;
-                            cin >> dice;
-                            if (dice == 1) {
+                            cin >> dice_affirm;
+                            if (dice_affirm == 1) {
                                 roll_result = player_dice->rollDice();
+                            }
+                            else
+                            {
+                                roll_result = 0;
                             }
                             player_power += roll_result;
                             if (player_power >= strength) {
@@ -392,4 +396,72 @@ tokens_info* player::redeploy()
 {
     tokens_info* temp =  map->l1->region_in_withdraw(player_name);
     return temp;
+}
+
+void player::redeploy_menu()
+{
+    List* list_ptr = map->l1;
+    vector<int> regions_list = list_ptr -> get_region_array(player_name);
+    int remaining_tokens = 0;
+    if(get_second_race_active())
+        remaining_tokens = first_race_stack->get_size();
+    else
+        remaining_tokens = second_race_stack->get_size();
+    bool continue_token = true;
+    do
+    {
+        cout<<"Here's the list of regions you control"<<endl;
+        for(int i = 0; i<regions_list.size(); ++i)
+            list_ptr -> get_region_info(regions_list[i]);
+        cout<<"Choose which regions to reinforce!"<<endl;
+        int ID_choice = 0;
+        bool exists = false;
+
+        do
+        {
+            cin>> ID_choice;
+            for(int i = 0; i < regions_list.size(); ++i)
+            {
+                if(ID_choice == regions_list[i])
+                    exists = true;
+            }
+
+        }while(exists == false);
+
+        int token_choice = 0;
+        do
+        {
+            cout<<"Current number of tokens: "<<remaining_tokens<<endl;
+            cout<<"You can place any number of tokens from [1 - "<<remaining_tokens<<"]"<<endl;
+            cin>>token_choice;
+
+            if(token_choice<0 || token_choice > remaining_tokens)
+                cout<<"invalid entry. Please enter another entry"<<endl;
+        }while(token_choice < 0 || token_choice > remaining_tokens);
+
+        for(int i = 0; i < token_choice; ++i)
+        {
+            if(get_second_race_active())
+            {
+                token* temp = first_race_stack->pop_one();
+                list_ptr->add_region_token(ID_choice, temp);
+            }
+            else
+            {
+                token* temp = second_race_stack->pop_one();
+                list_ptr -> add_region_token(ID_choice, temp);
+            }
+        }
+
+        if(get_second_race_active())
+            remaining_tokens = first_race_stack->get_size();
+        else
+            remaining_tokens = second_race_stack->get_size();
+
+        if(remaining_tokens == 0)
+            continue_token = false;
+
+    }while(continue_token);
+
+
 }

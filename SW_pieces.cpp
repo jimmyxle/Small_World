@@ -549,9 +549,8 @@ int bits::get_active()
 token* bits::token_withdraw( int code )
 {
     if(code == 1 ) {
-        int SIZE = pile.size();
+//        int SIZE = pile.size();
         for (auto iter = pile.begin() + 1; iter != pile.end(); ++iter) {
-
             if (!(*iter)->is_mountain()) {
                 if (*iter != nullptr) {
                     cout << "pop!" << endl;
@@ -560,13 +559,29 @@ token* bits::token_withdraw( int code )
                     return temp;
                 }
                 else
-                {
                     return nullptr;
-                }
-            }
 
+            }
         }
     }
+    else if(code == 0)
+    {
+        for (auto iter = pile.begin(); iter != pile.end(); ++iter) {
+            if (!(*iter)->is_mountain()) {
+                if (*iter != nullptr) {
+                    cout << "pop!" << endl;
+                    token *temp = *iter;
+                    pile.pop_back();
+                    return temp;
+                }
+                else
+                    return nullptr;
+
+            }
+        }
+    }
+    else
+        cout<<"Something went wrong in token_withdraw()"<<endl;
     return nullptr;
 }
 

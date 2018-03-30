@@ -53,6 +53,8 @@ public:
     bool remove_tokens(int);
 
     tokens_info* redeploy();
+    void redeploy_menu(); // make private later?
+
 };
 
 
