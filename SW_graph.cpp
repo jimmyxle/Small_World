@@ -304,6 +304,29 @@ int List::check_region_is_active(int ID)
     return world_nodes[ID].tokens_attached->get_active();
 }
 
+tokens_info* List::abandon_region(int region_ID, tokens_info& remainder)
+{
+//    tokens_info* remainder = new tokens_info();
+
+    bits* tokens_attached = world_nodes[region_ID].tokens_attached;
+    token* temp1 = nullptr;
+    do
+    {
+        temp1 = tokens_attached->token_withdraw(0);
+        if(temp1 != nullptr)
+            (&remainder)->returned_tokens.push_back(temp1);
+    }while(temp1 != nullptr);
+
+    world_nodes[region_ID].controlled = "default";
+    cout<<"Number of tokens attached: "<<tokens_attached->get_size()<<endl;
+
+    (&remainder)->number_of_tokens = (&remainder)->returned_tokens.size();
+    if((&remainder)->number_of_tokens > 0)
+        (&remainder)->exists = true;
+
+    return (&remainder);
+}
+
 tokens_info* List::region_in_withdraw(const std::string& player_name)
 {
     tokens_info* remainder = new tokens_info();
@@ -325,7 +348,7 @@ tokens_info* List::region_in_withdraw(const std::string& player_name)
     remainder->number_of_tokens = remainder->returned_tokens.size();
     if(remainder->number_of_tokens > 0)
         remainder->exists = true;
-    cout<<"tokens "<<remainder->number_of_tokens<<endl;
+//    cout<<"tokens "<<remainder->number_of_tokens<<endl;
     return remainder;
 }
 vector<int> List::get_region_array(const std::string& player_name)

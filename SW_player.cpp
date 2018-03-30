@@ -398,6 +398,13 @@ tokens_info* player::redeploy()
     return temp;
 }
 
+void player::player_display(vector<int>& regions_list, List& list_ptr)
+{
+    cout<<"Here's the list of regions you control: "<<endl;
+    for(int i = 0; i<regions_list.size(); ++i)
+        (&list_ptr) -> get_region_info(regions_list[i]);
+}
+
 void player::redeploy_menu()
 {
     List* list_ptr = map->l1;
@@ -410,9 +417,8 @@ void player::redeploy_menu()
     bool continue_token = true;
     do
     {
-        cout<<"Here's the list of regions you control"<<endl;
-        for(int i = 0; i<regions_list.size(); ++i)
-            list_ptr -> get_region_info(regions_list[i]);
+        player_display(regions_list, *list_ptr);
+
         cout<<"Choose which regions to reinforce!"<<endl;
         int ID_choice = 0;
         bool exists = false;
@@ -426,8 +432,10 @@ void player::redeploy_menu()
                     exists = true;
             }
 
+            if(exists == false)
+                cout<<"Wrong region ID, choose again!"<<endl;
         }while(exists == false);
-
+//
         int token_choice = 0;
         do
         {
@@ -464,4 +472,59 @@ void player::redeploy_menu()
     }while(continue_token);
 
 
+}
+
+tokens_info* player::abandon_menu()
+{
+
+    List* list_ptr = map->l1;
+    int remaining_tokens = 0;
+    tokens_info* return_token = new tokens_info();
+
+    bool continue_token = true;
+    do {
+        if(get_second_race_active())
+            remaining_tokens = first_race_stack->get_size();
+        else
+            remaining_tokens = second_race_stack->get_size();
+
+        vector<int> regions_list = list_ptr -> get_region_array(player_name);
+
+        player_display(regions_list, *list_ptr);
+        cout<<endl<<"Here's the current number of tokens: "<<remaining_tokens<<endl;
+        cout << "Choose which regions to abandon!"<< endl;
+        cout<<"Enter -1 to skip ahead"<<endl;
+        int ID_choice = 0;
+        bool exists = false;
+
+        do {
+            cin >> ID_choice;
+            if(ID_choice < 0)
+            {
+                continue_token = false;
+                break;
+            }
+
+
+            for(int i = 0; i < regions_list.size(); ++i)
+            {
+                if(ID_choice == regions_list[i])
+                    exists = true;
+            }
+            if(exists == false)
+                cout<<"Wrong region ID, choose again!"<<endl;
+
+        } while (exists == false);
+
+        //take user choice and go to that region and clear it out
+        //ID_choice
+        if(exists)
+            return_token = list_ptr -> abandon_region(ID_choice, *return_token);
+
+
+
+    }while(continue_token);
+
+    return_token->prev_owner = player_name;
+    return return_token;
 }

@@ -26,6 +26,7 @@ private:
     void redistrib_tokens(player&,  tokens_info&, bool );
     void continue_loop(player&);
     void distrib_tokens(player*);
+    void abandon_phase(player* p);
 public:
     game_manager(); //initiate map
     ~game_manager();
