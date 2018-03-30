@@ -5,25 +5,10 @@
  */
 
 #include "SW_player.h"
-#include "SW_map_loader.h"
 #include <limits>
 using namespace std;
 
-tokens_info::tokens_info()
-{
-    number_of_tokens = 0;
-    prev_owner = "";
-    exists = false;
-    returned_tokens.reserve(5);
-}
 
-tokens_info::~tokens_info()
-{
-    for(auto iter = returned_tokens.begin(); iter != returned_tokens.end(); ++iter)
-    {
-        delete (*iter);
-    }
-}
 player::player()
 {
     player_name = "Dom";
@@ -85,65 +70,7 @@ const std::string  player::get_name()
     return player_name;
 }
 
-void player::add_map(loader * map_loaded)
-{
-    map = map_loaded;
-}
 
-void player::picks_race() // no longer used
-{
-    //have a list
-    //prompt user to pick oned
-    const int SIZE = banner_list.size();
-    int banner;
-    int badge;
-    cout<<"Pick a race from the following list using the indexes [0-"<<SIZE-1<<"]"
-        <<endl;
-    for(int i =0; i<SIZE; ++i)
-    {
-        cout<<i<<": "<<banner_list[i]<<"["<<banner_power[i]<<"]"<<endl;
-    }
-    do {
-        cout<<"Choose a race [0-"<<SIZE-1<<"]"<<endl;
-        cin >> banner;
-    }
-    while(banner<0 || banner>SIZE);
-
-    const int SIZE2 = badge_list.size();
-    cout<<"Pick a power from the following list using the indexes [0-"<<SIZE2-1<<"]"
-        <<endl;
-    for(int i =0; i<SIZE2; ++i)
-    {
-        cout<<i<<": "<<badge_list[i]<<"["<<badge_power[i]<<"]"<<endl;
-    }
-    do {
-        cout<<"Choose a power [0-"<<SIZE2-1<<"]"<<endl;
-        cin >> badge;
-    }
-    while(badge<0 && badge>SIZE2);
-    cout<<"you picked: "<<badge_list[badge]<<" ["<<badge_power[badge]<<"]"
-        <<banner_list[banner]<<" ["<<banner_power[banner]<<"]"<<endl;
-
-    if(player_first_culture == nullptr)
-    { //culture::culture(std::string ban_name, int ban_power, std::string bad_name, int bad_power)
-        player_first_culture = new culture(banner_list[banner],banner_power[banner]
-                ,badge_list[badge],badge_power[badge]);
-        give_tokens();
-    }
-    else
-    {
-        if(player_second_culture == nullptr)
-        {
-            player_second_culture = new culture(banner_list[banner],banner_power[banner]
-                    ,badge_list[badge],badge_power[badge]);
-            give_tokens();
-        }
-        else
-        {
-            cout<<"Can't have two races in decline!!!";
-        }
-    }
-}
 
 void player::give_tokens()
 {
@@ -386,45 +313,28 @@ void player::scores()
         if( total/ 10 != 0)
         {
             for(int i = 0; i < total/10; ++i )
-            {
                 player_wallet->add_coin(10);
-//                cout<<"add coin line 359"<<endl;
-            }
+
             total = total/10;
 
         }
         if( total/ 5 != 0)
         {
             for(int i = 0; i < total/5; ++i )
-            {
                 player_wallet->add_coin(5);
-//                cout<<"add coin line 368"<<endl;
 
-            }
             total = total/5;
         }
         if( total/ 3 != 0)
         {
             for(int i = 0; i < total/3; ++i )
-            {
                 player_wallet->add_coin(3);
-//                cout<<"add coin line 799"<<endl;
-
-//                cout<<"three"<<endl;
-
-            }
             total = total/3;
         }
         if(total >0)
         {
-//            cout<<"Testing: total is "<<total<<endl;
             for(int i = 0; i < total; ++i)
-            {
-//                player_wallet->add_coin(1);
-//                cout<<"add coin line 391"<<endl;
                 player_wallet->add_coin(1);
-//                cout<<"one"<<endl;
-            }
             total = 0;
         }
     }
@@ -476,4 +386,10 @@ bool player::first_culture_null()
 bool player::get_second_race_active()
 {
     return player_second_culture == nullptr;
+}
+
+tokens_info* player::redeploy()
+{
+    tokens_info* temp =  map->l1->region_in_withdraw(player_name);
+    return temp;
 }

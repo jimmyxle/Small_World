@@ -137,7 +137,7 @@ void bank::initiate()
     {
         coin *temp= new coin(1);
         ones.push_back( temp );
-}
+    }
     for(int iter = 0; iter < BASE_SIZE; ++iter)
     {
         coin *temp= new coin(3);
@@ -501,8 +501,6 @@ void bits::clean()
 token* bits::pop_one()
 {
     token* temp = pile.back();
-//    cout<<"size: "<<pile.size()<<endl;
-//    cout<<endl<<"result "<<(*rev_iter)->is_mountain()<<endl;
     if(  !((temp)->is_mountain() ))
     {
         pile.pop_back();
@@ -546,6 +544,30 @@ int bits::get_active()
             return (*iter)->is_active();
         }
     }
+}
+
+token* bits::token_withdraw( int code )
+{
+    if(code == 1 ) {
+        int SIZE = pile.size();
+        for (auto iter = pile.begin() + 1; iter != pile.end(); ++iter) {
+
+            if (!(*iter)->is_mountain()) {
+                if (*iter != nullptr) {
+                    cout << "pop!" << endl;
+                    token *temp = *iter;
+                    pile.pop_back();
+                    return temp;
+                }
+                else
+                {
+                    return nullptr;
+                }
+            }
+
+        }
+    }
+    return nullptr;
 }
 
 /*

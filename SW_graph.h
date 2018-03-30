@@ -10,6 +10,8 @@
 #include <vector>
 #include <string>
 #include "SW_pieces.h"
+#include "SW_tokens_info.h"
+
 /*
  * Graph is made as a vector of region nodes. Each region node have a vector of pointers to its neightbours
  */
@@ -69,8 +71,10 @@ public:
     bool check_ownership(int, std::string);
     std::string get_owner(int);
     void print_tokens();
-    void regions_in_decline(std::string);
+    void regions_in_decline(const std::string&);
     int check_region_is_active(int);
+//    void regions_in_withdraw(const std::string&);
 //    bool check_region_in_decline(int);
+    tokens_info* region_in_withdraw(const std::string&);
 };
 #endif //SMALL_WORLD_SW_GRAPH_H

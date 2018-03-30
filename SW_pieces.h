@@ -148,7 +148,7 @@ public:
     int number_race_tokens();
     void token_decline();
     int get_active();
-
+    token* token_withdraw(int);
 //    bool check_if_decline();
 };
 

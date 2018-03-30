@@ -19,7 +19,6 @@
 #include "SW_graph.h"
 
 
-
 class loader
 {
 private:

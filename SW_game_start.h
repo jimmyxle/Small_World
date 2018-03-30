@@ -23,7 +23,8 @@ private:
     culture_set* culture_deck;
     void create_players(int);
     void add_lost_tribes(int);
-
+    void redistrib_tokens(player&,  tokens_info&, bool );
+    void continue_loop(player&);
 public:
     game_manager(); //initiate map
     ~game_manager();
@@ -32,6 +33,7 @@ public:
     int turn(player*);
     int menu(player*);
     void decline(player*);
+    void redeploy(player*);
 };
 
 

@@ -11,20 +11,8 @@
 #include "SW_pieces.h"
 #include "SW_dice.h"
 #include "SW_map_loader.h"
+#include "SW_tokens_info.h"
 
-struct tokens_info
-{
-public:
-    int number_of_tokens;
-    std::string prev_owner;
-    bool exists;
-    vector<token*> returned_tokens;
-    int turn_finish;
-
-    tokens_info();
-    ~tokens_info();
-//    bool second;
-};
 class player
 {
 private:
@@ -43,10 +31,10 @@ private:
 
     //include board bit vector
 //    bits* player_tokens;
-
+    void battle(int, tokens_info&);
+    void take_over(int, int, bits*);
 public:
-    void add_map(loader*);
-    void picks_race();
+
     tokens_info* conquers();
     void scores();
     player();
@@ -56,19 +44,15 @@ public:
     const std::string get_name();
     void give_tokens();
     void redistribute_token(token *);
-//    void redistribute_tokens(int, int);
     void get_status();
     void set_first_culture(culture);
-//    void set_second_culture(culture);
     int get_number_of_tokens_owned();
-//    void set_decline();
-//    bool get_decline();
     void player_decline();
     bool first_culture_null();
     bool get_second_race_active(); //return true if second race == nullptr
     bool remove_tokens(int);
-    void battle(int, tokens_info&);
-    void take_over(int, int, bits*);
+
+    tokens_info* redeploy();
 };
 
 
