@@ -33,6 +33,7 @@ private:
 //    bits* player_tokens;
     void battle(int, tokens_info&);
     void take_over(int, int, bits*);
+
 public:
 
     tokens_info* conquers();
@@ -54,6 +55,8 @@ public:
 
     tokens_info* redeploy();
     void redeploy_menu(); // make private later?
+    void player_display(vector<int>&, List&);
+    tokens_info* abandon_menu();
 
 };
 

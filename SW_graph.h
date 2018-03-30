@@ -79,5 +79,6 @@ public:
     tokens_info* region_in_withdraw(const std::string&);
     vector<int> get_region_array(const std::string&);
     void get_region_info(int);
+    tokens_info* abandon_region(int, tokens_info&);
 };
 #endif //SMALL_WORLD_SW_GRAPH_H

@@ -143,6 +143,12 @@ void game_manager::game_loop()
 {
     cout<<endl<<"Game start!"<<endl;
     while(marker->next_turn()) {
+
+        /*
+         * info about controlled reginos
+         */
+
+
         int menu_num = 0;
         menu_num = menu(one);
         //conquer phase
@@ -405,8 +411,8 @@ void game_manager::add_lost_tribes(int number_of_players)
 
 void game_manager::redistrib_tokens(player& p, tokens_info & return_token, bool withdraw)
 {
-    cout << "player" << (&p)->get_name() << " current token total : "
-         << (&p)->get_number_of_tokens_owned() << endl;
+//    cout << "player " << (&p)->get_name() << " current token total : "
+//         << (&p)->get_number_of_tokens_owned() << endl;
     vector<token *> *temp = &(&return_token)->returned_tokens;
     int SIZE = temp->size();
 
@@ -486,6 +492,27 @@ int game_manager::menu(player* p)
         p->set_first_culture(culture_deck->pick_race());
         p->give_tokens();
     }
+    else
+    {
+        List* list_ptr = game_map->l1;
+        vector<int> regions_list = list_ptr -> get_region_array(p->get_name());
+        p->player_display(regions_list, *list_ptr);
+
+        cout<<"Enter [1] if you want to abandon any regions"<<endl;
+
+        int choice = 0;
+        cin>>choice;
+
+        if(choice == 1)
+        {
+            abandon_phase(one);
+        }
+    }
+
+
+    cout<<endl;
+
+
     cout<<p->get_name()<<"'s turn. Will you conquer(1) or go in decline(2)?"<<endl;
     int p_choice = 0;
     do
@@ -558,5 +585,47 @@ void game_manager::distrib_tokens(player* p)
     p->redeploy_menu();
 }
 
+void game_manager::abandon_phase(player* p)
+{
+
+
+    /*
+     *
+     */
+    cout<<"Abandon phase initiated"<<endl;
+    tokens_info* return_token = p->abandon_menu();
+    if(return_token->exists)
+    {
+        if(return_token->prev_owner == one->get_name())
+        {
+            redistrib_tokens(*(one), *return_token, true);
+        }
+        else if(return_token->prev_owner == two->get_name())
+        {
+            redistrib_tokens(*(two), *return_token, true);
+        }
+        else if(three!= nullptr && return_token->prev_owner == three->get_name())
+        {
+            redistrib_tokens(*three, *return_token, true);
+        }
+        else if(four != nullptr && return_token->prev_owner == four->get_name())
+        {
+            redistrib_tokens(*four, *return_token, true);
+
+        }
+        else if(five != nullptr && return_token->prev_owner == five->get_name())
+        {
+            redistrib_tokens(*five, *return_token, true);
+        }
+        else
+        {
+            cout<<"something wrong has happened."<<endl;
+        }
+    }
+    if(return_token->turn_finish == true)
+        delete return_token;
+    else
+        delete return_token;
+}
 
 
