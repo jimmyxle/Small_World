@@ -20,7 +20,8 @@ int main() {
     cout<<endl<<"Assignment 2 Testing"<<endl<<"============================================="<<endl;
 
 
-
+//    player* test = new player();
+//    test->redeploy_menu();
 
     game_manager* game1 = new game_manager();
     game1->game_loop();

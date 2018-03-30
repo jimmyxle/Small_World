@@ -37,6 +37,7 @@ private:
         //Class functions
         void addAdj(region*);
         void printAdj();
+        void display();
     };
     //Some helper pointers
     region* head;
@@ -76,5 +77,7 @@ public:
 //    void regions_in_withdraw(const std::string&);
 //    bool check_region_in_decline(int);
     tokens_info* region_in_withdraw(const std::string&);
+    vector<int> get_region_array(const std::string&);
+    void get_region_info(int);
 };
 #endif //SMALL_WORLD_SW_GRAPH_H

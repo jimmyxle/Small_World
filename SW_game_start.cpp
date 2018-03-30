@@ -156,10 +156,7 @@ void game_manager::game_loop()
             int redeploy_result = 0;
             cin>>redeploy_result;
             if(redeploy_result == 1)
-            {
                 redeploy(one);
-
-            }
             //write new
 //            continue_loop(*one);
             cout<<"Done! "<<endl;
@@ -546,13 +543,20 @@ void game_manager::redeploy(player * p)
         }
     }
     if(return_token->turn_finish == true)
-    {
         delete return_token;
-//        return 1;
-    }
     else
-    {
         delete return_token;
-//        return 0;
-    }
+
+
+    /*
+     * second phase of redeploy
+     */
+    distrib_tokens(p);
 }
+void game_manager::distrib_tokens(player* p)
+{
+    p->redeploy_menu();
+}
+
+
+
