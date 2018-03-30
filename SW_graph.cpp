@@ -289,7 +289,7 @@ void List::print_tokens()
     }
 }
 
-void List::regions_in_decline(std::string player_name)
+void List::regions_in_decline(const std::string& player_name)
 {
     for(auto iter = world_nodes.begin(); iter!= world_nodes.end(); ++iter)
     {
@@ -302,4 +302,29 @@ void List::regions_in_decline(std::string player_name)
 int List::check_region_is_active(int ID)
 {
     return world_nodes[ID].tokens_attached->get_active();
+}
+
+tokens_info* List::region_in_withdraw(const std::string& player_name)
+{
+    tokens_info* remainder = new tokens_info();
+    for(auto iter = world_nodes.begin(); iter != world_nodes.end(); ++iter)
+    {
+        if(iter->controlled == player_name)
+        {
+            token* temp1 = nullptr;
+            do
+            {
+                 temp1 =  iter->tokens_attached->token_withdraw(1);
+                if(temp1 != nullptr)
+                    remainder->returned_tokens.push_back(temp1);
+
+            }while(temp1 != nullptr);
+        }
+    }
+    remainder->prev_owner = player_name;
+    remainder->number_of_tokens = remainder->returned_tokens.size();
+    if(remainder->number_of_tokens > 0)
+        remainder->exists = true;
+    cout<<"tokens "<<remainder->number_of_tokens<<endl;
+    return remainder;
 }
