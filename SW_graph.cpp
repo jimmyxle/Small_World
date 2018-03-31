@@ -468,3 +468,14 @@ void List::declare_all_edges(int number_players)
             break;
     }
 }
+
+bool List::check_adjacency(int region_ID, std::string& player_name)
+{
+    vector<region*> *regions = &(world_nodes[region_ID].adjacent);
+    for(auto iter = regions->begin(); iter != regions->end(); ++iter)
+    {
+        if((*iter)->controlled == player_name)
+            return true;
+    }
+    return false;
+}

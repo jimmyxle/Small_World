@@ -33,7 +33,8 @@ private:
 //    bits* player_tokens;
     void battle(int, tokens_info&);
     void take_over(int, int, bits*);
-    void show_edges(int);
+    vector<int> show_edges(int);
+    bool check_sea(int, int);
 
 public:
 
