@@ -267,16 +267,25 @@ void game_manager::game_loop()
             }
         }
 
+        score_phase();
         //score phase
-        one->scores();
-        two->scores();
-        if(three!= nullptr)
-            three->scores();
-        if(four!= nullptr)
-            four->scores();
-        if(five!= nullptr)
-            five->scores();
     }
+}
+
+void game_manager::score_phase()
+{
+    cout<<"===================>>"<<endl;
+    cout<<"Scoring phase"<<endl;
+    cout<<"===================>>"<<endl;
+
+    one->scores();
+    two->scores();
+    if(three!= nullptr)
+        three->scores();
+    if(four!= nullptr)
+        four->scores();
+    if(five!= nullptr)
+        five->scores();
 }
 
 void game_manager::add_lost_tribes(int number_of_players)
@@ -412,8 +421,7 @@ void game_manager::add_lost_tribes(int number_of_players)
 
 void game_manager::redistrib_tokens(player& p, tokens_info & return_token, bool withdraw)
 {
-//    cout << "player " << (&p)->get_name() << " current token total : "
-//         << (&p)->get_number_of_tokens_owned() << endl;
+
     vector<token *> *temp = &(&return_token)->returned_tokens;
     int SIZE = temp->size();
 
@@ -423,19 +431,12 @@ void game_manager::redistrib_tokens(player& p, tokens_info & return_token, bool 
             SIZE--;
     }
 
-
     for (int i = 0; i < SIZE; i++) {
         token *token1 = temp->back();
         (&p)->redistribute_token(token1);
         temp->pop_back();
     }
 
-    if(temp->size()>0)
-    {
-        cout<<"redistrib\t"<<temp->size();
-        auto iter = temp->begin();
-        delete (*iter);
-    }
 
 
     cout << "player " << (&p)->get_name() << " new token total : " << (&p)->get_number_of_tokens_owned()

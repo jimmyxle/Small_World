@@ -27,6 +27,7 @@ private:
     void continue_loop(player&);
     void distrib_tokens(player*);
     void abandon_phase(player* p);
+    void score_phase();
 public:
     game_manager(); //initiate map
     ~game_manager();
@@ -36,6 +37,7 @@ public:
     int menu(player*);
     void decline(player*);
     void redeploy(player*);
+
 };
 
 
