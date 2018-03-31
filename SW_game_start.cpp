@@ -72,6 +72,7 @@ game_manager::game_manager(){
         default:
             cout<<"Invalid entry."<<endl;
     }
+    game_map->l1->declare_all_edges(num_players);
     create_players(num_players);
     marker = new game_turn_token(num_players);
     initialize();
@@ -445,7 +446,7 @@ int game_manager::turn(player* p)
 {
     cout.flush();
     cout<<"player "<<p->get_name()<<"'s turn"<<endl;
-    tokens_info *return_token = ( p->conquers() );
+    tokens_info *return_token = ( p->conquers( num_players) );
     if(return_token->exists)
     {
         if(return_token->prev_owner == one->get_name())
@@ -487,6 +488,7 @@ int game_manager::turn(player* p)
 }
 int game_manager::menu(player* p)
 {
+    cout<<endl<<p->get_name()<<"'s turn."<<endl;
     if(p->first_culture_null())
     {
         p->set_first_culture(culture_deck->pick_race());
@@ -511,21 +513,29 @@ int game_manager::menu(player* p)
 
 
     cout<<endl;
-
-
-    cout<<p->get_name()<<"'s turn. Will you conquer(1) or go in decline(2)?"<<endl;
     int p_choice = 0;
-    do
+
+    if(p->get_second_race_active())
     {
-        cin>>p_choice;
-        if(!cin || p_choice <1 || p_choice >2)
+        cout<<"Will you conquer(1) or go in decline(2)?"<<endl;
+        do
         {
-            cout<<"Did not choose 1 or 2, pick again."<<endl;
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            p_choice = 0;
-        }
-    }while(p_choice <1 || p_choice > 2);
+            cin>>p_choice;
+            if(!cin || p_choice <1 || p_choice >2)
+            {
+                cout<<"Did not choose 1 or 2, pick again."<<endl;
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                p_choice = 0;
+            }
+        }while(p_choice <1 || p_choice > 2);
+    }
+    else
+    {
+        cout<<"You have 2 races, so can only conquer, abandon regions or redeploy!"<<endl;
+        p_choice = 1;
+    }
+
     return p_choice;
 }
 

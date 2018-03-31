@@ -175,17 +175,46 @@ void player::take_over(int region_ID, int power, bits* stack)
     cout << player_name << " has " << stack->get_size() << " tokens left" << endl;
 }
 
-tokens_info* player::conquers()
+void player::show_edges(int number_players)
+{
+    switch(number_players)
+    {
+        case 2:
+
+            break;
+        case 3:
+
+            break;
+        case 4:
+
+            break;
+        case 5:
+            break;
+        default:
+            break;
+    }
+}
+tokens_info* player::conquers(int map_number)
 {
     //start of turn
     cout<<endl;
 
+    List* list_ptr = map->l1;
+    vector<int> regions_list = list_ptr -> get_region_array(player_name);
+    int first_conquer = player_display(regions_list, *list_ptr);
+    if(first_conquer == 0)
+    {
+        //must conquer from the following list:
+        cout<<"This is your first conquer, "
+                "so you must choose a region found at the edge."<<endl;
+        show_edges(map_number);
+    }
 
     tokens_info* remainder = new tokens_info();
     (remainder)->number_of_tokens = 0;
     (remainder)->prev_owner = "";
     (remainder)->exists=false;
-    remainder->returned_tokens.reserve(5);
+    remainder->returned_tokens.reserve(13);
     remainder->turn_finish = 0;
 
     bool keep_conquering = true;
@@ -290,7 +319,7 @@ tokens_info* player::conquers()
                 }
             } else {
                 cout << "You already control this!" << endl;
-                conquers();
+                conquers(map_number);
             }
         }
         if(get_second_race_active())
@@ -398,11 +427,18 @@ tokens_info* player::redeploy()
     return temp;
 }
 
-void player::player_display(vector<int>& regions_list, List& list_ptr)
+int player::player_display(vector<int>& regions_list, List& list_ptr)
 {
-    cout<<"Here's the list of regions you control: "<<endl;
-    for(int i = 0; i<regions_list.size(); ++i)
-        (&list_ptr) -> get_region_info(regions_list[i]);
+    if(regions_list.size() > 0) {
+        cout << "Here's the list of regions you control: " << endl;
+        for (int i = 0; i < regions_list.size(); ++i)
+            (&list_ptr)->get_region_info(regions_list[i]);
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 void player::redeploy_menu()
@@ -473,6 +509,7 @@ void player::redeploy_menu()
 
 
 }
+
 
 tokens_info* player::abandon_menu()
 {
