@@ -12,16 +12,14 @@
 #include "SW_pieces.h"
 #include "SW_player.h"
 #include "SW_game_start.h"
+#include "SW_game_obs.h"
 /*
  * Driver file that contains all test situations
  */
 int main() {
-    cout.flush();
-    cout<<endl<<"Assignment 2 Testing"<<endl<<"============================================="<<endl;
+    cout<<endl<<"Assignment 3 Testing"<<endl<<"============================================="<<endl;
 
 
-//    player* test = new player();
-//    test->redeploy_menu();
 
     game_manager* game1 = new game_manager();
     game1->game_loop();

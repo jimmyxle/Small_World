@@ -4,7 +4,6 @@
 
 #include <limits>
 #include "SW_game_start.h"
-#include "SW_player.h"
 
 game_manager::game_manager(){
     //make game coins
@@ -72,10 +71,23 @@ game_manager::game_manager(){
         default:
             cout<<"Invalid entry."<<endl;
     }
+    game_map->l1->declare_all_edges(num_players);
     create_players(num_players);
     marker = new game_turn_token(num_players);
+    map_size = game_map->l1->get_total_number_regions();
+    setup_observers();
     initialize();
 
+}
+void game_manager::setup_observers()
+{
+    subject = new phase_subject();
+    phase = new phase_watcher(*subject);
+    subject->add(phase);
+
+    obj_sub = new objective_subject();
+    obj_watch = new objective_watcher(*obj_sub);
+    obj_sub->add(obj_watch);
 }
 
 void game_manager::initialize()
@@ -99,6 +111,9 @@ game_manager::~game_manager()
 
     delete marker;
     delete culture_deck;
+
+    delete subject;
+    delete phase;
 }
 void game_manager::create_players(int number)
 {
@@ -130,151 +145,113 @@ void game_manager::continue_loop(player& p)
     bool continue_turn = true;
     while (continue_turn)
     {
+        subject->change_status(p.get_name(), "Conquer", marker->get_turn_number());
+        update_objective_observer();
         int empty_tokens = turn( &p );
         if ( (&p) ->get_number_of_tokens_owned() > 0)
+        {
             continue_turn = true;
+        }
         else
             continue_turn = false;
         if (empty_tokens == 1)
             continue_turn = false;
     }
 }
-void game_manager::game_loop()
+
+void game_manager::one_play(player * player_obj)
 {
-    cout<<endl<<"Game start!"<<endl;
-    while(marker->next_turn()) {
+    int menu_num = 0;
+    menu_num = menu(*player_obj);
+    //conquer phase
+    if (menu_num == 1) {
+        continue_loop(*player_obj);
 
         /*
-         * info about controlled reginos
+         * redeploy here
          */
+        cout<<endl<<"Redeploy troops? Enter '1' to redeploy."<<endl;
+        int redeploy_result = 0;
+        cin>>redeploy_result;
+        if(redeploy_result == 1)
+        {
+            subject->change_status((*player_obj).get_name(), "Redeploy",marker->get_turn_number());
+            redeploy(player_obj);
+        }
 
-
-        int menu_num = 0;
-        menu_num = menu(one);
-        //conquer phase
-        if (menu_num == 1) {
-            continue_loop(*one);
-
-            /*
-             * redeploy here
-             */
-            cout<<endl<<"Redeploy troops? Enter '1' to redeploy."<<endl;
-            int redeploy_result = 0;
-            cin>>redeploy_result;
-            if(redeploy_result == 1)
-                redeploy(one);
-            //write new
+        //write new
 //            continue_loop(*one);
-            cout<<"Done! "<<endl;
-        } else if (menu_num == 2) {
-            //go in decline
-            decline(one);
-        }
+//        cout<<"Done! "<<endl;
+    } else if (menu_num == 2) {
+        //go in decline
+        subject->change_status((*player_obj).get_name(), "Decline",marker->get_turn_number());
+        decline(player_obj);
+    }
+}
+void game_manager::game_loop()
+{
+//    double total_regions =  one->get_total_number_regions();
+    cout<<endl<<"Game start!"<<endl;
+    while(marker->next_turn()) {
+//        cout<<one->get_number_regions_owned()<<endl;
 
 
-        menu_num = menu(two);
-        //conquer phase
-        if (menu_num == 1)
-        {
-            bool continue_turn = true;
-            while (continue_turn)
-            {
-                int empty_tokens = turn(two);
-                if (two->get_number_of_tokens_owned() > 0)
-                    continue_turn = true;
-                else
-                    continue_turn = false;
-                if (empty_tokens == 1)
-                    continue_turn = false;
-            }
-            /*
-             * redeploy here
-             */
-//            redeploy(two);
-        }
-        else if(menu_num == 2)
-        {
-            decline(two);
-        }
-
+        update_objective_observer();
+        one_play(one);
+        update_objective_observer();
+        one_play(two);
         if(three!= nullptr)
         {
-            int menu_num = menu(three);
-            //conquer phase
-            if(menu_num == 1)
-            {
-                bool continue_turn = true;
-                while (continue_turn) {
-                    int empty_tokens = turn(three);
-                    if(three->get_number_of_tokens_owned() > 0)
-                        continue_turn = true;
-                    else
-                        continue_turn = false;
-                    if(empty_tokens == 1)
-                        continue_turn = false;
-                }
-            }
-            else if(menu_num == 2)
-            {
-                decline(three);
-            }
+            update_objective_observer();
+
+            one_play(three);
         }
         if(four!= nullptr)
         {
-            int menu_num = menu(four);
-            //conquer phase
-            if(menu_num == 1)
-            {
-                bool continue_turn = true;
-                while (continue_turn) {
-                    int empty_tokens = turn(four);
-                    if(four->get_number_of_tokens_owned() > 0)
-                        continue_turn = true;
-                    else
-                        continue_turn = false;
-                    if(empty_tokens == 1)
-                        continue_turn = false;
-                }
-            }
-            else if(menu_num == 2)
-            {
-                decline(four);
-            }
+            update_objective_observer();
+
+            one_play(four);
         }
 
         if(five!= nullptr)
         {
-            int menu_num = menu(five);
-            //conquer phase
-            if(menu_num == 1)
-            {
-                bool continue_turn = true;
-                while (continue_turn) {
-                    int empty_tokens = turn(five);
-                    if(five->get_number_of_tokens_owned() > 0)
-                        continue_turn = true;
-                    else
-                        continue_turn = false;
-                    if(empty_tokens == 1)
-                        continue_turn = false;
-                }
-            }
-            else if(menu_num == 2)
-            {
-                //go in decline
-                decline(five);
-            }
-        }
+            update_objective_observer();
 
+            one_play(five);
+
+        }
+        score_phase();
         //score phase
-        one->scores();
-        two->scores();
-        if(three!= nullptr)
-            three->scores();
-        if(four!= nullptr)
-            four->scores();
-        if(five!= nullptr)
-            five->scores();
+    }
+}
+
+void game_manager::score_phase()
+{
+    cout<<"===================>>"<<endl;
+    cout<<"Scoring phase"<<endl;
+    cout<<"===================>>"<<endl<<endl;
+    subject->change_status(one->get_name(), "Score",marker->get_turn_number());
+    one->scores();
+    subject->change_status(two->get_name(), "Score",marker->get_turn_number());
+
+    two->scores();
+    if(three!= nullptr)
+    {
+        subject->change_status(three->get_name(), "Score",marker->get_turn_number());
+        three->scores();
+
+    }
+    if(four!= nullptr)
+    {
+        subject->change_status(four->get_name(), "Score",marker->get_turn_number());
+        four->scores();
+
+    }
+    if(five!= nullptr)
+    {
+        subject->change_status(five->get_name(), "Score",marker->get_turn_number());
+        five->scores();
+
     }
 }
 
@@ -411,8 +388,7 @@ void game_manager::add_lost_tribes(int number_of_players)
 
 void game_manager::redistrib_tokens(player& p, tokens_info & return_token, bool withdraw)
 {
-//    cout << "player " << (&p)->get_name() << " current token total : "
-//         << (&p)->get_number_of_tokens_owned() << endl;
+
     vector<token *> *temp = &(&return_token)->returned_tokens;
     int SIZE = temp->size();
 
@@ -422,19 +398,12 @@ void game_manager::redistrib_tokens(player& p, tokens_info & return_token, bool 
             SIZE--;
     }
 
-
     for (int i = 0; i < SIZE; i++) {
         token *token1 = temp->back();
         (&p)->redistribute_token(token1);
         temp->pop_back();
     }
 
-    if(temp->size()>0)
-    {
-        cout<<"redistrib\t"<<temp->size();
-        auto iter = temp->begin();
-        delete (*iter);
-    }
 
 
     cout << "player " << (&p)->get_name() << " new token total : " << (&p)->get_number_of_tokens_owned()
@@ -443,9 +412,7 @@ void game_manager::redistrib_tokens(player& p, tokens_info & return_token, bool 
 
 int game_manager::turn(player* p)
 {
-    cout.flush();
-    cout<<"player "<<p->get_name()<<"'s turn"<<endl;
-    tokens_info *return_token = ( p->conquers() );
+    tokens_info *return_token = ( p->conquers( num_players) );
     if(return_token->exists)
     {
         if(return_token->prev_owner == one->get_name())
@@ -485,18 +452,20 @@ int game_manager::turn(player* p)
         return 0;
     }
 }
-int game_manager::menu(player* p)
+int game_manager::menu(player& p)
 {
-    if(p->first_culture_null())
+    if((&p)->first_culture_null())
     {
-        p->set_first_culture(culture_deck->pick_race());
-        p->give_tokens();
+        subject->change_status(p.get_name(), "Pick", marker->get_turn_number());
+
+        (&p)->set_first_culture(culture_deck->pick_race());
+        (&p)->give_tokens();
     }
     else
     {
         List* list_ptr = game_map->l1;
-        vector<int> regions_list = list_ptr -> get_region_array(p->get_name());
-        p->player_display(regions_list, *list_ptr);
+        vector<int> regions_list = list_ptr -> get_region_array((&p)->get_name());
+        (&p)->player_display(regions_list, *list_ptr);
 
         cout<<"Enter [1] if you want to abandon any regions"<<endl;
 
@@ -505,27 +474,37 @@ int game_manager::menu(player* p)
 
         if(choice == 1)
         {
+            subject->change_status(p.get_name(), "Abandon",marker->get_turn_number());
             abandon_phase(one);
         }
     }
 
 
     cout<<endl;
-
-
-    cout<<p->get_name()<<"'s turn. Will you conquer(1) or go in decline(2)?"<<endl;
     int p_choice = 0;
-    do
+
+    if((&p)->get_second_race_active())
     {
-        cin>>p_choice;
-        if(!cin || p_choice <1 || p_choice >2)
+
+        cout<<"Will you conquer(1) or go in decline(2)?"<<endl;
+        do
         {
-            cout<<"Did not choose 1 or 2, pick again."<<endl;
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            p_choice = 0;
-        }
-    }while(p_choice <1 || p_choice > 2);
+            cin>>p_choice;
+            if(!cin || p_choice <1 || p_choice >2)
+            {
+                cout<<"Did not choose 1 or 2, pick again."<<endl;
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                p_choice = 0;
+            }
+        }while(p_choice <1 || p_choice > 2);
+    }
+    else
+    {
+        cout<<"You have 2 races, so can only conquer, abandon regions or redeploy!"<<endl;
+        p_choice = 1;
+    }
+
     return p_choice;
 }
 
@@ -540,6 +519,7 @@ void game_manager::decline(player* p)
 void game_manager::redeploy(player * p)
 {
     cout<<"Redeploy initiated"<<endl;
+    update_objective_observer();
     tokens_info* return_token = p->redeploy();
     if(return_token->exists)
     {
@@ -574,10 +554,6 @@ void game_manager::redeploy(player * p)
     else
         delete return_token;
 
-
-    /*
-     * second phase of redeploy
-     */
     distrib_tokens(p);
 }
 void game_manager::distrib_tokens(player* p)
@@ -587,12 +563,7 @@ void game_manager::distrib_tokens(player* p)
 
 void game_manager::abandon_phase(player* p)
 {
-
-
-    /*
-     *
-     */
-    cout<<"Abandon phase initiated"<<endl;
+    update_objective_observer();
     tokens_info* return_token = p->abandon_menu();
     if(return_token->exists)
     {
@@ -628,4 +599,15 @@ void game_manager::abandon_phase(player* p)
         delete return_token;
 }
 
+void game_manager::update_objective_observer()
+{
+    obj_sub->change_status(one->get_name(), one->get_number_regions_owned(),map_size);
+    obj_sub->change_status(two->get_name(), two->get_number_regions_owned(),map_size);
+    if(three != nullptr)
+        obj_sub->change_status(three->get_name(), three->get_number_of_tokens_owned(),map_size);
+    if(four != nullptr)
+        obj_sub->change_status(four->get_name(), four->get_number_of_tokens_owned(),map_size);
+    if(five != nullptr)
+        obj_sub->change_status(five->get_name(), five->get_number_of_tokens_owned(),map_size);
+}
 

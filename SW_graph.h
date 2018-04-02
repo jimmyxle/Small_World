@@ -29,6 +29,7 @@ private:
         std::string controlled;
         std::vector<region*> adjacent;
         bits* tokens_attached;
+        bool edge;
         //Constructors
         region();
         region(int, std::string);
@@ -38,6 +39,7 @@ private:
         void addAdj(region*);
         void printAdj();
         void display();
+        void set_edge();
     };
     //Some helper pointers
     region* head;
@@ -80,5 +82,9 @@ public:
     vector<int> get_region_array(const std::string&);
     void get_region_info(int);
     tokens_info* abandon_region(int, tokens_info&);
+    void declare_all_edges(int);
+    bool check_adjacency(int, std::string&);
+    double get_total_number_regions();
+
 };
 #endif //SMALL_WORLD_SW_GRAPH_H

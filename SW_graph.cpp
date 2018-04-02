@@ -218,6 +218,7 @@ List::region::region(){
 //    std::vector<region> adjacent;
     adjacent.reserve(3);
     tokens_attached = new bits();
+    edge = false;
 
 }
 List::region::region(int i, string n)
@@ -228,7 +229,7 @@ List::region::region(int i, string n)
     adjacent.reserve(3);
     controlled = "default";
     tokens_attached = new bits();
-
+    edge = false;
     if(n == "mountain")
         tokens_attached->add_mountain_token();
 //    cout<<"\tregion "<<ID<<" created"<<endl;
@@ -259,13 +260,13 @@ void List::region::printAdj()
 //Used for score() method
 int List::num_regions_controlled(std::string str)
 {
-    std::vector<region>::iterator iter;
     int count = 0;
-    for(iter = world_nodes.begin(); iter != world_nodes.end(); ++iter)
+    for(auto iter = world_nodes.begin(); iter != world_nodes.end(); ++iter)
     {
         if((*iter).controlled == str)
             count++;
     }
+//    cout<<"the count is "<<count<<endl;
     return count;
 }
 //used for player class
@@ -372,4 +373,114 @@ void List::get_region_info(int region_ID)
 void List::region::display()
 {
     cout<<"[ "<<ID<<" ]\t"<<"\'"<<name<<"\' : num_tokens: "<<tokens_attached->get_size()<<endl;
+}
+
+void List::region::set_edge()
+{
+    edge = true;
+}
+void List::declare_all_edges(int number_players)
+{
+    switch(number_players)
+    {
+        case 2:
+            world_nodes[0].set_edge();
+            world_nodes[1].set_edge();
+            world_nodes[2].set_edge();
+            world_nodes[3].set_edge();
+            world_nodes[4].set_edge();
+            world_nodes[5].set_edge();
+            world_nodes[10].set_edge();
+            world_nodes[11].set_edge();
+            world_nodes[15].set_edge();
+            world_nodes[16].set_edge();
+            world_nodes[17].set_edge();
+            world_nodes[18].set_edge();
+            world_nodes[19].set_edge();
+            world_nodes[20].set_edge();
+            world_nodes[22].set_edge();
+            break;
+        case 3:
+            world_nodes[0].set_edge();
+            world_nodes[2].set_edge();
+            world_nodes[3].set_edge();
+            world_nodes[4].set_edge();
+            world_nodes[5].set_edge();
+            world_nodes[6].set_edge();
+            world_nodes[7].set_edge();
+            world_nodes[12].set_edge();
+            world_nodes[17].set_edge();
+            world_nodes[18].set_edge();
+            world_nodes[24].set_edge();
+            world_nodes[25].set_edge();
+            world_nodes[26].set_edge();
+            world_nodes[27].set_edge();
+            world_nodes[28].set_edge();
+            world_nodes[29].set_edge();
+
+            break;
+        case 4:
+            world_nodes[0].set_edge();
+            world_nodes[3].set_edge();
+            world_nodes[4].set_edge();
+            world_nodes[5].set_edge();
+            world_nodes[11].set_edge();
+            world_nodes[12].set_edge();
+            world_nodes[18].set_edge();
+            world_nodes[19].set_edge();
+            world_nodes[24].set_edge();
+            world_nodes[25].set_edge();
+            world_nodes[29].set_edge();
+            world_nodes[30].set_edge();
+            world_nodes[31].set_edge();
+            world_nodes[34].set_edge();
+            world_nodes[35].set_edge();
+            world_nodes[36].set_edge();
+            world_nodes[37].set_edge();
+            world_nodes[38].set_edge();
+
+            break;
+        case 5:
+            world_nodes[0].set_edge();
+            world_nodes[1].set_edge();
+            world_nodes[2].set_edge();
+            world_nodes[3].set_edge();
+            world_nodes[4].set_edge();
+            world_nodes[5].set_edge();
+            world_nodes[6].set_edge();
+            world_nodes[13].set_edge();
+            world_nodes[18].set_edge();
+            world_nodes[24].set_edge();
+            world_nodes[29].set_edge();
+            world_nodes[30].set_edge();
+            world_nodes[35].set_edge();
+            world_nodes[40].set_edge();
+            world_nodes[41].set_edge();
+            world_nodes[42].set_edge();
+            world_nodes[43].set_edge();
+            world_nodes[44].set_edge();
+            world_nodes[45].set_edge();
+            world_nodes[46].set_edge();
+            world_nodes[47].set_edge();
+
+            break;
+        default:
+            break;
+    }
+}
+
+bool List::check_adjacency(int region_ID, std::string& player_name)
+{
+    vector<region*> *regions = &(world_nodes[region_ID].adjacent);
+    for(auto iter = regions->begin(); iter != regions->end(); ++iter)
+    {
+        if((*iter)->controlled == player_name)
+            return true;
+    }
+    return false;
+}
+
+double List::get_total_number_regions()
+{
+    return 0.0+world_nodes.size();
 }

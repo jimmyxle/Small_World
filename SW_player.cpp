@@ -175,31 +175,164 @@ void player::take_over(int region_ID, int power, bits* stack)
     cout << player_name << " has " << stack->get_size() << " tokens left" << endl;
 }
 
-tokens_info* player::conquers()
+vector<int> player::show_edges(int number_players)
 {
-    //start of turn
+    vector<int> arr;
+    switch(number_players) {
+        case 2:
+            arr = { 1, 2, 3, 4,
+                   5, 10, 11, 15, 16,
+                   17, 18, 19, 20};
+            break;
+        case 3:
+            arr = { 2, 3, 4, 5,
+                   6, 7, 12, 17, 18,
+                   24, 25, 26, 27, 28};
+            break;
+        case 4:
+            arr = { 3, 4, 5, 11,
+                   12, 18, 19, 24, 25,
+                   29, 30, 31, 34, 35,
+                    37, 38};
+            break;
+        case 5:
+            arr = {1, 2, 3, 4,
+                   5, 6, 13, 18, 24,
+                   29, 30, 35, 40, 41,
+                   43, 44, 45, 46, 47};
+            break;
+        default:
+            break;
+    }
+    for(int i =0; i<arr.size(); ++i)
+    {
+        cout<<arr[i]<<" ";
+    }
     cout<<endl;
+    return arr;
+}
 
+bool player::check_sea(int region_ID, int number_players)
+{
+    vector<int> arr;
+    switch(number_players)
+    {
+        case 2:
+            arr = {0, 7, 22};
+            break;
+        case 3:
+            arr={0,14,29};
+            break;
 
+        case 4:
+            arr={0,16, 36};
+
+        case 5:
+            arr={0,16,42};
+
+        default:
+            break;
+    }
+    for(int i = 0; i < arr.size(); ++i)
+    {
+        if(region_ID == arr[i])
+            return true;
+    }
+
+    return false;
+}
+tokens_info* player::conquers(int map_number)
+{
     tokens_info* remainder = new tokens_info();
     (remainder)->number_of_tokens = 0;
     (remainder)->prev_owner = "";
     (remainder)->exists=false;
-    remainder->returned_tokens.reserve(5);
+    remainder->returned_tokens.reserve(13);
     remainder->turn_finish = 0;
+
+    //start of turn
+    cout<<endl;
+
+    List* list_ptr = map->l1;
+
 
     bool keep_conquering = true;
     do
     {
-        cout << "Enter a region_ID(int) to conquer. Enter a -1 to skip the rest of the turn." << endl;
-        int region_ID;
-        cin >> region_ID;
+        int region_ID = 0;
+        vector<int> regions_list = list_ptr -> get_region_array(player_name);
+        int first_conquer = player_display(regions_list, *list_ptr);
+
+        if(first_conquer == 0)
+        {
+            //must conquer from the following list:
+            cout<<"This is your first conquer, "
+                    "so you must choose a region found at the edge:"<<endl;
+            vector<int> edge_list = show_edges(map_number);
+            bool not_edge = true;
+            do
+            {
+                cin>>region_ID;
+
+                for(int i = 0; i < edge_list.size(); ++i)
+                {
+                    if(region_ID == edge_list[i])
+                    {
+                        not_edge = false;
+                        break;
+                    }
+                }
+                if(not_edge)
+                    cout<<"choose again!"<<endl;
+
+            }while(not_edge);
+        }
+        else
+        {
+            bool is_sea = true;
+            do
+            {
+                cout << "Enter a region_ID(int) to conquer. Enter a -1 to skip the rest of the turn." << endl;
+                cin >> region_ID;
+
+                if(region_ID < 0)
+                {
+                    is_sea = false;
+                }
+                else
+                {
+                    if (check_sea(region_ID, map_number))
+                        cout << "You cannot conquer the sea. Choose again!" << endl;
+                    else
+                        is_sea = false;
+                }
+            }while(is_sea);
+
+
+            if(region_ID > 0)
+            {
+                bool adjacent_okay = false;
+                do {
+                    bool acceptable = list_ptr->check_adjacency(region_ID, player_name);
+
+                    if (acceptable == false) {
+                        cout << "This node is not adjacent to any of your regions. Choose again." << endl;
+                        cin >> region_ID;
+                    } else
+                        adjacent_okay = true;
+
+                } while (adjacent_okay == false);
+            }
+        }
+
 
         if (region_ID < 0) {
             cout << "Turn skipped" << endl;
             keep_conquering = false;
             remainder->turn_finish = 1;
-        } else {
+        }
+        else
+        {
             if (!(map->l1->check_ownership(region_ID, player_name)))
             {
                 cout << "Eligible region." << endl;
@@ -290,7 +423,7 @@ tokens_info* player::conquers()
                 }
             } else {
                 cout << "You already control this!" << endl;
-                conquers();
+                conquers(map_number);
             }
         }
         if(get_second_race_active())
@@ -312,6 +445,7 @@ tokens_info* player::conquers()
 void player::scores()
 {
     int total = map->l1->num_regions_controlled(player_name);
+    int total_display = total;
     while(total > 0) // ie: 28
     {
         if( total/ 10 != 0)
@@ -342,7 +476,12 @@ void player::scores()
             total = 0;
         }
     }
-    cout<<"player "<<player_name<<" has: "<<player_wallet->get_wallet_total()<<" coins"<<endl;
+    cout<<"------------------------"<<endl;
+    cout<<"Player "<<player_name<<endl;
+    cout<<"------------------------"<<endl;
+
+    cout<<"\tNumber of regions controlled: "<<total_display<<" region(s)!"<<endl;
+    cout<<"\tNumber of Victory Coins: "<<player_wallet->get_wallet_total()<<endl;
 }
 void player::get_status()
 {
@@ -382,6 +521,7 @@ void player::player_decline()
     first_race_stack = nullptr;
 }
 
+
 bool player::first_culture_null()
 {
     return player_first_culture == nullptr;
@@ -398,11 +538,18 @@ tokens_info* player::redeploy()
     return temp;
 }
 
-void player::player_display(vector<int>& regions_list, List& list_ptr)
+int player::player_display(vector<int>& regions_list, List& list_ptr)
 {
-    cout<<"Here's the list of regions you control: "<<endl;
-    for(int i = 0; i<regions_list.size(); ++i)
-        (&list_ptr) -> get_region_info(regions_list[i]);
+    if(regions_list.size() > 0) {
+        cout << "Here's the list of regions you control: " << endl;
+        for (int i = 0; i < regions_list.size(); ++i)
+            (&list_ptr)->get_region_info(regions_list[i]);
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 void player::redeploy_menu()
@@ -474,6 +621,7 @@ void player::redeploy_menu()
 
 }
 
+
 tokens_info* player::abandon_menu()
 {
 
@@ -491,7 +639,7 @@ tokens_info* player::abandon_menu()
         vector<int> regions_list = list_ptr -> get_region_array(player_name);
 
         player_display(regions_list, *list_ptr);
-        cout<<endl<<"Here's the current number of tokens: "<<remaining_tokens<<endl;
+//        cout<<endl<<"Here's the current number of tokens: "<<remaining_tokens<<endl;
         cout << "Choose which regions to abandon!"<< endl;
         cout<<"Enter -1 to skip ahead"<<endl;
         int ID_choice = 0;
@@ -527,4 +675,12 @@ tokens_info* player::abandon_menu()
 
     return_token->prev_owner = player_name;
     return return_token;
+}
+
+int player::get_number_regions_owned()
+{
+    List* list_ptr = map->l1;
+    int number = list_ptr->num_regions_controlled(player_name);
+//    cout<<number<<endl;
+    return number;
 }

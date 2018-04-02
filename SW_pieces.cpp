@@ -494,6 +494,7 @@ void bits::add_mountain_token()
 
 void bits::clean()
 {
+    cout<<"Size of pile"<<pile.size()<<endl;
     for(auto rev_iter = pile.rbegin(); rev_iter!= pile.rend(); ++rev_iter)
         delete (*rev_iter);
 
@@ -771,7 +772,7 @@ culture culture_set::pick_race()
     {
         cin>>choice;
         if(choice >= 0 || choice <6)
-            cout<<"You chose "<<choice<<endl;
+            cout<<"You chose ("<<choice<<")\t";
 
         else
             cout<<"invalid choice, please choose again."<<endl;

@@ -33,10 +33,12 @@ private:
 //    bits* player_tokens;
     void battle(int, tokens_info&);
     void take_over(int, int, bits*);
+    vector<int> show_edges(int);
+    bool check_sea(int, int);
 
 public:
 
-    tokens_info* conquers();
+    tokens_info* conquers(int );
     void scores();
     player();
     ~player();
@@ -55,8 +57,10 @@ public:
 
     tokens_info* redeploy();
     void redeploy_menu(); // make private later?
-    void player_display(vector<int>&, List&);
+    int player_display(vector<int>&, List&);
     tokens_info* abandon_menu();
+
+    int get_number_regions_owned();
 
 };
 
