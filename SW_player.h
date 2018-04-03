@@ -61,6 +61,7 @@ public:
     tokens_info* abandon_menu();
 
     int get_number_regions_owned();
+    int get_victory_tokens();
 
 };
 

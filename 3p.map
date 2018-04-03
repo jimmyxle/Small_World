@@ -1,0 +1,30 @@
+sea 1 2 12
+plain 0 2 8 12
+forest 0 1 3 8
+mountain 2 4 8 9
+plain 3 5 9 10
+swamp 4 6 10 11
+forest 5 7 11
+swamp 6 11 16 17
+swamp 1 2 3 9 12 13
+hill 3 4 8 10 13 14
+mountain 4 5 9 11 14 15
+plain 5 6 10 7 15 16
+mountain 0 1 8 13 18
+swamp 8 9 12 14 18 19
+sea 9 10 13 15 19 20 21
+mountain 10 11 14 16 21 22
+hill 7 11 15 17 22 23
+mountain 7 16 23 29
+plain 12 13 19 24 25
+forest 13 14 18 20 25 26
+hill 14 19 21 26 27
+swamp 14 15 20 22 27 28
+plain 15 16 21 23 28
+hill 16 17 22 28 29
+hill 18 25
+mountain 18 19 24 26
+mountain 19 20 25 27
+forest 20 21 26 28
+forest 21 22 23 27 29
+sea 17 23 28

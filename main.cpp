@@ -21,10 +21,26 @@ int main() {
 
 
 
-    game_manager* game1 = new game_manager();
-    game1->game_loop();
-    delete game1;
+//    game_manager* game1 = new game_manager();
+//    game1->game_loop();
+//    delete game1;
 
+    stats_observable* stats = new stats_observable();
+    Iobserver* undec = new undecorated_watcher(*stats);
+    stats->add(undec);
+//    Iobserver* undec2 = new undecorated_watcher(*stats);
+//    stats->add(undec2);
+
+    stats->change_status(5,2.5,10,12);
+//    undec->show();
+    undec = new dom_decorator(undec);
+    cout<<"split"<<endl;
+    stats->change_status(6,3.0,11,11);
+    undec->update(0,3.0,0,0);
+//    undec ->show();
+
+//    undec->show();
+//    undec2->show();
 
     cout<<endl<<"============================ END ============================";
     return 0;

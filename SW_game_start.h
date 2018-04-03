@@ -24,19 +24,19 @@ private:
     culture_set* culture_deck;
     phase_subject* subject;
     phase_watcher* phase;
-    objective_subject* obj_sub;
-    objective_watcher* obj_watch;
-    double map_size;
+    int map_size;
 
     void create_players(int);
     void add_lost_tribes(int);
     void redistrib_tokens(player&,  tokens_info&, bool );
     void continue_loop(player&);
     void distrib_tokens(player*);
-    void abandon_phase(player* p);
-    void score_phase();
+    void abandon_phase(player& );
+//    void score_phase();
+    void score_phase(player* );
     void one_play(player*);
-    void update_objective_observer();
+//    void update_objective_observer();
+    void decorate(observer*, int);
 public:
     game_manager(); //initiate map
     ~game_manager();
