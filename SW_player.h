@@ -39,7 +39,7 @@ private:
 public:
 
     tokens_info* conquers(int );
-    void scores();
+    int scores(int, int);
     player();
     ~player();
 

@@ -146,7 +146,7 @@ void game_manager::continue_loop(player& p)
     while (continue_turn)
     {
         subject->change_status(p.get_name(), "Conquer", p.get_number_regions_owned(), map_size);
-        update_stats();
+        update_stats(0);
 
         int empty_tokens = turn( &p );
         if ( (&p) ->get_number_of_tokens_owned() > 0)
@@ -169,7 +169,7 @@ void game_manager::one_play(player * p)
         redeploy(p);
         continue_loop(*p);
         subject->change_status((p)->get_name(), "Redeploy", p->get_number_regions_owned(), map_size );
-        update_stats();
+        update_stats(0);
 
 
         cout<<endl<<"Redeploy troops? Enter '1' to redeploy. Enter '0' to skip ahead."<<endl;
@@ -250,12 +250,24 @@ int game_manager::deco_menu(int choice)
 
     return decorator_choice;
 }
-void game_manager::update_stats()
+void game_manager::update_stats(int coin)
 {
-    game_stats->change_status(marker->get_turn_number(),
-                              get_percent(one), get_percent(two),
-                              one->get_number_of_tokens_owned(),
-                              two->get_number_of_tokens_owned(),0);
+    if(coin > 0)
+    {
+        cout<<endl<<"Player recieved a "<<coin<<" victory coin!"<<endl;
+        game_stats->change_status(marker->get_turn_number(),
+                                  get_percent(one), get_percent(two),
+                                  one->get_number_of_tokens_owned(),
+                                  two->get_number_of_tokens_owned(),coin);
+    }
+    else
+    {
+        game_stats->change_status(marker->get_turn_number(),
+                                  get_percent(one), get_percent(two),
+                                  one->get_number_of_tokens_owned(),
+                                  two->get_number_of_tokens_owned(),0);
+    }
+
     watcher->show();
     cout<<"\t\t---";
     cout<<endl<<endl;
@@ -267,7 +279,7 @@ void game_manager::game_loop()
     cout<<endl<<"Game start!"<<endl;
     int deco_choice = 0;
     while(marker->next_turn()) {
-        update_stats();
+        update_stats(0);
 
         cout<<endl<<endl;
         if(deco_choice >= 0)
@@ -313,8 +325,43 @@ void game_manager::game_loop()
 void game_manager::score_phase(player * p)
 {
     subject->change_status((p)->get_name(), "Score", p->get_number_regions_owned(), map_size );
-    p->scores();
 
+    int total = game_map->l1->num_regions_controlled(p->get_name());
+    int total_display = total;
+
+    while(total > 0) // ie: 28
+    {
+        while( total / 10 > 0)
+        {
+            int temp = p->scores(total, 10); //return 18
+            total = temp;
+            update_stats(10);
+            //update game when player gets a 10 coin token
+        }while( total / 5 > 0)
+        {
+            int temp = p->scores(total, 5); //return 18
+            total = temp;
+            update_stats(5);
+        }while( total / 3 > 0)
+        {
+            int temp = p->scores(total, 3); //return 18
+            total = temp;
+            update_stats(3);
+        }while( total / 1 > 0)
+        {
+            int temp = p->scores(total, 1); //return 18
+            total = temp;
+            update_stats(1);
+        }
+    }
+
+
+    cout<<"------------------------"<<endl;
+    cout<<"Player "<<p->get_name()<<endl;
+    cout<<"------------------------"<<endl;
+
+    cout<<"\tNumber of regions controlled: "<<total_display<<" region(s)!"<<endl;
+    cout<<"\tNumber of Victory Coins: "<<p->get_victory_tokens()<<endl<<endl;
 
 }
 void game_manager::add_lost_tribes(int number_of_players)
@@ -469,7 +516,7 @@ void game_manager::redistrib_tokens(player& p, tokens_info & return_token, bool 
 
     cout << "player " << (&p)->get_name() << " new token total : " << (&p)->get_number_of_tokens_owned()
          << endl;
-    update_stats();
+    update_stats(0);
 
 }
 
@@ -499,6 +546,10 @@ int game_manager::turn(player* p)
         {
             redistrib_tokens(*five, *return_token, false);
         }
+        else if(return_token->prev_owner == "default")
+        {
+            cout<<"Lost tribes slain"<<endl;
+        }
         else
         {
             cout<<"Redistribute token has no owner."<<endl;
@@ -523,16 +574,17 @@ int game_manager::menu(player& p)
         (&p)->set_first_culture(culture_deck->pick_race());
         (&p)->give_tokens();
 
-        update_stats();
+        update_stats(0);
     }
     else
     {
         List* list_ptr = game_map->l1;
         vector<int> regions_list = list_ptr -> get_region_array((&p)->get_name());
+        subject->change_status((&p)->get_name(), "Abandon", (&p)->get_number_regions_owned(), map_size);
+        update_stats(0);
+
         (&p)->player_display(regions_list, *list_ptr);
 
-        subject->change_status((&p)->get_name(), "Abandon", (&p)->get_number_regions_owned(), map_size);
-        update_stats();
         cout<<"Enter [1] if you want to abandon any regions"<<endl;
 
         int choice = 0;
@@ -551,7 +603,7 @@ int game_manager::menu(player& p)
     if((&p)->get_second_race_active())
     {
         subject->change_status((&p)->get_name(), "Conquer", (&p)->get_number_regions_owned(), map_size);
-        update_stats();
+        update_stats(0);
         cout<<"Will you conquer(1) or go in decline(2)?"<<endl;
         do
         {
@@ -631,7 +683,7 @@ void game_manager::abandon_phase(player& p)
 {
 //    update_objective_observer();
     subject->change_status((&p)->get_name(), "Abandon",(&p)->get_number_regions_owned(), map_size);
-    update_stats();
+    update_stats(0);
 
     tokens_info* return_token = (&p)->abandon_menu();
     if(return_token->exists)
@@ -681,13 +733,13 @@ void game_manager::decorate( int deco_number)
             watcher = new hand_decorator(watcher);
             break;
         case 4:
-
+            watcher = new coin_decorator(watcher);
             break;
         default:
             break;
     }
     game_stats->add(watcher);
-    update_stats();    //
+    update_stats(0);    //
 }
 
 double game_manager::get_percent(player *p)

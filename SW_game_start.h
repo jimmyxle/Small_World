@@ -39,7 +39,7 @@ private:
     void one_play(player*);
 
     int deco_menu(int);
-    void update_stats();
+    void update_stats(int);
     void decorate( int);
     double get_percent(player*);
 
