@@ -37,7 +37,7 @@ private:
     bool check_sea(int, int);
 
 public:
-
+    tokens_info* ai_conquers(int);
     tokens_info* conquers(int );
     int scores(int, int);
     player();
@@ -62,6 +62,9 @@ public:
 
     int get_number_regions_owned();
     int get_victory_tokens();
+    int ai_region_conquers(int);
+    int ai_owned();
+
 
 };
 

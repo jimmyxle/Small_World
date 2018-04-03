@@ -759,7 +759,24 @@ void culture_set::show_top(int number) {
     }
     cout.flush();
 }
+culture culture_set::ai_pick_race()
+{
 
+    cout<<endl;
+    cout<<"-----------------------------------"<<endl;
+    cout<<"Please choose an option from below:"<<endl;
+    show_top(6);
+    cout<<"-----------------------------------"<<endl;
+
+//    cout.flush();
+    int choice = 0;
+    cout<<"Ai chose 0"<<endl;
+    visible[choice].print_culture();
+    culture temp = visible[choice];
+    visible.erase( visible.begin()+choice );
+    return temp;
+
+}
 culture culture_set::pick_race()
 {
     cout<<endl;
