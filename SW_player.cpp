@@ -276,6 +276,178 @@ bool player::check_sea(int region_ID, int number_players)
 
     return false;
 }
+tokens_info* player::ai_conquers(int map_number)
+{
+    tokens_info* remainder = new tokens_info();
+    (remainder)->number_of_tokens = 0;
+    (remainder)->prev_owner = "";
+    (remainder)->exists=false;
+    remainder->returned_tokens.reserve(13);
+    remainder->turn_finish = 0;
+
+    //start of turn
+    cout<<endl;
+
+    List* list_ptr = map->l1;
+
+
+    bool keep_conquering = true;
+    do
+    {
+        int region_ID = 0;
+        vector<int> regions_list = list_ptr -> get_region_array(player_name);
+        int first_conquer = player_display(regions_list, *list_ptr);
+
+        if(first_conquer == 0)
+        {
+            //must conquer from the following list:
+            cout<<"This is your first conquer, "
+                    "so you must choose a region found at the edge:"<<endl;
+            vector<int> edge_list = show_edges(map_number);
+            int START_SEED = 16;
+            region_ID = START_SEED;
+            cout<<"Ai always start on region "<<START_SEED<<endl;
+        }
+        else
+        {
+
+            bool is_sea = true;
+            do
+            {
+                cout << "Enter a region_ID(int) to conquer. Enter a -1 to skip the rest of the turn." << endl;
+                //choose a random ai region
+                int next_ai_conquer = ai_owned();
+                region_ID = ai_region_conquers(next_ai_conquer);
+
+
+                if (check_sea(region_ID, map_number))
+                    cout << "You cannot conquer the sea. Choose again!" << endl;
+                else
+                    is_sea = false;
+
+            }while(is_sea);
+
+            //check if owned by player already
+
+        }
+
+
+        if (region_ID < 0) {
+            cout << "Turn skipped" << endl;
+            keep_conquering = false;
+            remainder->turn_finish = 1;
+        }
+        else
+        {
+            if (!(map->l1->check_ownership(region_ID, player_name)))
+            {
+                cout << "Eligible region." << endl;
+                int SIZE = 0;
+
+                if (get_second_race_active())
+                {
+                    SIZE = first_race_stack->get_size();
+                }
+                else
+                {
+                    SIZE = second_race_stack->get_size();
+                }
+
+                {
+                    int player_power = SIZE;
+                    if (player_power >= 0)
+                    {
+                        //Check how many tokens there are, including mountain
+                        int strength = map->l1->get_region_strength(region_ID) + 2;
+
+                        int power = 0;
+                        int dice_affirm = 0;
+                        int roll_result = 0;
+
+                        cout << "You need to have " << strength << " to conquer this." << endl;
+
+                        if (player_power >= 1 && strength > player_power &&
+                            (player_power + 3) >= strength)
+                        {
+                            cout<<"ai will always roll reinforcement die"<<endl;
+
+                            dice_affirm = 1;
+                            if (dice_affirm == 1) {
+                                roll_result = player_dice->rollDice();
+                            }
+                            player_power += roll_result;
+                            if (player_power >= strength)
+                            {
+                                cout << "Comquered!" << endl;
+                                //slap on units
+                                if(get_second_race_active()){
+                                    take_over(region_ID, SIZE, first_race_stack, *remainder);
+                                }
+                                else
+                                {
+                                    take_over(region_ID, SIZE, second_race_stack, *remainder);
+
+                                }
+                                keep_conquering = false;
+                            } else {
+                                cout << "too weak" << endl;
+                                keep_conquering = false;
+                                remainder->turn_finish = 1;
+                            }
+                        }
+                        else
+                        {
+                            cout << "You currently have " << player_power << " tokens." << endl;
+                            cout << "How many do you want to use to conquer [" << region_ID << "] ?" << endl;
+                            cout<<"Ai will always use the least"<<endl;
+
+                            power = strength;
+                            if (power >= strength && power <= player_power) {
+                                cout << endl;
+                                battle(region_ID, *remainder);
+                                if(get_second_race_active())
+                                {
+                                    take_over(region_ID, power, first_race_stack,*remainder);
+                                }
+                                else
+                                {
+                                    take_over(region_ID, power, second_race_stack, *remainder);
+                                }
+
+                            } else {
+                                cout << "Not strong enough" << endl;
+                                remainder->turn_finish = 1;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        keep_conquering = false;
+                        cout << "not enough first race tokens" << endl;
+                    }
+                }
+            } else {
+                cout << "You already control this!" << endl;
+                ai_conquers(map_number);
+            }
+        }
+        if(get_second_race_active())
+        {
+            if(first_race_stack->get_size() == 0)
+                keep_conquering = false;
+
+        }
+        else
+        {
+            if(second_race_stack->get_size() == 0)
+                keep_conquering = false;
+        }
+    }
+    while(keep_conquering);
+
+    return remainder;
+}
+
 tokens_info* player::conquers(int map_number)
 {
     tokens_info* remainder = new tokens_info();
@@ -718,4 +890,15 @@ int player::get_number_regions_owned()
 int player::get_victory_tokens()
 {
     player_wallet->get_wallet_total();
+}
+int player::ai_region_conquers(int region_ID)
+{
+    map->l1->ai_get_region_adjacent(region_ID);
+}
+int player::ai_owned()
+{
+    vector<int> regions = map->l1->get_region_array(player_name);
+    srand(time(0));
+    int index = rand()% regions.size();
+    return index;
 }

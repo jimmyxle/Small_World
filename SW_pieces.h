@@ -227,6 +227,7 @@ public:
     void shuffle();
     void show_top(int);
     culture pick_race();
+    culture ai_pick_race();
 };
 
 #endif //SMALL_WORLD_SW_PIECES_H

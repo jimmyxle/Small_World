@@ -11,6 +11,7 @@
 #include <string>
 #include "SW_pieces.h"
 #include "SW_tokens_info.h"
+#include <ctime>
 
 /*
  * Graph is made as a vector of region nodes. Each region node have a vector of pointers to its neightbours
@@ -85,6 +86,6 @@ public:
     void declare_all_edges(int);
     bool check_adjacency(int, std::string&);
     double get_total_number_regions();
-
+    int ai_get_region_adjacent(int);
 };
 #endif //SMALL_WORLD_SW_GRAPH_H
