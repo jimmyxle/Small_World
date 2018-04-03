@@ -7,25 +7,21 @@
 
 #include <vector>
 #include <string>
+#include "SW_pieces.h"
+#include <list>
+
 using namespace std;
 
 class observer
 {
-private:
 public:
-    virtual void update(string, string, int, int) = 0;
-};
-
-class display
-{
-private:
-public:
+    virtual void update(string, string, int,int) = 0;
     virtual void show() =0;
 };
 
+
 class observable
 {
-private:
 public:
     virtual void add(observer*) = 0;
 //    virtual void rem(observer*) = 0;
@@ -35,10 +31,12 @@ public:
 
 class phase_subject : public observable
 {
-private:
+protected:
     string player_name;
     string phase;
-    int turn_number;
+    int number_regions_controlled;
+    int total_number_regions;
+
     vector<observer*> watcher_list;
 
 public:
@@ -46,63 +44,136 @@ public:
     ~phase_subject();
     void add(observer*);
 //    void rem(observer*);
-    void change_status(string, string, int);
+    void change_status(string, string,int,int);
     void notify();
 };
 
 
-class objective_subject : public observable
+class phase_watcher : public observer
 {
-private:
-    string name;
-    int number_regions_controlled;
-    double total_number_regions;
-
-    vector<observer*>watcher_list;
-public:
-    objective_subject();
-    ~objective_subject();
-    void add(observer*);
-    void change_status(string, int, int);
-    void notify();
-};
-
-class phase_watcher : public observer, public display
-{
-private:
+protected:
     string observed_name;
     string observed_phase;
-    int observed_turn;
+    int regions_watched;
+    int total_watched;
 
     phase_subject* subject;
 public:
     phase_watcher();
     phase_watcher(phase_subject&);
     ~phase_watcher();
-    void update(string, string, int, int);
-    void show();
+//    void update(string, string, int, int, int, int, int);
+    void update(string, string, int,int);
+
+    void show() override ;
 };
+/*
+ * part 4
+ */
 
-class objective_watcher : public observer, public display
-{
-private:
-    string name_watched;
-    int regions_watched;
-    int total_watched;
-
-    objective_subject* subject;
-public:
-    objective_watcher();
-    objective_watcher(objective_subject&);
-    ~objective_watcher();
-    void update(string,string, int, int);
-    void show();
-};
-
-class observer_decorator : public observer
+class Iobserver
 {
 public:
-    virtual void display() = 0;
+    ~Iobserver();
+    virtual void show() = 0;
+    virtual void update(int, double,double, int, int, int) = 0;
+};
+class Iobservable
+{
+public:
+    ~Iobservable();
+    virtual void add(Iobserver*)=0;
+    //remove
+    virtual void notify() = 0;
+    virtual void change_status(int, double,double, int,int,int)=0;
+};
+
+
+class stats_observable : public Iobservable
+{
+protected:
+    int turn_number;
+    double uno_perc;
+    double dos_perc;
+
+    int uno_hand;
+    int dos_hand;
+
+    int victory_coins;
+
+    list<Iobserver*> observer_list;
+public:
+    stats_observable();
+    ~stats_observable();
+    void add(Iobserver*);
+    void remove(Iobserver*);
+    void notify();
+    void change_status(int, double,double, int, int, int);
+
+};
+
+class undecorated_watcher : public Iobserver
+{
+protected:
+    int w_turn_number;
+    double w_uno;
+    double w_dos;
+
+    int w_uno_hand;
+    int w_dos_hand;
+
+    int w_victory_coins;
+
+    Iobservable* subject;
+
+public:
+    undecorated_watcher();
+    ~undecorated_watcher();
+    undecorated_watcher(Iobservable&);
+    void update(int, double,double, int, int, int);
+    void show();
+
+};
+
+class watcher_decorator : public undecorated_watcher
+{
+public:
+    ~watcher_decorator();
+    virtual void show() = 0;
+    virtual void update(int,double,double, int, int,int) = 0;
+};
+
+class dom_decorator : public watcher_decorator
+{
+protected:
+    Iobserver* obs;
+public:
+    dom_decorator(Iobserver*);
+    ~dom_decorator() ;
+    void show();
+    void update(int, double,double, int,int,int);
+};
+
+class hand_decorator : public watcher_decorator
+{
+protected:
+    Iobserver* obs;
+public:
+    hand_decorator(Iobserver*);
+    ~hand_decorator();
+    void show();
+    void update(int, double, double, int, int, int);
+};
+
+class coin_decorator : public watcher_decorator
+{
+protected:
+    Iobserver* obs;
+public:
+    coin_decorator(Iobserver*);
+    ~coin_decorator();
+    void show();
+    void update(int, double,double, int,int, int);
 };
 
 #endif //SMALL_WORLD_SW_GAME_OBS_H

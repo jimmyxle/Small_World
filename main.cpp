@@ -20,11 +20,77 @@ int main() {
     cout<<endl<<"Assignment 3 Testing"<<endl<<"============================================="<<endl;
 
 
-
+//
     game_manager* game1 = new game_manager();
     game1->game_loop();
     delete game1;
 
+
+/*
+        stats_observable *stats = new stats_observable();
+
+        Iobserver *undec = new undecorated_watcher(*stats);
+        undec = new dom_decorator(undec);
+        undec = new coin_decorator(undec);
+        undec = new hand_decorator(undec);
+        stats->add(undec);
+
+        stats->change_status(5, 45,55,2,6,0);
+
+        undec->show();
+
+    /*
+        stats->remove(undec);
+        undec = new coin_decorator(new undecorated_watcher());
+        stats->add(undec);
+
+        stats->change_status(7, 5.0, 11, 20);
+
+        undec->show();
+        stats->remove(undec);
+
+        undec = new undecorated_watcher();
+        stats->add(undec);
+
+        stats->change_status(10, 5.0, 11, 20);
+
+        undec->show();
+
+        delete undec;
+
+
+    stats_observable* stats = new stats_observable();
+
+    Iobserver* undec = new undecorated_watcher(*stats);
+    undec = new dom_decorator(undec);
+    stats->add(undec);
+
+    Iobserver* undec2 = new undecorated_watcher(*stats);
+    undec2 = new coin_decorator(undec2);
+    stats->add(undec2);
+
+    Iobserver* undec3 = new undecorated_watcher(*stats);
+    undec3  = new dom_decorator(undec3);
+    undec3 = new coin_decorator(undec3);
+    stats->add(undec3);
+
+    stats->change_status(6,3.0,11,10);
+
+    undec->show();
+    cout<<"----"<<endl;
+    undec2->show();
+    cout<<"----"<<endl;
+    undec3->show();
+    cout<<"=====split"<<endl;
+
+    stats->change_status(7,20,11,15);
+
+    undec->show();
+    cout<<"----"<<endl;
+    undec2->show();
+    cout<<"----"<<endl;
+    undec3->show();
+    */
 
     cout<<endl<<"============================ END ============================";
     return 0;
