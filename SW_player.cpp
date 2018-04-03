@@ -126,6 +126,7 @@ void player::battle(int region_ID, tokens_info& remainder)
             {
                 cout<<"!!decline detected!!"<<endl;
                 (&remainder)->number_of_tokens = 0;
+                //still need to cleanse the region
             }
             else
             {
@@ -134,13 +135,16 @@ void player::battle(int region_ID, tokens_info& remainder)
 
                 cout<<"num tokens given = "<<num_tokens-1 <<endl;
                 (&remainder)->number_of_tokens= (num_tokens-1);
+
                 token* temp = nullptr;
                 do{ //gotta give back to original player
                     temp = map->l1->clear_region(region_ID);
                     if(temp != nullptr)
                         (&remainder)->returned_tokens.push_back(temp);
                 }while(temp != nullptr);
+
             }
+
             if((&remainder)->number_of_tokens < 0)
                 (&remainder)->number_of_tokens = 0;
             (&remainder)->prev_owner = map->l1->get_owner(region_ID);
@@ -163,9 +167,40 @@ void player::battle(int region_ID, tokens_info& remainder)
     }
 }
 
-void player::take_over(int region_ID, int power, bits* stack)
+void player::take_over(int region_ID, int power, bits* stack,tokens_info& remainder)
 {
     cout << "Success, region " << region_ID << " conquered!" << endl;
+//    cout<<"region has "<<map->l1->get_number_race_tokens(region_ID)<<endl;
+
+
+
+//    cout<<"!!active!!"<<endl;
+    int num_tokens = map->l1->get_number_race_tokens(region_ID);
+
+//    cout<<"num tokens given = "<<num_tokens-1 <<endl;
+    (&remainder)->number_of_tokens= (num_tokens-1);
+
+    token* temp = nullptr;
+    do{ //gotta give back to original player
+        temp = map->l1->clear_region(region_ID);
+        if(temp != nullptr)
+            (&remainder)->returned_tokens.push_back(temp);
+    }while(temp != nullptr);
+    map->l1->clear_region(region_ID);
+
+    if((&remainder)->number_of_tokens < 0)
+        (&remainder)->number_of_tokens = 0;
+    else
+    {
+        (&remainder)->prev_owner = map->l1->get_owner(region_ID);
+        (&remainder)->exists = true;
+    }
+
+
+
+
+//    cout<<"region has "<<map->l1->get_number_race_tokens(region_ID)<<endl;
+
     map->l1->control_region(region_ID, player_name);
     cout << "Adding " << power << " tokens to region " << region_ID << endl;
 
@@ -361,7 +396,8 @@ tokens_info* player::conquers(int map_number)
                         cout << "You need to have " << strength << " to conquer this." << endl;
 
                         if (player_power >= 1 && strength > player_power &&
-                            (player_power + 3) >= strength) {
+                            (player_power + 3) >= strength)
+                        {
                             cout << "You must use the reinforcement die to conquer this" << endl;
                             cout << "Enter: '1' to roll the die." << endl;
                             cin >> dice_affirm;
@@ -373,15 +409,16 @@ tokens_info* player::conquers(int map_number)
                                 roll_result = 0;
                             }
                             player_power += roll_result;
-                            if (player_power >= strength) {
+                            if (player_power >= strength)
+                            {
                                 cout << "Comquered!" << endl;
                                 //slap on units
                                 if(get_second_race_active()){
-                                    take_over(region_ID, SIZE, first_race_stack);
+                                    take_over(region_ID, SIZE, first_race_stack, *remainder);
                                 }
                                 else
                                 {
-                                    take_over(region_ID, SIZE, second_race_stack);
+                                    take_over(region_ID, SIZE, second_race_stack, *remainder);
 
                                 }
                                 keep_conquering = false;
@@ -390,7 +427,9 @@ tokens_info* player::conquers(int map_number)
                                 keep_conquering = false;
                                 remainder->turn_finish = 1;
                             }
-                        } else {
+                        }
+                        else
+                        {
                             cout << "You currently have " << player_power << " tokens." << endl;
                             cout << "How many do you want to use to conquer [" << region_ID << "] ?" << endl;
                             cin >> power;
@@ -399,11 +438,11 @@ tokens_info* player::conquers(int map_number)
                                 battle(region_ID, *remainder);
                                 if(get_second_race_active())
                                 {
-                                    take_over(region_ID, power, first_race_stack);
+                                    take_over(region_ID, power, first_race_stack,*remainder);
                                 }
                                 else
                                 {
-                                    take_over(region_ID, power, second_race_stack);
+                                    take_over(region_ID, power, second_race_stack, *remainder);
                                 }
 
                                 power = 0;
@@ -442,46 +481,37 @@ tokens_info* player::conquers(int map_number)
 
     return remainder;
 }
-void player::scores()
+int player::scores(int total, int div)
 {
-    int total = map->l1->num_regions_controlled(player_name);
-    int total_display = total;
-    while(total > 0) // ie: 28
+
+    if( total / div > 0)
     {
-        if( total/ 10 != 0)
-        {
-            for(int i = 0; i < total/10; ++i )
-                player_wallet->add_coin(10);
-
-            total = total/10;
-
-        }
-        if( total/ 5 != 0)
-        {
-            for(int i = 0; i < total/5; ++i )
-                player_wallet->add_coin(5);
-
-            total = total/5;
-        }
-        if( total/ 3 != 0)
-        {
-            for(int i = 0; i < total/3; ++i )
-                player_wallet->add_coin(3);
-            total = total/3;
-        }
-        if(total >0)
-        {
-            for(int i = 0; i < total; ++i)
-                player_wallet->add_coin(1);
-            total = 0;
-        }
+        player_wallet->add_coin(div);
+        total = total - div;
+        return total;
     }
-    cout<<"------------------------"<<endl;
-    cout<<"Player "<<player_name<<endl;
-    cout<<"------------------------"<<endl;
 
-    cout<<"\tNumber of regions controlled: "<<total_display<<" region(s)!"<<endl;
-    cout<<"\tNumber of Victory Coins: "<<player_wallet->get_wallet_total()<<endl;
+/*
+    if( total/ 5 != 0)
+    {
+        for(int i = 0; i < total/5; ++i )
+            player_wallet->add_coin(5);
+
+        total = total/5;
+    }
+    if( total/ 3 != 0)
+    {
+        for(int i = 0; i < total/3; ++i )
+            player_wallet->add_coin(3);
+        total = total/3;
+    }
+    if(total >0)
+    {
+        for(int i = 0; i < total; ++i)
+            player_wallet->add_coin(1);
+        total = 0;
+    }
+    */
 }
 void player::get_status()
 {
@@ -683,4 +713,9 @@ int player::get_number_regions_owned()
     int number = list_ptr->num_regions_controlled(player_name);
 //    cout<<number<<endl;
     return number;
+}
+
+int player::get_victory_tokens()
+{
+    player_wallet->get_wallet_total();
 }

@@ -32,14 +32,14 @@ private:
     //include board bit vector
 //    bits* player_tokens;
     void battle(int, tokens_info&);
-    void take_over(int, int, bits*);
+    void take_over(int, int, bits*,tokens_info&);
     vector<int> show_edges(int);
     bool check_sea(int, int);
 
 public:
 
     tokens_info* conquers(int );
-    void scores();
+    int scores(int, int);
     player();
     ~player();
 
@@ -61,6 +61,7 @@ public:
     tokens_info* abandon_menu();
 
     int get_number_regions_owned();
+    int get_victory_tokens();
 
 };
 

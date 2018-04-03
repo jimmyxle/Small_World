@@ -85,9 +85,9 @@ void game_manager::setup_observers()
     phase = new phase_watcher(*subject);
     subject->add(phase);
 
-    obj_sub = new objective_subject();
-    obj_watch = new objective_watcher(*obj_sub);
-    obj_sub->add(obj_watch);
+    game_stats = new stats_observable();
+    watcher = new undecorated_watcher();
+    game_stats->add(watcher);
 }
 
 void game_manager::initialize()
@@ -145,8 +145,9 @@ void game_manager::continue_loop(player& p)
     bool continue_turn = true;
     while (continue_turn)
     {
-        subject->change_status(p.get_name(), "Conquer", marker->get_turn_number());
-        update_objective_observer();
+        subject->change_status(p.get_name(), "Conquer", p.get_number_regions_owned(), map_size);
+        update_stats(0);
+
         int empty_tokens = turn( &p );
         if ( (&p) ->get_number_of_tokens_owned() > 0)
         {
@@ -159,102 +160,210 @@ void game_manager::continue_loop(player& p)
     }
 }
 
-void game_manager::one_play(player * player_obj)
+void game_manager::one_play(player * p)
 {
     int menu_num = 0;
-    menu_num = menu(*player_obj);
+    menu_num = menu(*p);
     //conquer phase
     if (menu_num == 1) {
-        continue_loop(*player_obj);
+        redeploy(p);
+        continue_loop(*p);
+        subject->change_status((p)->get_name(), "Redeploy", p->get_number_regions_owned(), map_size );
+        update_stats(0);
 
-        /*
-         * redeploy here
-         */
-        cout<<endl<<"Redeploy troops? Enter '1' to redeploy."<<endl;
+
+        cout<<endl<<"Redeploy troops? Enter '1' to redeploy. Enter '0' to skip ahead."<<endl;
         int redeploy_result = 0;
         cin>>redeploy_result;
         if(redeploy_result == 1)
         {
-            subject->change_status((*player_obj).get_name(), "Redeploy",marker->get_turn_number());
-            redeploy(player_obj);
+            redeploy(p);
+            distrib_tokens(p);
         }
 
-        //write new
-//            continue_loop(*one);
-//        cout<<"Done! "<<endl;
     } else if (menu_num == 2) {
         //go in decline
-        subject->change_status((*player_obj).get_name(), "Decline",marker->get_turn_number());
-        decline(player_obj);
+        subject->change_status((p)->get_name(), "Decline", p->get_number_regions_owned(), map_size);
+//        subject->change_status((p)->get_name(), "Redeploy", marker->get_turn_number(),
+//                               p->get_number_regions_owned(), map_size );
+        decline(p);
     }
+}
+int game_manager::deco_menu(int choice)
+{
+    int decorator_choice = 0;
+
+
+    bool deco_loop = true;
+    do
+    {
+        if(choice > 0)
+            decorator_choice = choice;
+        else
+        {
+            cout<<"Would you like to add a new decorator?"<<endl;
+            cout<<"Enter the index of the item. Enter a \'-1\' when you wish to continue"<<endl;
+            cout<<"(2) Domination Decorator"<<endl<<"(3) Hand Decorator"<<endl
+                <<"(4) Victory Coin Decorator" <<endl;
+            cin>>decorator_choice;
+        }
+
+        if(decorator_choice < 0)
+        {
+            deco_loop = false;
+        }
+        else
+        {
+            if(decorator_choice > 1 && decorator_choice < 5)
+            {
+                deco_loop = false;
+            }
+            else
+            {
+                cout<<"Wrong input. Try again"<<endl;
+                decorator_choice = 0;
+                choice = 0;
+            }
+        }
+
+
+
+
+    }while(deco_loop);
+
+
+    if(decorator_choice > 0)
+    {
+        cout<<"You chose "<<decorator_choice<<endl;
+
+        decorate(decorator_choice);
+
+        cout<<"Add another?\nEnter 1 to add another decorator.\n"
+                "Enter -1 to skip ahead."<<endl;
+        cin>>decorator_choice;
+        if(decorator_choice > 0)
+            deco_menu(decorator_choice);
+
+    }
+
+
+
+    return decorator_choice;
+}
+void game_manager::update_stats(int coin)
+{
+    if(coin > 0)
+    {
+        cout<<endl<<"Player recieved a "<<coin<<" victory coin!"<<endl;
+        game_stats->change_status(marker->get_turn_number(),
+                                  get_percent(one), get_percent(two),
+                                  one->get_number_of_tokens_owned(),
+                                  two->get_number_of_tokens_owned(),coin);
+    }
+    else
+    {
+        game_stats->change_status(marker->get_turn_number(),
+                                  get_percent(one), get_percent(two),
+                                  one->get_number_of_tokens_owned(),
+                                  two->get_number_of_tokens_owned(),0);
+    }
+
+    watcher->show();
+    cout<<"\t\t---";
+    cout<<endl<<endl;
+
 }
 void game_manager::game_loop()
 {
 //    double total_regions =  one->get_total_number_regions();
     cout<<endl<<"Game start!"<<endl;
+    int deco_choice = 0;
     while(marker->next_turn()) {
-//        cout<<one->get_number_regions_owned()<<endl;
+        update_stats(0);
+
+        cout<<endl<<endl;
+        if(deco_choice >= 0)
+            deco_choice = deco_menu(deco_choice);
 
 
-        update_objective_observer();
         one_play(one);
-        update_objective_observer();
+        score_phase(one);
+
         one_play(two);
+        score_phase(two);
+
         if(three!= nullptr)
         {
-            update_objective_observer();
+//            update_objective_observer();
 
             one_play(three);
+            score_phase(three);
+
         }
         if(four!= nullptr)
         {
-            update_objective_observer();
+//            update_objective_observer();
 
             one_play(four);
+            score_phase(four);
+
         }
 
         if(five!= nullptr)
         {
-            update_objective_observer();
+//            update_objective_observer();
 
             one_play(five);
+            score_phase(five);
+
 
         }
-        score_phase();
         //score phase
     }
 }
 
-void game_manager::score_phase()
+void game_manager::score_phase(player * p)
 {
-    cout<<"===================>>"<<endl;
-    cout<<"Scoring phase"<<endl;
-    cout<<"===================>>"<<endl<<endl;
-    subject->change_status(one->get_name(), "Score",marker->get_turn_number());
-    one->scores();
-    subject->change_status(two->get_name(), "Score",marker->get_turn_number());
+    subject->change_status((p)->get_name(), "Score", p->get_number_regions_owned(), map_size );
 
-    two->scores();
-    if(three!= nullptr)
+    int total = game_map->l1->num_regions_controlled(p->get_name());
+    int total_display = total;
+
+    while(total > 0) // ie: 28
     {
-        subject->change_status(three->get_name(), "Score",marker->get_turn_number());
-        three->scores();
-
+        while( total / 10 > 0)
+        {
+            int temp = p->scores(total, 10); //return 18
+            total = temp;
+            update_stats(10);
+            //update game when player gets a 10 coin token
+        }while( total / 5 > 0)
+        {
+            int temp = p->scores(total, 5); //return 18
+            total = temp;
+            update_stats(5);
+        }while( total / 3 > 0)
+        {
+            int temp = p->scores(total, 3); //return 18
+            total = temp;
+            update_stats(3);
+        }while( total / 1 > 0)
+        {
+            int temp = p->scores(total, 1); //return 18
+            total = temp;
+            update_stats(1);
+        }
     }
-    if(four!= nullptr)
-    {
-        subject->change_status(four->get_name(), "Score",marker->get_turn_number());
-        four->scores();
 
-    }
-    if(five!= nullptr)
-    {
-        subject->change_status(five->get_name(), "Score",marker->get_turn_number());
-        five->scores();
 
-    }
+    cout<<"------------------------"<<endl;
+    cout<<"Player "<<p->get_name()<<endl;
+    cout<<"------------------------"<<endl;
+
+    cout<<"\tNumber of regions controlled: "<<total_display<<" region(s)!"<<endl;
+    cout<<"\tNumber of Victory Coins: "<<p->get_victory_tokens()<<endl<<endl;
+
 }
-
 void game_manager::add_lost_tribes(int number_of_players)
 {
     List* temp_list = game_map->l1;
@@ -405,9 +514,10 @@ void game_manager::redistrib_tokens(player& p, tokens_info & return_token, bool 
     }
 
 
-
     cout << "player " << (&p)->get_name() << " new token total : " << (&p)->get_number_of_tokens_owned()
          << endl;
+    update_stats(0);
+
 }
 
 int game_manager::turn(player* p)
@@ -436,9 +546,13 @@ int game_manager::turn(player* p)
         {
             redistrib_tokens(*five, *return_token, false);
         }
+        else if(return_token->prev_owner == "default")
+        {
+            cout<<"Lost tribes slain"<<endl;
+        }
         else
         {
-            cout<<"something wrong has happened."<<endl;
+            cout<<"Redistribute token has no owner."<<endl;
         }
     }
     if(return_token->turn_finish == true)
@@ -456,15 +570,19 @@ int game_manager::menu(player& p)
 {
     if((&p)->first_culture_null())
     {
-        subject->change_status(p.get_name(), "Pick", marker->get_turn_number());
-
+        subject->change_status((&p)->get_name(), "Pick", (&p)->get_number_regions_owned(), map_size );
         (&p)->set_first_culture(culture_deck->pick_race());
         (&p)->give_tokens();
+
+        update_stats(0);
     }
     else
     {
         List* list_ptr = game_map->l1;
         vector<int> regions_list = list_ptr -> get_region_array((&p)->get_name());
+        subject->change_status((&p)->get_name(), "Abandon", (&p)->get_number_regions_owned(), map_size);
+        update_stats(0);
+
         (&p)->player_display(regions_list, *list_ptr);
 
         cout<<"Enter [1] if you want to abandon any regions"<<endl;
@@ -474,8 +592,7 @@ int game_manager::menu(player& p)
 
         if(choice == 1)
         {
-            subject->change_status(p.get_name(), "Abandon",marker->get_turn_number());
-            abandon_phase(one);
+            abandon_phase(*one);
         }
     }
 
@@ -485,7 +602,8 @@ int game_manager::menu(player& p)
 
     if((&p)->get_second_race_active())
     {
-
+        subject->change_status((&p)->get_name(), "Conquer", (&p)->get_number_regions_owned(), map_size);
+        update_stats(0);
         cout<<"Will you conquer(1) or go in decline(2)?"<<endl;
         do
         {
@@ -519,7 +637,7 @@ void game_manager::decline(player* p)
 void game_manager::redeploy(player * p)
 {
     cout<<"Redeploy initiated"<<endl;
-    update_objective_observer();
+//    update_objective_observer();
     tokens_info* return_token = p->redeploy();
     if(return_token->exists)
     {
@@ -554,17 +672,20 @@ void game_manager::redeploy(player * p)
     else
         delete return_token;
 
-    distrib_tokens(p);
+//    distrib_tokens(p);
 }
 void game_manager::distrib_tokens(player* p)
 {
     p->redeploy_menu();
 }
 
-void game_manager::abandon_phase(player* p)
+void game_manager::abandon_phase(player& p)
 {
-    update_objective_observer();
-    tokens_info* return_token = p->abandon_menu();
+//    update_objective_observer();
+    subject->change_status((&p)->get_name(), "Abandon",(&p)->get_number_regions_owned(), map_size);
+    update_stats(0);
+
+    tokens_info* return_token = (&p)->abandon_menu();
     if(return_token->exists)
     {
         if(return_token->prev_owner == one->get_name())
@@ -599,15 +720,31 @@ void game_manager::abandon_phase(player* p)
         delete return_token;
 }
 
-void game_manager::update_objective_observer()
+
+void game_manager::decorate( int deco_number)
 {
-    obj_sub->change_status(one->get_name(), one->get_number_regions_owned(),map_size);
-    obj_sub->change_status(two->get_name(), two->get_number_regions_owned(),map_size);
-    if(three != nullptr)
-        obj_sub->change_status(three->get_name(), three->get_number_of_tokens_owned(),map_size);
-    if(four != nullptr)
-        obj_sub->change_status(four->get_name(), four->get_number_of_tokens_owned(),map_size);
-    if(five != nullptr)
-        obj_sub->change_status(five->get_name(), five->get_number_of_tokens_owned(),map_size);
+    game_stats->remove(watcher);
+    switch (deco_number)
+    {
+        case 2:
+            watcher = new dom_decorator(watcher);
+            break;
+        case 3:
+            watcher = new hand_decorator(watcher);
+            break;
+        case 4:
+            watcher = new coin_decorator(watcher);
+            break;
+        default:
+            break;
+    }
+    game_stats->add(watcher);
+    update_stats(0);    //
 }
 
+double game_manager::get_percent(player *p)
+{
+    int owned = p->get_number_regions_owned();
+    double percent = 100*owned/map_size;
+    return percent;
+}

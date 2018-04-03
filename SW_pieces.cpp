@@ -59,6 +59,8 @@ bool game_turn_token::next_turn()
         turn_number++;
         cout<<endl<<endl<<"====================="<<endl;
         cout<<"Turn advanced to turn: "<<turn_number<<endl;
+        cout<<"====================="<<endl;
+
         if(turn_number == MAX_TURNS)
             cout<<"It's the last turn!"<<endl;
         return true;
