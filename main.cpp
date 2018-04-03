@@ -20,13 +20,62 @@ int main() {
     cout<<endl<<"Assignment 3 Testing"<<endl<<"============================================="<<endl;
 
 
-//
     game_manager* game1 = new game_manager();
     game1->game_loop();
     delete game1;
 
 
 /*
+ *     int total = 29;
+    int modulo = 10;
+//    cout<<total/modulo<<endl;
+//    if( total / modulo  >  0)
+//    {
+//        int times = total/modulo;
+////        cout<<times<<endl;
+//        cout<<total<<" - "<<times<<"*"<<modulo<<endl;
+//        total = total - modulo;
+//        cout<< total;
+//    }
+    while( total / 10 > 0)
+    {
+//        cout<<total<<"\t"<<endl;
+        total = total - 10;
+//        cout<<total;
+        cout<<"kampai"<<endl;
+        //update game when player gets a 10 coin token
+    }while( total / 5 > 0)
+    {
+        cout<<total<<"\t"<<endl;
+
+        total = total -5;
+        cout<<total;
+
+        cout<<"YO"<<endl;
+        //update game when player gets a 10 coin token
+    }while( total / 3 > 0)
+    {
+        cout<<total<<"\t"<<endl;
+
+        total = total - 3;
+        cout<<total;
+
+        cout<<"drink!"<<endl;
+        //update game when player gets a 10 coin token
+    }while( total / 1 > 0)
+    {
+        cout<<total<<"\t"<<endl;
+
+        total = total -1;
+        cout<<total;
+
+        cout<<"blargh"<<endl;
+        //update game when player gets a 10 coin token
+    }
+    cout<<total;
+
+////
+ */
         stats_observable *stats = new stats_observable();
 
         Iobserver *undec = new undecorated_watcher(*stats);

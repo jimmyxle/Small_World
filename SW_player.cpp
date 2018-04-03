@@ -170,14 +170,14 @@ void player::battle(int region_ID, tokens_info& remainder)
 void player::take_over(int region_ID, int power, bits* stack,tokens_info& remainder)
 {
     cout << "Success, region " << region_ID << " conquered!" << endl;
-    cout<<"region has "<<map->l1->get_number_race_tokens(region_ID)<<endl;
+//    cout<<"region has "<<map->l1->get_number_race_tokens(region_ID)<<endl;
 
 
 
-    cout<<"!!active!!"<<endl;
+//    cout<<"!!active!!"<<endl;
     int num_tokens = map->l1->get_number_race_tokens(region_ID);
 
-    cout<<"num tokens given = "<<num_tokens-1 <<endl;
+//    cout<<"num tokens given = "<<num_tokens-1 <<endl;
     (&remainder)->number_of_tokens= (num_tokens-1);
 
     token* temp = nullptr;
@@ -199,7 +199,7 @@ void player::take_over(int region_ID, int power, bits* stack,tokens_info& remain
 
 
 
-    cout<<"region has "<<map->l1->get_number_race_tokens(region_ID)<<endl;
+//    cout<<"region has "<<map->l1->get_number_race_tokens(region_ID)<<endl;
 
     map->l1->control_region(region_ID, player_name);
     cout << "Adding " << power << " tokens to region " << region_ID << endl;
@@ -481,46 +481,37 @@ tokens_info* player::conquers(int map_number)
 
     return remainder;
 }
-void player::scores()
+int player::scores(int total, int div)
 {
-    int total = map->l1->num_regions_controlled(player_name);
-    int total_display = total;
-    while(total > 0) // ie: 28
+
+    if( total / div > 0)
     {
-        if( total/ 10 != 0)
-        {
-            for(int i = 0; i < total/10; ++i )
-                player_wallet->add_coin(10);
-
-            total = total/10;
-
-        }
-        if( total/ 5 != 0)
-        {
-            for(int i = 0; i < total/5; ++i )
-                player_wallet->add_coin(5);
-
-            total = total/5;
-        }
-        if( total/ 3 != 0)
-        {
-            for(int i = 0; i < total/3; ++i )
-                player_wallet->add_coin(3);
-            total = total/3;
-        }
-        if(total >0)
-        {
-            for(int i = 0; i < total; ++i)
-                player_wallet->add_coin(1);
-            total = 0;
-        }
+        player_wallet->add_coin(div);
+        total = total - div;
+        return total;
     }
-    cout<<"------------------------"<<endl;
-    cout<<"Player "<<player_name<<endl;
-    cout<<"------------------------"<<endl;
 
-    cout<<"\tNumber of regions controlled: "<<total_display<<" region(s)!"<<endl;
-    cout<<"\tNumber of Victory Coins: "<<player_wallet->get_wallet_total()<<endl<<endl;
+/*
+    if( total/ 5 != 0)
+    {
+        for(int i = 0; i < total/5; ++i )
+            player_wallet->add_coin(5);
+
+        total = total/5;
+    }
+    if( total/ 3 != 0)
+    {
+        for(int i = 0; i < total/3; ++i )
+            player_wallet->add_coin(3);
+        total = total/3;
+    }
+    if(total >0)
+    {
+        for(int i = 0; i < total; ++i)
+            player_wallet->add_coin(1);
+        total = 0;
+    }
+    */
 }
 void player::get_status()
 {

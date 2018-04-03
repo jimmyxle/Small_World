@@ -41,13 +41,13 @@ void phase_watcher::update(string p_name, string p_phase, int regions, int total
 void phase_watcher::show()
 {
     cout<<endl;
-    cout<<"Player "<<observed_name<<"\'s \""<<observed_phase<<"\" phase."<<endl;
+    cout<<"\t\tPlayer ["<<observed_name<<"] \""<<observed_phase<<"\" phase."<<endl;
 
 
     double percentage = 100*regions_watched/total_watched;
-    cout<<"(=\tPlayer "<<observed_name<<" controls "<<regions_watched<<"/"<<total_watched
+    cout<<"(=\t\t\tPlayer "<<observed_name<<" controls "<<regions_watched<<"/"<<total_watched
         <<"("<<percentage<<"%)";
-    string bars = "\n\t\t\tControl: |\t";
+    string bars = "\n\tControl: |\t";
     for(int i =0; i < regions_watched; ++i)
     {
         bars += "[X]";
@@ -165,7 +165,7 @@ undecorated_watcher::~undecorated_watcher()
 
 void undecorated_watcher::show()
 {
-    cout<<endl<<endl<<"====================="<<endl;
+    cout<<endl<<"====================="<<endl;
     cout<<"Turn number:\t["<<w_turn_number<<"]"<<endl;
 }
 void undecorated_watcher::update(int turn,double uno, double dos , int uno_token,int dos_token, int coin )
@@ -218,7 +218,7 @@ coin_decorator::~coin_decorator()
 void coin_decorator::show()
 {
     this->obs->show();
-    cout<<"Number of coins: "<<w_victory_coins<<endl;
+    cout<<"Coin value: "<<w_victory_coins<<endl;
 }
 void coin_decorator::update(int turn, double uno, double dos, int uno_token,int dos_token, int coin)
 {
