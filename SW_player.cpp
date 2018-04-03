@@ -684,3 +684,8 @@ int player::get_number_regions_owned()
 //    cout<<number<<endl;
     return number;
 }
+
+int player::get_victory_tokens()
+{
+    player_wallet->get_wallet_total();
+}
