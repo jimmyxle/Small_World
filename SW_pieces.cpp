@@ -43,10 +43,7 @@ game_turn_token::game_turn_token(int number_of_players)
     }
 }
 
-game_turn_token::~game_turn_token()
-{
-
-}
+game_turn_token::~game_turn_token()=default;
 int game_turn_token::get_turn_number()
 {
     return turn_number;
@@ -83,7 +80,7 @@ coin::coin()
 {
     coin_value = 1;
 }
-coin::~coin(){}
+coin::~coin()=default;
 coin::coin(int value)
 {
     coin_value = value;
@@ -151,22 +148,12 @@ void bank::initiate()
         temp= new coin(10);
         tens.push_back( temp );
     }
-//    cout<<"ones size: "<<ones.size()<<endl;
-//    cout<<"threes size: "<<threes.size()<<endl;
-//    cout<<"fives size: "<<fives.size()<<endl;
-//    cout<<"tens size: "<<tens.size()<<endl;
-//
-//
-//    cout<<"initiated"<<endl;
-//    cout.flush();
+
 }
 
 coin* bank::give_coins( int value)
 {
-    //go to a vector according to value
-    //assign a temp to the pointer
-    //pop back that vector
-    //return pointer
+
     coin* temp = nullptr;
     switch(value)
     {
@@ -177,7 +164,6 @@ coin* bank::give_coins( int value)
         case 3:
             temp = threes.back();
             threes.pop_back();
-//            cout<<threes.size()<<endl;
             return temp;
         case 5:
             temp = fives.back();
@@ -438,17 +424,11 @@ terrain_token::terrain_token()
 {
     cout<<"default terrain created"<<endl;
 }
-terrain_token::terrain_token(std::string tera, bool mount) : token(tera, mount)
-{
-//    terrain = tera;
-}
+terrain_token::terrain_token(std::string tera, bool mount) : token(tera, mount) {}
 terrain_token::~terrain_token()=default;
 
 
-void terrain_token::foo()
-{
-
-}
+void terrain_token::foo()=default;
 void terrain_token::flip_token()
 {
     cout<<"wrong call "<<endl;
@@ -683,7 +663,6 @@ culture_set::culture_set()
         ability_power.push_back(badge_power[i]);
     }
 
-//    cout<<race_list.size()<<" AND "<<ability_power.size()<<endl;
 }
 culture_set::~culture_set()
 {
@@ -759,7 +738,24 @@ void culture_set::show_top(int number) {
     }
     cout.flush();
 }
+culture culture_set::ai_pick_race()
+{
 
+    cout<<endl;
+    cout<<"-----------------------------------"<<endl;
+    cout<<"Please choose an option from below:"<<endl;
+    show_top(6);
+    cout<<"-----------------------------------"<<endl;
+
+//    cout.flush();
+    int choice = 0;
+    cout<<"Ai chose 0"<<endl;
+    visible[choice].print_culture();
+    culture temp = visible[choice];
+    visible.erase( visible.begin()+choice );
+    return temp;
+
+}
 culture culture_set::pick_race()
 {
     cout<<endl;

@@ -170,7 +170,6 @@ void undecorated_watcher::show()
 }
 void undecorated_watcher::update(int turn,double uno, double dos , int uno_token,int dos_token, int coin )
 {
-//    cout<<"undecorated watcher update"<<endl;
      w_turn_number = turn;
 
     w_uno = uno;
@@ -180,7 +179,6 @@ void undecorated_watcher::update(int turn,double uno, double dos , int uno_token
     w_dos_hand = dos_token;
 
      w_victory_coins = coin;
-//    show();
 }
 
 dom_decorator::dom_decorator(Iobserver * observer1)

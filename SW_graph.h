@@ -11,6 +11,7 @@
 #include <string>
 #include "SW_pieces.h"
 #include "SW_tokens_info.h"
+#include <ctime>
 
 /*
  * Graph is made as a vector of region nodes. Each region node have a vector of pointers to its neightbours
@@ -49,9 +50,7 @@ private:
     //Counter keeps track of the node index
     int counter = 0;
 public:
-    //Constructors
     List();
-//    explicit List( std::string);
     ~List();
     //Methods to create the graph
     void add_region( std::string);
@@ -64,9 +63,7 @@ public:
     void control_region(int, std::string);
     int get_region_strength(int);
     int get_number_race_tokens(int);
-//    void clean_region(int);
     token* clear_region(const int);
-//    void add_region_tokens(int, int, const std::string&);
     void add_region_token(int, token*);
     bool is_region_adjacent(int, int);
     bool is_control_adjacent(int, int);
@@ -76,8 +73,6 @@ public:
     void print_tokens();
     void regions_in_decline(const std::string&);
     int check_region_is_active(int);
-//    void regions_in_withdraw(const std::string&);
-//    bool check_region_in_decline(int);
     tokens_info* region_in_withdraw(const std::string&);
     vector<int> get_region_array(const std::string&);
     void get_region_info(int);
@@ -86,5 +81,6 @@ public:
     bool check_adjacency(int, std::string&);
     double get_total_number_regions();
 
+    int ai_get_region_adjacent_random(int); //get a random region adjacent to target id
 };
 #endif //SMALL_WORLD_SW_GRAPH_H
