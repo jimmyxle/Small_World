@@ -46,7 +46,7 @@ private:
     vector<coin*> threes;
     vector<coin*> fives;
     vector<coin*> tens;
-    const int BASE_SIZE = 25;
+    const int BASE_SIZE = 40;
 
 public:
     bank();
@@ -75,11 +75,6 @@ public:
     int get_wallet_total();
 };
 
-/*
- * Race Tokens. These are the pieces that the players move around the board. Each one depicts
-one unit of the race in question on a little square chit. You know what race you (or anyone else)
-is controlling by looking at the race banner sitting in front of them.
- */
 
 class token
 {
@@ -117,12 +112,10 @@ public:
 class terrain_token : public token
 {
 private:
-//    std::string terrain;
 public:
     terrain_token();
     explicit terrain_token(std::string, bool);
     ~terrain_token();
-//    std::string getTerrain();
     void foo();
     void flip_token();
     int is_active();
@@ -137,7 +130,6 @@ public:
     bits();
     ~bits();
     void add_mountain_token();
-//    void add_race_tokens(std::string, int);
 
     void add_race_token( token *);
     token* pop_race_token();
@@ -149,23 +141,8 @@ public:
     void token_decline();
     int get_active();
     token* token_withdraw(int);
-//    bool check_if_decline();
 };
 
-
-
-
-/*
-Cultural Identifiers. These determine the abilities of each race in the game. They're cleverly set
-up as 14 race "banners" and 20 special power "badges". You link a badge with a banner and
-        you have the cultural identity of a race. They work great any way you measure them. They're
-attractive. The iconography on them is both consistent and easy to use, to the point where
-        someone who's read the rules should be able to make out 80-90% of the powers at first glance.
-Finally, they add great color to the game, as each special power lists an adjective and each race
-        lists a noun, so you can have "Hill Elves", "Flying Ghouls", "Seafaring Giants", and "Heroic
-Ratmen".
-
- */
 class culture
 {
     /*
@@ -227,6 +204,7 @@ public:
     void shuffle();
     void show_top(int);
     culture pick_race();
+    culture ai_pick_race();
 };
 
 #endif //SMALL_WORLD_SW_PIECES_H

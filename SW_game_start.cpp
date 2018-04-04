@@ -5,11 +5,36 @@
 #include <limits>
 #include "SW_game_start.h"
 
-game_manager::game_manager(){
-    //make game coins
+game_manager::game_manager(int dummy_var)
+{
     game_bank = new bank();
 
+    one = nullptr;
+    two = nullptr;
+    three = nullptr;
+    four = nullptr;
+    five = nullptr;
 
+    num_players = 2;
+    cout<<endl<<"Number of players is now: "<<num_players<<endl;
+
+    game_map = new loader();
+    game_map->read_file("2p.map");
+    game_map->populate();
+    cout<<"2p mode chosen."<<endl;
+    add_lost_tribes(2);
+
+    game_map->l1->declare_all_edges(num_players);
+    ai_create_players(dummy_var);
+    marker = new game_turn_token(num_players);
+    map_size = game_map->l1->get_total_number_regions();
+    setup_observers();
+    initialize(); //culture decks
+
+}
+game_manager::game_manager(){
+    //make game coins
+      game_bank = new bank();
     one = nullptr;
     two = nullptr;
     three = nullptr;
@@ -76,7 +101,7 @@ game_manager::game_manager(){
     marker = new game_turn_token(num_players);
     map_size = game_map->l1->get_total_number_regions();
     setup_observers();
-    initialize();
+    initialize(); //culture decks
 
 }
 void game_manager::setup_observers()
@@ -114,32 +139,57 @@ game_manager::~game_manager()
 
     delete subject;
     delete phase;
+    delete game_stats;
+    delete watcher;
+}
+void game_manager::ai_create_players(int setting)
+{
+    one = new player("uno", game_map, game_bank, 0);
+    two = new player("dos", game_map, game_bank, setting );
 }
 void game_manager::create_players(int number)
 {
-    one = new player("uno", game_map, game_bank);
-    two = new player("dos", game_map, game_bank);
+    one = new player("uno", game_map, game_bank, 0);
+    two = new player("dos", game_map, game_bank,0 );
     switch(number)
     {
         case 2:
             break;
         case 3:
-            three = new player("tres", game_map, game_bank);
+            three = new player("tres", game_map, game_bank,0);
             break;
         case 4:
-            three = new player("tres", game_map,game_bank);
-            four = new player("quatro", game_map,game_bank);
+            three = new player("tres", game_map,game_bank, 0);
+            four = new player("quatro", game_map,game_bank,0);
             break;
         case 5:
-            three = new player("tres", game_map,game_bank);
-            four = new player("quatro", game_map,game_bank);
-            five = new player("cinqo", game_map,game_bank);
+            three = new player("tres", game_map,game_bank,0);
+            four = new player("quatro", game_map,game_bank,0);
+            five = new player("cinqo", game_map,game_bank,0);
             break;
         default:
             cout<<"Not possible"<<endl;
     }
 }
+void game_manager::ai_continue_loop(player &p)
+{
+    bool continue_turn = true;
+    while (continue_turn)
+    {
+        subject->change_status(p.get_name(), "Conquer", p.get_number_regions_owned(), map_size);
+        update_stats(0);
 
+        int empty_tokens = ai_turn( &p );
+        if ( (&p) ->get_number_of_tokens_owned() > 0)
+        {
+            continue_turn = true;
+        }
+        else
+            continue_turn = false;
+        if (empty_tokens == 1)
+            continue_turn = false;
+    }
+}
 void game_manager::continue_loop(player& p)
 {
     bool continue_turn = true;
@@ -159,7 +209,26 @@ void game_manager::continue_loop(player& p)
             continue_turn = false;
     }
 }
+void game_manager::ai_one_play(player * p)
+{
+    int menu_num = 0;
+    menu_num = ai_menu(*p);
+    //conquer phase
+    if (menu_num == 1) {
+        redeploy(p);
+        ai_continue_loop(*p);
+        subject->change_status((p)->get_name(), "Redeploy", p->get_number_regions_owned(), map_size );
+        update_stats(0);
 
+
+        cout<<endl<<"Redeploy troops? Enter '1' to redeploy. Enter '0' to skip ahead."<<endl;
+        cout<<"ai never redeploys"<<endl;
+    } else if (menu_num == 2) {
+        //go in decline
+        subject->change_status((p)->get_name(), "Decline", p->get_number_regions_owned(), map_size);
+        decline(p);
+    }
+}
 void game_manager::one_play(player * p)
 {
     int menu_num = 0;
@@ -184,8 +253,6 @@ void game_manager::one_play(player * p)
     } else if (menu_num == 2) {
         //go in decline
         subject->change_status((p)->get_name(), "Decline", p->get_number_regions_owned(), map_size);
-//        subject->change_status((p)->get_name(), "Redeploy", marker->get_turn_number(),
-//                               p->get_number_regions_owned(), map_size );
         decline(p);
     }
 }
@@ -210,6 +277,8 @@ int game_manager::deco_menu(int choice)
 
         if(decorator_choice < 0)
         {
+            cout<<"Won't bother you again"<<endl;
+            decorator_choice = -1;
             deco_loop = false;
         }
         else
@@ -241,11 +310,11 @@ int game_manager::deco_menu(int choice)
         cout<<"Add another?\nEnter 1 to add another decorator.\n"
                 "Enter -1 to skip ahead."<<endl;
         cin>>decorator_choice;
+
         if(decorator_choice > 0)
             deco_menu(decorator_choice);
 
     }
-
 
 
     return decorator_choice;
@@ -273,17 +342,43 @@ void game_manager::update_stats(int coin)
     cout<<endl<<endl;
 
 }
-void game_manager::game_loop()
+
+void game_manager::ai_game_loop()
 {
-//    double total_regions =  one->get_total_number_regions();
     cout<<endl<<"Game start!"<<endl;
-    int deco_choice = 0;
+    int deco_choice = 1;
     while(marker->next_turn()) {
         update_stats(0);
 
         cout<<endl<<endl;
-        if(deco_choice >= 0)
+        if(deco_choice > 0)
+        {
             deco_choice = deco_menu(deco_choice);
+            deco_choice = -1;
+        }
+
+
+        one_play(one);
+        score_phase(one);
+
+        ai_one_play(two);
+        score_phase(two);
+    }
+    declare_winner();
+}
+void game_manager::game_loop()
+{
+    cout<<endl<<"Game start!"<<endl;
+    int deco_choice = 1;
+    while(marker->next_turn()) {
+        update_stats(0);
+
+        cout<<endl<<endl;
+        if(deco_choice > 0)
+        {
+            deco_choice = deco_menu(deco_choice);
+            deco_choice = -1;
+        }
 
 
         one_play(one);
@@ -292,34 +387,8 @@ void game_manager::game_loop()
         one_play(two);
         score_phase(two);
 
-        if(three!= nullptr)
-        {
-//            update_objective_observer();
-
-            one_play(three);
-            score_phase(three);
-
-        }
-        if(four!= nullptr)
-        {
-//            update_objective_observer();
-
-            one_play(four);
-            score_phase(four);
-
-        }
-
-        if(five!= nullptr)
-        {
-//            update_objective_observer();
-
-            one_play(five);
-            score_phase(five);
-
-
-        }
-        //score phase
     }
+    declare_winner();
 }
 
 void game_manager::score_phase(player * p)
@@ -519,7 +588,40 @@ void game_manager::redistrib_tokens(player& p, tokens_info & return_token, bool 
     update_stats(0);
 
 }
+int game_manager::ai_turn(player *p)
+{
 
+    tokens_info *return_token = ( p->ai_conquers( num_players) );
+    if(return_token->exists)
+    {
+        if(return_token->prev_owner == one->get_name())
+        {
+            redistrib_tokens(*(one), *return_token, false);
+        }
+        else if(return_token->prev_owner == two->get_name())
+        {
+            redistrib_tokens(*(two), *return_token, false);
+        }
+        else if(return_token->prev_owner == "default")
+        {
+            cout<<"Lost tribes slain"<<endl;
+        }
+        else
+        {
+            cout<<"Redistribute token has no owner."<<endl;
+        }
+    }
+    if(return_token->turn_finish == true)
+    {
+        delete return_token;
+        return 1;
+    }
+    else
+    {
+        delete return_token;
+        return 0;
+    }
+}
 int game_manager::turn(player* p)
 {
     tokens_info *return_token = ( p->conquers( num_players) );
@@ -566,6 +668,49 @@ int game_manager::turn(player* p)
         return 0;
     }
 }
+
+int game_manager::ai_menu(player &p)
+{
+    if((&p)->first_culture_null())
+    {
+        subject->change_status((&p)->get_name(), "Pick", (&p)->get_number_regions_owned(), map_size );
+        int ai_pick = (&p)->ai.execute(1,3);
+        (&p)->set_first_culture(culture_deck->ai_pick_race( ));
+        (&p)->give_tokens();
+        update_stats(0);
+    }
+    else
+    {
+        List* list_ptr = game_map->l1;
+        vector<int> regions_list = list_ptr -> get_region_array((&p)->get_name());
+        subject->change_status((&p)->get_name(), "Abandon", (&p)->get_number_regions_owned(), map_size);
+        update_stats(0);
+
+        (&p)->player_display(regions_list, *list_ptr);
+
+        cout<<"Ai won't abandon any regions"<<endl;
+
+    }
+
+
+    cout<<endl;
+    int ai_choice = 0;
+    if((&p)->get_second_race_active())
+    {
+        subject->change_status((&p)->get_name(), "Conquer", (&p)->get_number_regions_owned(), map_size);
+        update_stats(0);
+        cout<<"Will you conquer(1) or go in decline(2)?"<<endl;
+        cout<<"ai will conquer"<<endl;
+        ai_choice =1;
+    }
+    else
+    {
+        cout<<"You have 2 races, so can only conquer, abandon regions or redeploy!"<<endl;
+        ai_choice = 1;
+    }
+
+    return ai_choice;
+}
 int game_manager::menu(player& p)
 {
     if((&p)->first_culture_null())
@@ -592,7 +737,7 @@ int game_manager::menu(player& p)
 
         if(choice == 1)
         {
-            abandon_phase(*one);
+            abandon_phase(p);
         }
     }
 
@@ -637,7 +782,6 @@ void game_manager::decline(player* p)
 void game_manager::redeploy(player * p)
 {
     cout<<"Redeploy initiated"<<endl;
-//    update_objective_observer();
     tokens_info* return_token = p->redeploy();
     if(return_token->exists)
     {
@@ -672,7 +816,6 @@ void game_manager::redeploy(player * p)
     else
         delete return_token;
 
-//    distrib_tokens(p);
 }
 void game_manager::distrib_tokens(player* p)
 {
@@ -681,7 +824,6 @@ void game_manager::distrib_tokens(player* p)
 
 void game_manager::abandon_phase(player& p)
 {
-//    update_objective_observer();
     subject->change_status((&p)->get_name(), "Abandon",(&p)->get_number_regions_owned(), map_size);
     update_stats(0);
 
@@ -747,4 +889,19 @@ double game_manager::get_percent(player *p)
     int owned = p->get_number_regions_owned();
     double percent = 100*owned/map_size;
     return percent;
+}
+
+void game_manager::declare_winner()
+{
+    update_stats(0); //string p_name, string p_phase, int regions, int total
+    subject->change_status(one->get_name(), "END", one->get_number_regions_owned(), map_size);
+    subject->change_status(two->get_name(), "END", two->get_number_regions_owned(), map_size);
+    int one_score = one->get_victory_tokens();
+    int two_score = two->get_victory_tokens();
+
+    if(one_score>two_score)
+        cout<<one->get_name()<<" wins!"<<endl;
+    else
+        cout<<two->get_name()<<" wins!"<<endl;
+
 }

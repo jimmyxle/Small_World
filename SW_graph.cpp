@@ -484,3 +484,21 @@ double List::get_total_number_regions()
 {
     return 0.0+world_nodes.size();
 }
+
+int List::ai_get_region_adjacent_random(int region_ID)
+{
+    vector<int> adjacent_regions;
+    cout<<"ai choosing between regions: "<<endl;
+    for(auto iter = world_nodes[region_ID].adjacent.begin();
+        iter!=world_nodes[region_ID].adjacent.end(); ++iter)
+    {
+        cout<< (*iter)->ID<<" ";
+        adjacent_regions.push_back( (*iter)->ID);
+    }
+
+    srand(time(nullptr));
+    int index = rand()%adjacent_regions.size();
+    int reg = adjacent_regions[index];
+    cout<<"ai chose "<<reg<<endl;
+    return adjacent_regions[index];
+}

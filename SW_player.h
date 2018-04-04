@@ -12,6 +12,7 @@
 #include "SW_dice.h"
 #include "SW_map_loader.h"
 #include "SW_tokens_info.h"
+#include "SW_strategy.h"
 
 class player
 {
@@ -22,12 +23,18 @@ private:
     bits* second_race_stack;
     culture* player_first_culture;
     culture* player_second_culture;
-//    bool first_decline;
     dice* player_dice;
     loader* map;
 
     bank* player_central;
     wallet* player_wallet;
+
+    aggressive_strategy aggr_strat;
+    defensive_strategy def_strat;
+    moderate_strategy mod_strat;
+    random_strategy rand_strat;
+
+//    behaviour ai = behaviour(nullptr);
 
     //include board bit vector
 //    bits* player_tokens;
@@ -38,12 +45,14 @@ private:
 
 public:
 
+    behaviour ai = behaviour(nullptr);
+
     tokens_info* conquers(int );
     int scores(int, int);
     player();
     ~player();
 
-    explicit player(std::string, loader*, bank*);
+    explicit player(std::string, loader*, bank*, int);
     const std::string get_name();
     void give_tokens();
     void redistribute_token(token *);
@@ -62,6 +71,11 @@ public:
 
     int get_number_regions_owned();
     int get_victory_tokens();
+
+    tokens_info* ai_conquers(int); //always reinforcments, could change # units used
+    int ai_region_conquers(int); //helper: calls get_region_adjacent_random
+    int ai_owned(); //returns a random region id that the ai owns
+
 
 };
 
