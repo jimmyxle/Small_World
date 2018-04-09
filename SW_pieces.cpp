@@ -428,7 +428,7 @@ terrain_token::terrain_token(std::string tera, bool mount) : token(tera, mount) 
 terrain_token::~terrain_token()=default;
 
 
-void terrain_token::foo()=default;
+void terrain_token::foo(){};
 void terrain_token::flip_token()
 {
     cout<<"wrong call "<<endl;

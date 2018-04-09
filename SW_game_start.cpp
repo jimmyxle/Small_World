@@ -15,17 +15,65 @@ game_manager::game_manager(int dummy_var)
     four = nullptr;
     five = nullptr;
 
-    num_players = 2;
-    cout<<endl<<"Number of players is now: "<<num_players<<endl;
+    do
+    {
+        cout<<"Enter the number of players(2-5): "<<endl;
+        cin >>num_players;
+        if(!cin)
+        {
+            cin.clear();
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            num_players = 1;
+        }
+        if(num_players < 1 || num_players > 5)
+            cout<<"Invalid number, please choose between 2 & 5."<<endl;
+        else
+            cout<<endl<<"Number of players is now: "<<num_players<<endl;
+    }while(num_players < 1 || num_players > 5);
+    switch(num_players)
+    {
+        case 1:
+            cout<<"bad map mode chosen"<<endl;
+            game_map = new loader();
+            game_map->read_file("bad_test_map.map");
+            game_map->populate();
+            break;
+        case 2:
+            game_map = new loader();
+            game_map->read_file("2p.map");
+            game_map->populate();
+            cout<<"2p mode chosen."<<endl;
+            add_lost_tribes(2);
+            break;
+        case 3:
+            game_map = new loader();
+            game_map->read_file("3p.map");
+            game_map->populate();
+            cout<<"3p mode chosen."<<endl;
+            add_lost_tribes(3);
+            break;
+        case 4:
+            game_map = new loader();
+            game_map->read_file("4p.map");
+            game_map->populate();
+            cout<<"4p mode chosen."<<endl;
+            add_lost_tribes(4);
 
-    game_map = new loader();
-    game_map->read_file("2p.map");
-    game_map->populate();
-    cout<<"2p mode chosen."<<endl;
-    add_lost_tribes(2);
+            break;
+        case 5:
+            game_map = new loader();
+            game_map->read_file("5p.map");
+            game_map->populate();
+            cout<<"5p mode chosen."<<endl;
+            add_lost_tribes(5);
+
+            break;
+        default:
+            cout<<"Invalid entry."<<endl;
+    }
 
     game_map->l1->declare_all_edges(num_players);
-    ai_create_players(dummy_var);
+    ai_create_players(num_players, dummy_var);
     marker = new game_turn_token(num_players);
     map_size = game_map->l1->get_total_number_regions();
     setup_observers();
@@ -142,10 +190,33 @@ game_manager::~game_manager()
     delete game_stats;
     delete watcher;
 }
-void game_manager::ai_create_players(int setting)
+void game_manager::ai_create_players(int num_players, int setting)
 {
     one = new player("uno", game_map, game_bank, 0);
     two = new player("dos", game_map, game_bank, setting );
+    switch(num_players)
+    {
+        case 2:
+            break;
+        case 3:
+            three = new player("tres", game_map, game_bank,2); //defensive
+
+            break;
+        case 4:
+            three = new player("tres", game_map,game_bank, 2);
+            four = new player("quatro", game_map,game_bank,1); //aggressive
+            break;
+        case 5:
+            three = new player("tres", game_map,game_bank,2);
+            four = new player("quatro", game_map,game_bank,1);
+            five = new player("cinqo", game_map,game_bank,4); //random
+            break;
+        default:
+            cout<<"Not possible"<<endl;
+            break;
+
+
+    }
 }
 void game_manager::create_players(int number)
 {
@@ -289,7 +360,7 @@ int game_manager::deco_menu(int choice)
             }
             else
             {
-                cout<<"Wrong input. Try again"<<endl;
+//                cout<<"Enter "<<endl;
                 decorator_choice = 0;
                 choice = 0;
             }
@@ -307,7 +378,7 @@ int game_manager::deco_menu(int choice)
 
         decorate(decorator_choice);
 
-        cout<<"Add another?\nEnter 1 to add another decorator.\n"
+        cout<<"Add another?\nEnter 2,3,4 to add another decorator.\n"
                 "Enter -1 to skip ahead."<<endl;
         cin>>decorator_choice;
 
@@ -358,13 +429,28 @@ void game_manager::ai_game_loop()
         }
 
 
-        one_play(one);
-        score_phase(one);
+        game_loop_helper(one);
+        ai_game_loop_helper(two);
 
-        ai_one_play(two);
-        score_phase(two);
+        if(three != nullptr)
+            ai_game_loop_helper(three);
+        if(four != nullptr)
+            ai_game_loop_helper(four);
+        if(five != nullptr)
+            ai_game_loop_helper(five);
+
     }
     declare_winner();
+}
+void game_manager::game_loop_helper(player* p)
+{
+    one_play(p);
+    score_phase(p);
+}
+void game_manager::ai_game_loop_helper(player *p)
+{
+    ai_one_play(p);
+    score_phase(p);
 }
 void game_manager::game_loop()
 {
@@ -381,11 +467,15 @@ void game_manager::game_loop()
         }
 
 
-        one_play(one);
-        score_phase(one);
+        game_loop_helper(one);
+        game_loop_helper(two);
 
-        one_play(two);
-        score_phase(two);
+        if(three != nullptr)
+            game_loop_helper(three);
+        if(four != nullptr)
+            game_loop_helper(four);
+        if(five != nullptr)
+            game_loop_helper(five);
 
     }
     declare_winner();
@@ -601,6 +691,19 @@ int game_manager::ai_turn(player *p)
         else if(return_token->prev_owner == two->get_name())
         {
             redistrib_tokens(*(two), *return_token, false);
+        }
+        else if(three!= nullptr && return_token->prev_owner == three->get_name())
+        {
+            redistrib_tokens(*three, *return_token, false);
+        }
+        else if(four != nullptr && return_token->prev_owner == four->get_name())
+        {
+            redistrib_tokens(*four, *return_token, false);
+
+        }
+        else if(five != nullptr && return_token->prev_owner == five->get_name())
+        {
+            redistrib_tokens(*five, *return_token, false);
         }
         else if(return_token->prev_owner == "default")
         {
@@ -893,15 +996,52 @@ double game_manager::get_percent(player *p)
 
 void game_manager::declare_winner()
 {
+
     update_stats(0); //string p_name, string p_phase, int regions, int total
     subject->change_status(one->get_name(), "END", one->get_number_regions_owned(), map_size);
     subject->change_status(two->get_name(), "END", two->get_number_regions_owned(), map_size);
     int one_score = one->get_victory_tokens();
     int two_score = two->get_victory_tokens();
+    int three_score = 0;
+    int four_score = 0;
+    int five_score = 0;
 
-    if(one_score>two_score)
-        cout<<one->get_name()<<" wins!"<<endl;
+    if(three != nullptr)
+    {
+        subject->change_status(three->get_name(), "END", three->get_number_regions_owned(), map_size);
+        three_score = three->get_victory_tokens();
+    }
+    if(four != nullptr)
+    {
+        subject->change_status(four->get_name(), "END", four->get_number_regions_owned(), map_size);
+        four_score = four -> get_victory_tokens();
+    }
+    if(five != nullptr)
+    {
+        subject->change_status(five->get_name(), "END", five->get_number_regions_owned(), map_size);
+        five_score = five -> get_victory_tokens();
+    }
+
+    int score_arr[] = {one_score, two_score, three_score, four_score, five_score};
+    int max = 0;
+    for(int i =0; i < 5; ++i)
+    {
+        if(score_arr[i] > max)
+        {
+            max = score_arr[i];
+        }
+    }
+    string winner = "";
+    if(max == one_score)
+        winner = one->get_name();
+    else if(max == two_score)
+        winner = two->get_name();
+    else if(max == three_score)
+        winner = three->get_name();
+    else if(max == four_score)
+        winner = four->get_name();
     else
-        cout<<two->get_name()<<" wins!"<<endl;
+        winner = five->get_name();
 
+    cout<<winner<<" has won!"<<endl;
 }

@@ -43,8 +43,9 @@ private:
     void update_stats(int);
     void decorate( int);
     double get_percent(player*);
+    void game_loop_helper(player*);
 
-    void ai_create_players(int);
+    void ai_create_players(int, int);
     void ai_continue_loop(player&); //keep doing ai_turn until you run out of tokens
     void ai_one_play(player*);
 
@@ -58,6 +59,7 @@ public:
     void setup_observers();
     void initialize();
 
+
     void game_loop();
 
     int turn(player*);
@@ -66,10 +68,10 @@ public:
     void decline(player*);
     void redeploy(player*);
 
-    int ai_turn(player*); //leads to ai_conquer()
+    int ai_turn(player*); //leads to ai_conquer() @
     int ai_menu(player&); //will always choose conquer, never redeploy, maybe should choose decline
     void ai_game_loop();
-
+    void ai_game_loop_helper(player*);
 
     void declare_winner();
 
