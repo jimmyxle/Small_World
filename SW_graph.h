@@ -41,6 +41,8 @@ private:
         void printAdj();
         void display();
         void set_edge();
+        bool is_sea();
+
     };
     //Some helper pointers
     region* head;
@@ -76,11 +78,11 @@ public:
     tokens_info* region_in_withdraw(const std::string&);
     vector<int> get_region_array(const std::string&);
     void get_region_info(int);
-    tokens_info* abandon_region(int, tokens_info&);
+    tokens_info * abandon_region(int, tokens_info&);
     void declare_all_edges(int);
     bool check_adjacency(int, std::string&);
     double get_total_number_regions();
 
-    int ai_get_region_adjacent_random(int); //get a random region adjacent to target id
+    int ai_get_region_adjacent_random(int, string); //get a random region adjacent to target id
 };
 #endif //SMALL_WORLD_SW_GRAPH_H

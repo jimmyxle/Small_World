@@ -27,6 +27,9 @@ player::player()
     second_race_stack = new bits();
     map = nullptr;
 //    first_decline = false;
+    player_stats = new stats_observable();
+    marker = nullptr;
+    update_stats(5);
     cout<<player_name<<" has entered the game!"<<"\t";
 
 };
@@ -42,12 +45,14 @@ player::~player()
 //    player_wallet = nullptr;
     player_central = nullptr;
     delete player_wallet;
-
+    delete player_stats;
+    delete marker;
     cout<<player_name<<" has left the game!"<<"\t";
 
 
 }
-player::player(std::string str, loader* map_loaded, bank* bank1, int ai_factor)
+player::player(std::string str, loader* map_loaded, bank* bank1,
+               int ai_factor, game_turn_token* mark)
 {
     player_name = std::move(str);
     player_dice = new dice();
@@ -90,6 +95,26 @@ player::player(std::string str, loader* map_loaded, bank* bank1, int ai_factor)
     {
         cout<<player_name<<" has entered the game!"<<"\t";
     }
+    player_stats = new stats_observable();
+    marker = mark;
+    update_stats(5);
+}
+
+void player::update_stats(int coins)
+{
+    if(coins > 0)
+    {
+        cout << endl << "Player recieved a " << coins << " victory coin!" << endl;
+        player_stats->change_status(get_name(), marker->get_turn_number(), get_percent(),
+                                    get_number_of_tokens_owned(), coins);
+    }
+    else
+    {
+        player_stats->change_status(get_name(), marker->get_turn_number(), get_percent(),
+                                    get_number_of_tokens_owned(), 0);
+    }
+    cout<<"\t\t---"<<endl<<endl;
+
 }
 const std::string  player::get_name()
 {
@@ -123,10 +148,9 @@ void player::give_tokens()
             race_token* temp = new race_token(name, true, false);
             second_race_stack->add_race_token( (temp) );
         }
-//        second_race_stack->add_race_tokens(player_second_culture->get_banner(),
-//                                           player_second_culture->get_culture_power());
     }
 
+    update_stats(0);
 }
 
 
@@ -229,7 +253,8 @@ void player::take_over(int region_ID, int power, bits* stack,tokens_info& remain
     for (int i = 0; i < power; ++i)
         map->l1->add_region_token(region_ID, stack->pop_race_token());
 
-    cout << player_name << " has " << stack->get_size() << " tokens left" << endl;
+    cout << player_name << " has \t\t[" << stack->get_size() << "] tokens left" << endl;
+//    update_stats(0);
 }
 
 vector<int> player::show_edges(int number_players)
@@ -610,6 +635,9 @@ tokens_info* player::conquers(int map_number)
                                     take_over(region_ID, SIZE, second_race_stack, *remainder);
 
                                 }
+
+                                update_stats(0);
+
                                 keep_conquering = false;
                             } else {
                                 cout << "too weak" << endl;
@@ -680,27 +708,7 @@ int player::scores(int total, int div)
         return total;
     }
 
-/*
-    if( total/ 5 != 0)
-    {
-        for(int i = 0; i < total/5; ++i )
-            player_wallet->add_coin(5);
-
-        total = total/5;
-    }
-    if( total/ 3 != 0)
-    {
-        for(int i = 0; i < total/3; ++i )
-            player_wallet->add_coin(3);
-        total = total/3;
-    }
-    if(total >0)
-    {
-        for(int i = 0; i < total; ++i)
-            player_wallet->add_coin(1);
-        total = 0;
-    }
-    */
+    update_stats(div);
 }
 void player::get_status()
 {
@@ -911,7 +919,7 @@ int player::get_victory_tokens()
 int player::ai_region_conquers(int region_ID)
 {
 
-    map->l1->ai_get_region_adjacent_random(region_ID);
+    map->l1->ai_get_region_adjacent_random(region_ID, player_name);
 }
 int player::ai_owned()
 {
@@ -919,4 +927,12 @@ int player::ai_owned()
     srand(time(nullptr));
     int index = rand()% regions.size();
     return regions[index];
+}
+
+double player::get_percent()
+{
+    int map_size = map->l1->get_total_number_regions();
+    int owned = get_number_regions_owned();
+    double percent = 100*owned/map_size;
+    return percent;
 }

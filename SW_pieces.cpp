@@ -476,7 +476,7 @@ void bits::add_mountain_token()
 
 void bits::clean()
 {
-    cout<<"Size of pile"<<pile.size()<<endl;
+    cout<<"Size of pile "<<pile.size()<<endl;
     for(auto rev_iter = pile.rbegin(); rev_iter!= pile.rend(); ++rev_iter)
         delete (*rev_iter);
 

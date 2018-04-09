@@ -13,6 +13,7 @@
 #include "SW_map_loader.h"
 #include "SW_tokens_info.h"
 #include "SW_strategy.h"
+#include "SW_game_obs.h"
 
 class player
 {
@@ -34,6 +35,9 @@ private:
     moderate_strategy mod_strat;
     random_strategy rand_strat;
 
+    game_turn_token* marker;
+//    undecorated_watcher* player_watcher;
+
 //    behaviour ai = behaviour(nullptr);
 
     //include board bit vector
@@ -42,8 +46,10 @@ private:
     void take_over(int, int, bits*,tokens_info&);
     vector<int> show_edges(int);
     bool check_sea(int, int);
-
+    void update_stats(int);
 public:
+
+    stats_observable* player_stats;
 
     behaviour ai = behaviour(nullptr);
 
@@ -52,7 +58,7 @@ public:
     player();
     ~player();
 
-    explicit player(std::string, loader*, bank*, int);
+    explicit player(std::string, loader*, bank*, int, game_turn_token*);
     const std::string get_name();
     void give_tokens();
     void redistribute_token(token *);
@@ -71,6 +77,8 @@ public:
 
     int get_number_regions_owned();
     int get_victory_tokens();
+    double get_percent();
+
 
     tokens_info* ai_conquers(int); //always reinforcments, could change # units used
     int ai_region_conquers(int); //helper: calls get_region_adjacent_random
