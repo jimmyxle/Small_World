@@ -476,7 +476,7 @@ void bits::add_mountain_token()
 
 void bits::clean()
 {
-    cout<<"Size of pile"<<pile.size()<<endl;
+    cout<<"Size of pile "<<pile.size()<<endl;
     for(auto rev_iter = pile.rbegin(); rev_iter!= pile.rend(); ++rev_iter)
         delete (*rev_iter);
 
@@ -768,7 +768,23 @@ culture culture_set::pick_race()
     int choice = 0;
     do
     {
-        cin>>choice;
+
+        try
+        {
+            cin>>choice;
+            if(!cin)
+            {
+                cin.clear();
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                choice = -1;
+                throw "Not a number";
+            }
+
+        }catch(const char* msg)
+        {
+            cerr<<"ERROR: "<<msg<<endl;
+            cout<<"Enter a new number"<<endl;
+        }
         if(choice >= 0 || choice <6)
             cout<<"You chose ("<<choice<<")\t";
 

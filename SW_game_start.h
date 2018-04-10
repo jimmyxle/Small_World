@@ -25,8 +25,9 @@ private:
     phase_subject* subject;
     phase_watcher* phase;
     int map_size;
-    stats_observable* game_stats;
+//    stats_observable* game_stats;
     undecorated_watcher* watcher;
+
 
     void create_players(int);
     void add_lost_tribes(int);
@@ -40,9 +41,9 @@ private:
     void one_play(player*);
 
     int deco_menu(int);
-    void update_stats(int);
+    void update_stats();
     void decorate( int);
-    double get_percent(player*);
+//    double get_percent(player*);
     void game_loop_helper(player*);
 
     void ai_create_players(int, int);

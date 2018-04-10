@@ -25,10 +25,11 @@ private:
     struct region
     {
         //Parameters
+
         int ID;
-        std::string name;
-        std::string controlled;
-        std::vector<region*> adjacent;
+        string name;
+        string controlled;
+        vector<region*> adjacent;
         bits* tokens_attached;
         bool edge;
         //Constructors
@@ -41,6 +42,9 @@ private:
         void printAdj();
         void display();
         void set_edge();
+        bool is_sea();
+        string get_controlled();
+
     };
     //Some helper pointers
     region* head;
@@ -68,7 +72,7 @@ public:
     bool is_region_adjacent(int, int);
     bool is_control_adjacent(int, int);
     int num_regions_controlled(std::string);
-    bool check_ownership(int, std::string);
+    bool check_ownership(int, const string);
     std::string get_owner(int);
     void print_tokens();
     void regions_in_decline(const std::string&);
@@ -76,11 +80,11 @@ public:
     tokens_info* region_in_withdraw(const std::string&);
     vector<int> get_region_array(const std::string&);
     void get_region_info(int);
-    tokens_info* abandon_region(int, tokens_info&);
+    tokens_info * abandon_region(int, tokens_info&);
     void declare_all_edges(int);
     bool check_adjacency(int, std::string&);
     double get_total_number_regions();
 
-    int ai_get_region_adjacent_random(int); //get a random region adjacent to target id
+    int ai_get_region_adjacent_random(int, string); //get a random region adjacent to target id
 };
 #endif //SMALL_WORLD_SW_GRAPH_H

@@ -270,9 +270,14 @@ int List::num_regions_controlled(std::string str)
     return count;
 }
 //used for player class
-bool List::check_ownership(int target, std::string str)
+string List::region::get_controlled()
 {
-    return (world_nodes[target].controlled == (str));
+    return controlled;
+}
+bool List::check_ownership(int target, const string str)
+{
+    string temp = world_nodes[target].get_controlled();
+    return (temp == str);
 }
 std::string List::get_owner(int ID)
 {
@@ -485,20 +490,36 @@ double List::get_total_number_regions()
     return 0.0+world_nodes.size();
 }
 
-int List::ai_get_region_adjacent_random(int region_ID)
+int List::ai_get_region_adjacent_random(int region_ID, string name)
 {
     vector<int> adjacent_regions;
     cout<<"ai choosing between regions: "<<endl;
     for(auto iter = world_nodes[region_ID].adjacent.begin();
         iter!=world_nodes[region_ID].adjacent.end(); ++iter)
     {
-        cout<< (*iter)->ID<<" ";
-        adjacent_regions.push_back( (*iter)->ID);
+        if( !((*iter)->is_sea()) && (*iter)->controlled != name)
+        {
+            cout<< (*iter)->ID<<" ";
+            adjacent_regions.push_back( (*iter)->ID);
+        }
+
     }
 
     srand(time(nullptr));
-    int index = rand()%adjacent_regions.size();
-    int reg = adjacent_regions[index];
-    cout<<"ai chose "<<reg<<endl;
-    return adjacent_regions[index];
+    int size = adjacent_regions.size();
+    if(size > 0)
+    {
+        int index = rand()%size;
+        int reg = adjacent_regions[index];
+        cout<<endl<<"ai chose "<<reg<<endl;
+        return reg;
+    }
+    else
+        return -1;
+
+}
+
+bool List::region::is_sea()
+{
+    return name=="sea";
 }
