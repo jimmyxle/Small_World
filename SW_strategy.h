@@ -17,25 +17,25 @@ public:
 class aggressive_strategy : public Istrategy
 {
 public:
-    int execute(int, int) const;
+    int execute(int, int) const override;
 };
 
 class defensive_strategy : public Istrategy
 {
 public:
-    int execute(int, int) const;
+    int execute(int, int) const override;
 };
 
 class moderate_strategy : public Istrategy
 {
 public:
-    int execute(int, int) const;
+    int execute(int, int) const override;
 };
 
 class random_strategy : public Istrategy
 {
 public:
-    int execute(int, int) const;
+    int execute(int, int) const override;
 };
 
 class behaviour

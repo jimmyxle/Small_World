@@ -20,7 +20,8 @@ private:
     int MAX_TURNS;
 public:
     game_turn_token();
-    game_turn_token(int);
+
+    explicit game_turn_token(int);
     ~game_turn_token();
     int get_turn_number();
     bool next_turn();
@@ -33,7 +34,8 @@ private:
 
 public:
     coin();
-    coin(int);
+
+    explicit coin(int);
     ~coin();
     int get_coin();
 };
@@ -46,7 +48,7 @@ private:
     vector<coin*> threes;
     vector<coin*> fives;
     vector<coin*> tens;
-    const int BASE_SIZE = 40;
+    unsigned int BASE_SIZE = 40;
 
 public:
     bank();
@@ -85,9 +87,9 @@ public:
     token();
     token(std::string, bool);
     virtual ~token();
-    virtual void foo() = 0;
     std::string get_name();
-    bool is_mountain();
+
+    virtual bool is_mountain();
     virtual void flip_token()=0;
     virtual int is_active()=0;
 
@@ -95,18 +97,14 @@ public:
 class race_token : public token
 {
 private:
-//    std::string name_of_race;
     bool active;
 public:
     race_token();
     explicit race_token(std::string, bool, bool);
-//    race_token( race_token&);
-    ~race_token();
+    ~race_token() override;
     bool is_mountain();
-    void flip_token();
-    int is_active();
-//    std::string get_name();
-    void foo();
+    void flip_token() override;
+    int is_active() override;
 };
 
 class terrain_token : public token
@@ -115,10 +113,9 @@ private:
 public:
     terrain_token();
     explicit terrain_token(std::string, bool);
-    ~terrain_token();
-    void foo();
-    void flip_token();
-    int is_active();
+    ~terrain_token() override;
+    void flip_token() override;
+    int is_active() override;
 };
 
 class bits {
@@ -141,6 +138,8 @@ public:
     void token_decline();
     int get_active();
     token* token_withdraw(int);
+    string get_token_race();
+
 };
 
 class culture
@@ -174,6 +173,7 @@ public:
     culture(std::string, int);
     ~culture();
     void print_culture();
+
     const int get_culture_power();
     const std::string get_banner();
     const std::string get_badge();
@@ -204,7 +204,7 @@ public:
     void shuffle();
     void show_top(int);
     culture pick_race();
-    culture ai_pick_race();
+    culture ai_pick_race(int);
 };
 
 #endif //SMALL_WORLD_SW_PIECES_H

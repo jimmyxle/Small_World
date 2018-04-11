@@ -23,7 +23,5 @@ public:
     dice();
     ~dice();
     int rollDice();
-    void getHistory();
 };
-
 #endif //DICE_DICE_GENERATE_H

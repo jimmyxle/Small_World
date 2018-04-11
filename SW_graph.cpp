@@ -261,18 +261,22 @@ void List::region::printAdj()
 int List::num_regions_controlled(std::string str)
 {
     int count = 0;
-    for(auto iter = world_nodes.begin(); iter != world_nodes.end(); ++iter)
-    {
-        if((*iter).controlled == str)
+    for (auto &world_node : world_nodes) {
+        if(world_node.controlled == str)
             count++;
     }
 //    cout<<"the count is "<<count<<endl;
     return count;
 }
 //used for player class
-bool List::check_ownership(int target, std::string str)
+string List::region::get_controlled()
 {
-    return (world_nodes[target].controlled == (str));
+    return controlled;
+}
+bool List::check_ownership(int target, const string str)
+{
+    string temp = world_nodes[target].get_controlled();
+    return (temp == str);
 }
 std::string List::get_owner(int ID)
 {
@@ -280,23 +284,21 @@ std::string List::get_owner(int ID)
 }
 void List::print_tokens()
 {
-    for(auto iter = world_nodes.begin(); iter!=world_nodes.end(); ++iter)
-    {
-        if(iter->tokens_attached->get_size() > 0)
+    for (auto &world_node : world_nodes) {
+        if(world_node.tokens_attached->get_size() > 0)
         {
-            cout<<iter->ID<<" ";
-            iter->tokens_attached->print_pile();
+            cout<< world_node.ID<<" ";
+            world_node.tokens_attached->print_pile();
         }
     }
 }
 
 void List::regions_in_decline(const std::string& player_name)
 {
-    for(auto iter = world_nodes.begin(); iter!= world_nodes.end(); ++iter)
-    {
-        if((*iter).controlled == player_name)
+    for (auto &world_node : world_nodes) {
+        if(world_node.controlled == player_name)
         {
-            (*iter).tokens_attached->token_decline();
+            world_node.tokens_attached->token_decline();
         }
     }
 }
@@ -330,15 +332,14 @@ tokens_info* List::abandon_region(int region_ID, tokens_info& remainder)
 
 tokens_info* List::region_in_withdraw(const std::string& player_name)
 {
-    tokens_info* remainder = new tokens_info();
-    for(auto iter = world_nodes.begin(); iter != world_nodes.end(); ++iter)
-    {
-        if(iter->controlled == player_name)
+    auto * remainder = new tokens_info();
+    for (auto &world_node : world_nodes) {
+        if(world_node.controlled == player_name)
         {
             token* temp1 = nullptr;
             do
             {
-                 temp1 =  iter->tokens_attached->token_withdraw(1);
+                 temp1 = world_node.tokens_attached->token_withdraw(1);
                 if(temp1 != nullptr)
                     remainder->returned_tokens.push_back(temp1);
 
@@ -356,15 +357,28 @@ vector<int> List::get_region_array(const std::string& player_name)
 {
     vector<int> region_list;
 
-    for(auto iter = world_nodes.begin(); iter != world_nodes.end(); ++iter)
-    {
-        if(iter-> controlled == player_name)
+    for (auto &world_node : world_nodes) {
+        if(world_node.controlled == player_name)
         {
-            region_list.push_back(iter->ID);
+            region_list.push_back(world_node.ID);
         }
     }
     return region_list;
 }
+
+vector<int> List::get_region_array(const std::string& player_name, string race_name)
+{
+    vector<int> region_list;
+
+    for (auto &world_node : world_nodes) {
+        if(world_node.controlled == player_name && world_node.tokens_attached->get_token_race() == race_name)
+        {
+            region_list.push_back(world_node.ID);
+        }
+    }
+    return region_list;
+}
+
 void List::get_region_info(int region_ID)
 {
     world_nodes[region_ID].display();
@@ -472,9 +486,8 @@ void List::declare_all_edges(int number_players)
 bool List::check_adjacency(int region_ID, std::string& player_name)
 {
     vector<region*> *regions = &(world_nodes[region_ID].adjacent);
-    for(auto iter = regions->begin(); iter != regions->end(); ++iter)
-    {
-        if((*iter)->controlled == player_name)
+    for (auto &region : *regions) {
+        if(region->controlled == player_name)
             return true;
     }
     return false;
@@ -485,20 +498,34 @@ double List::get_total_number_regions()
     return 0.0+world_nodes.size();
 }
 
-int List::ai_get_region_adjacent_random(int region_ID)
+int List::ai_get_region_adjacent_random(int region_ID, string name)
 {
     vector<int> adjacent_regions;
     cout<<"ai choosing between regions: "<<endl;
-    for(auto iter = world_nodes[region_ID].adjacent.begin();
-        iter!=world_nodes[region_ID].adjacent.end(); ++iter)
-    {
-        cout<< (*iter)->ID<<" ";
-        adjacent_regions.push_back( (*iter)->ID);
+    for (auto &iter : world_nodes[region_ID].adjacent) {
+        if( !(iter->is_sea()) && iter->controlled != name)
+        {
+            cout<< iter->ID<<" ";
+            adjacent_regions.push_back(iter->ID);
+        }
+
     }
 
-    srand(time(nullptr));
-    int index = rand()%adjacent_regions.size();
-    int reg = adjacent_regions[index];
-    cout<<"ai chose "<<reg<<endl;
-    return adjacent_regions[index];
+    srand(static_cast<unsigned int>(time(nullptr)));
+    int size = adjacent_regions.size();
+    if(size > 0)
+    {
+        int index = rand()%size;
+        int reg = adjacent_regions[index];
+//        cout<<endl<<"ai chose "<<reg<<endl;
+        return reg;
+    }
+    else
+        return -1;
+
+}
+
+bool List::region::is_sea()
+{
+    return name=="sea";
 }

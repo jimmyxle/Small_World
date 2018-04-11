@@ -2,6 +2,8 @@
  * Jimmy Le - 26546986
  * COMP 345 WINTER 2018 NORA H.
  * A1
+ *
+ *
  */
 
 #include "SW_player.h"
@@ -13,7 +15,7 @@ player::player()
 {
     player_name = "Dom";
     player_dice = new dice();
-//    player_wallet = new wallet();
+    player_wallet = new wallet();
     player_first_culture = new culture(banner_list[2],banner_power[2],badge_list[2],badge_power[2]);
     player_second_culture= nullptr;
     first_race_stack = new bits();
@@ -26,28 +28,25 @@ player::player()
     give_tokens();
     second_race_stack = new bits();
     map = nullptr;
-//    first_decline = false;
+    player_stats = new stats_observable();
+    marker = nullptr;
+    update_stats(5);
     cout<<player_name<<" has entered the game!"<<"\t";
-
 };
 player::~player()
 {
     delete player_dice;
-//    delete player_wallet;
-//    delete player_first_culture;
-//    delete player_second_culture;
     player_first_culture = nullptr;
     player_second_culture = nullptr;
     player_dice = nullptr;
-//    player_wallet = nullptr;
     player_central = nullptr;
     delete player_wallet;
-
+    delete player_stats;
+    delete marker;
     cout<<player_name<<" has left the game!"<<"\t";
-
-
 }
-player::player(std::string str, loader* map_loaded, bank* bank1, int ai_factor)
+player::player(std::string str, loader* map_loaded, bank* bank1,
+               int ai_factor, game_turn_token* mark)
 {
     player_name = std::move(str);
     player_dice = new dice();
@@ -56,40 +55,56 @@ player::player(std::string str, loader* map_loaded, bank* bank1, int ai_factor)
     first_race_stack = new bits();
     second_race_stack = new bits();
     map = map_loaded;
-//    first_decline = false;
-
     player_central = bank1;
     player_wallet = new wallet();
     player_wallet->init(bank1);
 
-//    cout<<ai_factor<<endl;
     if(ai_factor > 0)
     {
-       switch(ai_factor)
-       {
-           case 1:
-               ai =  behaviour(&aggr_strat);
-               break;
-           case 2:
-               ai =  behaviour(&def_strat);
-               break;
-           case 3:
-               ai =  behaviour(&mod_strat);
-               break;
-           case 4:
-               ai =  behaviour(&rand_strat);
-               break;
-           default:
-               ai =  behaviour(&rand_strat);
-               break;
-       }
-        cout<<"ai "<<player_name<<" has entered the game!"<<"\t";
-//        ai.execute(1,10);
+        switch(ai_factor)
+        {
+            case 1:
+                ai =  behaviour(&aggr_strat);
+                break;
+            case 2:
+                ai =  behaviour(&def_strat);
+                break;
+            case 3:
+                ai =  behaviour(&mod_strat);
+                break;
+            case 4:
+                ai =  behaviour(&rand_strat);
+                break;
+            default:
+                ai =  behaviour(&rand_strat);
+                break;
+        }
+        cout<<"\t[ai] "<<player_name<<" has entered the game!"<<"\t";
     }
     else
     {
         cout<<player_name<<" has entered the game!"<<"\t";
     }
+    player_stats = new stats_observable();
+    marker = mark;
+    update_stats(5);
+}
+
+void player::update_stats(int coins)
+{
+    if(coins > 0)
+    {
+        cout << endl << "Player recieved a " << coins << " victory coin!" << endl;
+        player_stats->change_status(get_name(), marker->get_turn_number(), get_percent(),
+                                    get_number_of_tokens_owned(), coins);
+    }
+    else
+    {
+        player_stats->change_status(get_name(), marker->get_turn_number(), get_percent(),
+                                    get_number_of_tokens_owned(), 0);
+    }
+    cout<<"\t\t---"<<endl<<endl;
+
 }
 const std::string  player::get_name()
 {
@@ -123,10 +138,9 @@ void player::give_tokens()
             race_token* temp = new race_token(name, true, false);
             second_race_stack->add_race_token( (temp) );
         }
-//        second_race_stack->add_race_tokens(player_second_culture->get_banner(),
-//                                           player_second_culture->get_culture_power());
     }
 
+    update_stats(0);
 }
 
 
@@ -185,8 +199,8 @@ void player::battle(int region_ID, tokens_info& remainder)
                 if(temp != nullptr)
                     delete_these.push_back(temp);
             }while(temp != nullptr);
-            for(auto iter = delete_these.begin(); iter != delete_these.end();++iter)
-                delete (*iter);
+            for (auto &iter : delete_these)
+                delete iter;
             delete_these.clear();
         }
     }
@@ -229,7 +243,8 @@ void player::take_over(int region_ID, int power, bits* stack,tokens_info& remain
     for (int i = 0; i < power; ++i)
         map->l1->add_region_token(region_ID, stack->pop_race_token());
 
-    cout << player_name << " has " << stack->get_size() << " tokens left" << endl;
+    cout << player_name << " has \t\t[" << stack->get_size() << "] tokens left" << endl;
+//    update_stats(0);
 }
 
 vector<int> player::show_edges(int number_players)
@@ -238,18 +253,18 @@ vector<int> player::show_edges(int number_players)
     switch(number_players) {
         case 2:
             arr = { 1, 2, 3, 4,
-                   5, 10, 11, 15, 16,
-                   17, 18, 19, 20};
+                    5, 10, 11, 15, 16,
+                    17, 18, 19, 20};
             break;
         case 3:
             arr = { 2, 3, 4, 5,
-                   6, 7, 12, 17, 18,
-                   24, 25, 26, 27, 28};
+                    6, 7, 12, 17, 18,
+                    24, 25, 26, 27, 28};
             break;
         case 4:
             arr = { 3, 4, 5, 11,
-                   12, 18, 19, 24, 25,
-                   29, 30, 31, 34, 35,
+                    12, 18, 19, 24, 25,
+                    29, 30, 31, 34, 35,
                     37, 38};
             break;
         case 5:
@@ -261,9 +276,8 @@ vector<int> player::show_edges(int number_players)
         default:
             break;
     }
-    for(int i =0; i<arr.size(); ++i)
-    {
-        cout<<arr[i]<<" ";
+    for (int i : arr) {
+        cout<< i <<" ";
     }
     cout<<endl;
     return arr;
@@ -290,9 +304,8 @@ bool player::check_sea(int region_ID, int number_players)
         default:
             break;
     }
-    for(int i = 0; i < arr.size(); ++i)
-    {
-        if(region_ID == arr[i])
+    for (int i : arr) {
+        if(region_ID == i)
             return true;
     }
 
@@ -300,7 +313,7 @@ bool player::check_sea(int region_ID, int number_players)
 }
 tokens_info* player::ai_conquers(int map_number)
 {
-    tokens_info* remainder = new tokens_info();
+    auto * remainder = new tokens_info();
     (remainder)->number_of_tokens = 0;
     (remainder)->prev_owner = "";
     (remainder)->exists=false;
@@ -319,14 +332,23 @@ tokens_info* player::ai_conquers(int map_number)
     do {
         int region_ID = 0;
 
-        if (num_fails > 10) {
+        if (num_fails > 3) {
             keep_conquering = false;
             region_ID = -1;
         } else {
 
+            vector<int> regions_list;
+            int first_conquer = 0;
 
-            vector<int> regions_list = list_ptr->get_region_array(player_name);
-            int first_conquer = player_display(regions_list, *list_ptr);
+            regions_list = list_ptr -> get_region_array(player_name);
+            first_conquer = player_display(regions_list, *list_ptr);
+            if(!( get_second_race_active() ))
+            {
+                regions_list = list_ptr -> get_region_array(player_name,
+                                                            player_second_culture->get_banner());
+                first_conquer = player_display(regions_list, *list_ptr);
+            }
+
 
             if (first_conquer == 0) {
                 //must conquer from the following list:
@@ -334,20 +356,48 @@ tokens_info* player::ai_conquers(int map_number)
                         "so you must choose a region found at the edge:" << endl;
                 vector<int> edge_list = show_edges(map_number);
 
+
+
                 int ai_choice = ai.execute(0, edge_list.size() - 1);
 
-                int START_SEED = edge_list[ai_choice];
-                region_ID = START_SEED;
-                cout << "Ai start on region " << START_SEED << endl;
+                cout<<"\t[ai] suggests "<<edge_list[ai_choice]<<". Make your choice."<<endl;
+
+                bool not_edge = true;
+                do{
+                    cout<<"Enter a region ID"<<endl;
+                    region_ID = get_choice();
+
+                    for (int i : edge_list) {
+                        if(region_ID == i)
+                        {
+                            not_edge = false;
+                            break;
+                        }
+                    }
+                    if(not_edge)
+                        cout<<"Choose again!"<<endl;
+
+                }while(not_edge);
+
+                ///here
+                ai_choice = region_ID;
+                //
+                cout << "\t[Ai] start on region " << ai_choice << endl;
             } else {
 
                 bool is_sea = true;
                 do {
                     cout << "Enter a region_ID(int) to conquer. Enter a -1 to skip the rest of the turn." << endl;
-                    //choose a random ai region
                     int next_ai_conquer = ai_owned();
+
+
+
                     region_ID = ai_region_conquers(next_ai_conquer);
 
+                    cout<<"\t[ai] chose"<<region_ID<<endl;
+
+                    cout<<"Enter a region ID"<<endl;
+                    region_ID = get_choice();
 
                     if (check_sea(region_ID, map_number))
                         cout << "You cannot conquer the sea. Choose again!" << endl;
@@ -392,13 +442,18 @@ tokens_info* player::ai_conquers(int map_number)
 
                             if (player_power >= 1 && strength > player_power &&
                                 (player_power + 3) >= strength) {
-                                cout << "ai will always roll reinforcement die" << endl;
+                                cout << "\t[ai] wants to roll reinforcement die" << endl;
                                 //we can tweek this
 
                                 dice_affirm = ai.execute(0, 1);
 
+                                cout<<"[ai] chose "<<dice_affirm<<endl;
 
-                                if (dice_affirm == 1) {
+                                cout<<"Enter 0 or 1"<<endl;
+                                dice_affirm = get_choice();
+
+
+                                if (dice_affirm == 0) {
                                     roll_result = player_dice->rollDice();
                                 }
                                 player_power += roll_result;
@@ -422,7 +477,11 @@ tokens_info* player::ai_conquers(int map_number)
                                 cout << "How many do you want to use to conquer [" << region_ID << "] ?" << endl;
 
                                 power = ai.execute(strength, player_power);
-                                cout << "Ai will use " << power << endl;
+                                cout << "\t[Ai] will use " << power << endl;
+
+                                cout<<"Enter your choice."<<endl;
+                                power = get_choice();
+
 
                                 if (power >= strength && power <= player_power) {
                                     cout << endl;
@@ -465,9 +524,31 @@ tokens_info* player::ai_conquers(int map_number)
     return remainder;
 }
 
+int player::get_choice()
+{
+    int player_integer= 0;
+
+    try
+    {
+        cin>>player_integer;
+        if(!cin)
+        {
+            cin.clear();
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            player_integer = -1;
+            throw "Not a number";
+        }
+    }catch(const char* msg)
+    {
+        cerr<<"ERROR: "<<msg<<endl;
+    }
+    return player_integer;
+}
+
+
 tokens_info* player::conquers(int map_number)
 {
-    tokens_info* remainder = new tokens_info();
+    auto * remainder = new tokens_info();
     (remainder)->number_of_tokens = 0;
     (remainder)->prev_owner = "";
     (remainder)->exists=false;
@@ -484,32 +565,45 @@ tokens_info* player::conquers(int map_number)
     do
     {
         int region_ID = 0;
-        vector<int> regions_list = list_ptr -> get_region_array(player_name);
-        int first_conquer = player_display(regions_list, *list_ptr);
+        vector<int> regions_list;
+        int first_conquer =0;
+
+
+        regions_list = list_ptr -> get_region_array(player_name);
+        first_conquer = player_display(regions_list, *list_ptr);
+        if(!( get_second_race_active() ))
+        {
+            regions_list = list_ptr -> get_region_array(player_name,
+                                                        player_second_culture->get_banner());
+            first_conquer = player_display(regions_list, *list_ptr);
+        }
+
+
 
         if(first_conquer == 0)
         {
             //must conquer from the following list:
-            cout<<"This is your first conquer, "
+            cout<<"This is your first conquer with this race, "
                     "so you must choose a region found at the edge:"<<endl;
             vector<int> edge_list = show_edges(map_number);
-            bool not_edge = true;
-            do
-            {
-                cin>>region_ID;
 
-                for(int i = 0; i < edge_list.size(); ++i)
-                {
-                    if(region_ID == edge_list[i])
+            bool not_edge = true;
+            do{
+
+                region_ID = get_choice();
+
+                for (int i : edge_list) {
+                    if(region_ID == i)
                     {
                         not_edge = false;
                         break;
                     }
                 }
                 if(not_edge)
-                    cout<<"choose again!"<<endl;
+                    cout<<"Choose again!"<<endl;
 
             }while(not_edge);
+
         }
         else
         {
@@ -517,7 +611,21 @@ tokens_info* player::conquers(int map_number)
             do
             {
                 cout << "Enter a region_ID(int) to conquer. Enter a -1 to skip the rest of the turn." << endl;
-                cin >> region_ID;
+
+                try
+                {
+                    cin>>region_ID;
+                    if(!cin)
+                    {
+                        cin.clear();
+                        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        region_ID = -1;
+                        throw "Not a number";
+                    }
+                }catch(const char* msg)
+                {
+                    cerr<<"ERROR: "<<msg<<endl;
+                }
 
                 if(region_ID < 0)
                 {
@@ -539,13 +647,27 @@ tokens_info* player::conquers(int map_number)
                 do {
                     bool acceptable = list_ptr->check_adjacency(region_ID, player_name);
 
-                    if (acceptable == false) {
+                    if (!acceptable) {
                         cout << "This node is not adjacent to any of your regions. Choose again." << endl;
-                        cin >> region_ID;
+                        try
+                        {
+                            cin>>region_ID;
+                            if(!cin)
+                            {
+                                cin.clear();
+                                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                                region_ID = -1;
+                                adjacent_okay = true;
+                                throw "Not a number";
+                            }
+                        }catch(const char* msg)
+                        {
+                            cerr<<"ERROR: "<<msg<<endl;
+                        }
                     } else
                         adjacent_okay = true;
 
-                } while (adjacent_okay == false);
+                } while (!adjacent_okay);
             }
         }
 
@@ -589,7 +711,22 @@ tokens_info* player::conquers(int map_number)
                         {
                             cout << "You must use the reinforcement die to conquer this" << endl;
                             cout << "Enter: '1' to roll the die." << endl;
-                            cin >> dice_affirm;
+
+                            try
+                            {
+                                cin>>dice_affirm;
+                                if(!cin)
+                                {
+                                    cin.clear();
+                                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                                    dice_affirm = 0;
+                                    throw "Not a number";
+                                }
+                            }catch(const char* msg)
+                            {
+                                cerr<<"ERROR: "<<msg<<endl;
+                            }
+
                             if (dice_affirm == 1) {
                                 roll_result = player_dice->rollDice();
                             }
@@ -610,6 +747,9 @@ tokens_info* player::conquers(int map_number)
                                     take_over(region_ID, SIZE, second_race_stack, *remainder);
 
                                 }
+
+                                update_stats(0);
+
                                 keep_conquering = false;
                             } else {
                                 cout << "too weak" << endl;
@@ -621,7 +761,22 @@ tokens_info* player::conquers(int map_number)
                         {
                             cout << "You currently have " << player_power << " tokens." << endl;
                             cout << "How many do you want to use to conquer [" << region_ID << "] ?" << endl;
-                            cin >> power;
+
+                            try
+                            {
+                                cin>>power;
+                                if(!cin)
+                                {
+                                    cin.clear();
+                                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                                    power = 0;
+                                    throw "Not a number";
+                                }
+                            }catch(const char* msg)
+                            {
+                                cerr<<"ERROR: "<<msg<<endl;
+                            }
+
                             if (power >= strength && power <= player_power) {
                                 cout << endl;
                                 battle(region_ID, *remainder);
@@ -636,8 +791,6 @@ tokens_info* player::conquers(int map_number)
 
                                 power = 0;
                             } else {
-                                cin.clear();
-                                cin.ignore(numeric_limits<streamsize>::max(), '\n');
                                 cout << "Not strong enough" << endl;
                                 remainder->turn_finish = 1;
                             }
@@ -680,27 +833,7 @@ int player::scores(int total, int div)
         return total;
     }
 
-/*
-    if( total/ 5 != 0)
-    {
-        for(int i = 0; i < total/5; ++i )
-            player_wallet->add_coin(5);
-
-        total = total/5;
-    }
-    if( total/ 3 != 0)
-    {
-        for(int i = 0; i < total/3; ++i )
-            player_wallet->add_coin(3);
-        total = total/3;
-    }
-    if(total >0)
-    {
-        for(int i = 0; i < total; ++i)
-            player_wallet->add_coin(1);
-        total = 0;
-    }
-    */
+    update_stats(div);
 }
 void player::get_status()
 {
@@ -721,7 +854,7 @@ void player::get_status()
 }
 void player::set_first_culture(culture first)
 {
-    player_first_culture = &(first);
+    player_first_culture = &first;
 }
 
 int player::get_number_of_tokens_owned() {
@@ -759,10 +892,10 @@ tokens_info* player::redeploy()
 
 int player::player_display(vector<int>& regions_list, List& list_ptr)
 {
-    if(regions_list.size() > 0) {
+    if(!regions_list.empty()) {
         cout << "Here's the list of regions you control: " << endl;
-        for (int i = 0; i < regions_list.size(); ++i)
-            (&list_ptr)->get_region_info(regions_list[i]);
+        for (int i : regions_list)
+            (&list_ptr)->get_region_info(i);
         return 1;
     }
     else
@@ -791,26 +924,56 @@ void player::redeploy_menu()
 
         do
         {
-            cin>> ID_choice;
-            for(int i = 0; i < regions_list.size(); ++i)
+
+            try
             {
-                if(ID_choice == regions_list[i])
+                cin>>ID_choice;
+                if(!cin)
+                {
+                    cin.clear();
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    ID_choice = -1;
+                    throw "Not a number";
+                }
+            }catch(const char* msg)
+            {
+                cerr<<"ERROR: "<<msg<<endl;
+            }
+
+            for (int i : regions_list) {
+                if(ID_choice == i)
                     exists = true;
             }
 
-            if(exists == false)
+            if(!exists)
                 cout<<"Wrong region ID, choose again!"<<endl;
-        }while(exists == false);
+        }while(!exists);
 //
         int token_choice = 0;
         do
         {
             cout<<"Current number of tokens: "<<remaining_tokens<<endl;
             cout<<"You can place any number of tokens from [1 - "<<remaining_tokens<<"]"<<endl;
-            cin>>token_choice;
 
-            if(token_choice<0 || token_choice > remaining_tokens)
-                cout<<"invalid entry. Please enter another entry"<<endl;
+            try
+            {
+                cin>>token_choice;
+                if(!cin)
+                {
+                    cin.clear();
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    token_choice = -1;
+                    throw "Not a number";
+                }
+                if(token_choice<0 || token_choice > remaining_tokens)
+                    throw "Number not in range.";
+            }catch(const char* msg)
+            {
+                cerr<<"ERROR: "<<msg<<endl;
+            }
+
+
+
         }while(token_choice < 0 || token_choice > remaining_tokens);
 
         for(int i = 0; i < token_choice; ++i)
@@ -846,7 +1009,7 @@ tokens_info* player::abandon_menu()
 
     List* list_ptr = map->l1;
     int remaining_tokens = 0;
-    tokens_info* return_token = new tokens_info();
+    auto * return_token = new tokens_info();
 
     bool continue_token = true;
     do {
@@ -865,7 +1028,23 @@ tokens_info* player::abandon_menu()
         bool exists = false;
 
         do {
-            cin >> ID_choice;
+
+            try
+            {
+                cin>>ID_choice;
+                if(!cin)
+                {
+                    cin.clear();
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    ID_choice = -1;
+                    throw "Not a number";
+                }
+
+            }catch(const char* msg)
+            {
+                cerr<<"ERROR: "<<msg<<endl;
+            }
+
             if(ID_choice < 0)
             {
                 continue_token = false;
@@ -873,15 +1052,14 @@ tokens_info* player::abandon_menu()
             }
 
 
-            for(int i = 0; i < regions_list.size(); ++i)
-            {
-                if(ID_choice == regions_list[i])
+            for (int i : regions_list) {
+                if(ID_choice == i)
                     exists = true;
             }
-            if(exists == false)
+            if(!exists)
                 cout<<"Wrong region ID, choose again!"<<endl;
 
-        } while (exists == false);
+        } while (!exists);
 
         //take user choice and go to that region and clear it out
         //ID_choice
@@ -911,12 +1089,21 @@ int player::get_victory_tokens()
 int player::ai_region_conquers(int region_ID)
 {
 
-    map->l1->ai_get_region_adjacent_random(region_ID);
+    return map->l1->ai_get_region_adjacent_random(region_ID, player_name);
 }
 int player::ai_owned()
 {
     vector<int> regions = map->l1->get_region_array(player_name);
-    srand(time(nullptr));
+    srand(static_cast<unsigned int>(time(nullptr)));
     int index = rand()% regions.size();
+
     return regions[index];
+}
+
+double player::get_percent()
+{
+    int map_size = map->l1->get_total_number_regions();
+    int owned = get_number_regions_owned();
+    double percent = 100*owned/map_size;
+    return percent;
 }

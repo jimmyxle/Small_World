@@ -14,13 +14,13 @@ using namespace std;
 /*
  * Seed the random number generator
  */
-mt19937 randomGenerator(time(nullptr));
+mt19937 randomGenerator((time(nullptr)));
 uniform_int_distribution<int> dice_roll(1, 6);
 
 /*
  * default constructors and deconstructors
  */
-dice::dice(){}
+dice::dice() = default;
 
 dice::~dice(){
     history.clear();
@@ -35,7 +35,6 @@ int dice::rollDice()
     int face = dice_roll(randomGenerator);
     if(face>3)
         face = 0;
-
     if(face==0)
         cout << "  ===>blank face!" << endl;
     else
@@ -43,48 +42,4 @@ int dice::rollDice()
     history.push_back(face);
     return face;
 
-}
-/*
- * Prints out the history of rolls as a percentage
- */
-void dice::getHistory(){
-    vector<int>::iterator iter;
-    cout<<endl<<"Here's the history of rolls."<<endl;
-    int oneCount=0;
-    int twoCount=0;
-    int threeCount=0;
-    int blankCount=0;
-    int total = 0;
-    for(iter = history.begin(); iter != history.end(); ++iter)
-    {
-        switch(*iter)
-        {
-            case 1:
-                ++oneCount;
-                ++total;
-                break;
-            case 2:
-
-                ++twoCount;
-                ++total;
-                break;
-            case 3:
-                ++threeCount;
-                ++total;
-                break;
-            default:
-                ++blankCount;
-                ++total;
-                break;
-        }
-    }
-    double onePercentage =  (oneCount*100.0 / total);
-    double twoPercentage = (twoCount*100.0 / total);
-    double threePercentage = (threeCount*100.0 / total);
-    double blankPercentage = (blankCount*100.0 / total);
-
-    cout<<"one's percentage: "<<onePercentage<<"%"<<endl;
-    cout<<"twos's percentage: "<<twoPercentage<<"%"<<endl;
-    cout<<"three's percentage: "<<threePercentage<<"%"<<endl;
-    cout<<"blanks's percentage: "<<blankPercentage<<"%"<<endl;
 }

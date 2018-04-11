@@ -14,8 +14,7 @@ tokens_info::tokens_info()
 
 tokens_info::~tokens_info()
 {
-    for(auto iter = returned_tokens.begin(); iter != returned_tokens.end(); ++iter)
-    {
-        delete (*iter);
+    for (auto &returned_token : returned_tokens) {
+        delete returned_token;
     }
 }

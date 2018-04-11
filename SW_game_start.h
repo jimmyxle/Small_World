@@ -25,8 +25,9 @@ private:
     phase_subject* subject;
     phase_watcher* phase;
     int map_size;
-    stats_observable* game_stats;
+//    stats_observable* game_stats;
     undecorated_watcher* watcher;
+
 
     void create_players(int);
     void add_lost_tribes(int);
@@ -40,20 +41,24 @@ private:
     void one_play(player*);
 
     int deco_menu(int);
-    void update_stats(int);
+    void update_stats();
     void decorate( int);
-    double get_percent(player*);
+//    double get_percent(player*);
     void game_loop_helper(player*);
 
-    void ai_create_players(int, int);
+    void ai_create_players(int);
     void ai_continue_loop(player&); //keep doing ai_turn until you run out of tokens
     void ai_one_play(player*);
-
+    int ai_turn(player*); //leads to ai_conquer() @
+    int ai_menu(player&); //will always choose conquer, never redeploy, maybe should choose decline
+    void ai_game_loop_helper(player*);
+    int ai_choose_setting();
+    void declare_winner();
 
 
 public:
     game_manager(); //initiate map
-    game_manager(int); //initiate map
+    explicit game_manager(int); //initiate map
 
     ~game_manager();
     void setup_observers();
@@ -61,6 +66,8 @@ public:
 
 
     void game_loop();
+    void ai_game_loop();
+
 
     int turn(player*);
 
@@ -68,12 +75,7 @@ public:
     void decline(player*);
     void redeploy(player*);
 
-    int ai_turn(player*); //leads to ai_conquer() @
-    int ai_menu(player&); //will always choose conquer, never redeploy, maybe should choose decline
-    void ai_game_loop();
-    void ai_game_loop_helper(player*);
 
-    void declare_winner();
 
 };
 

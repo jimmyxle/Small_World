@@ -24,7 +24,7 @@ int moderate_strategy::execute(int min, int max) const
 int random_strategy::execute(int min, int max) const
 {
     cout<<"Random"<<endl;
-    srand(time(nullptr));
+    srand(static_cast<unsigned int>(time(nullptr)));
     int random_num = 0;
 
     random_num = rand()%(max-min+1)+min;
